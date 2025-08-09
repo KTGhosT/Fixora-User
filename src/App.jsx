@@ -11,6 +11,7 @@ import ManageUsers from "./pages/admin/ManageUsers";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 
+import UserLayout from './layouts/user/userlayout';
 // You can later add ManageWorkers, ManageWorks, ManageContent
 
 function App() {
@@ -20,8 +21,11 @@ function App() {
 
       {/* Routes */}
       <Routes>
+
+        <Route path="/Home" element={<UserLayout />} />
+
         {/* Worker Routes */}
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
