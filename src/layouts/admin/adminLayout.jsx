@@ -3,17 +3,23 @@ import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import { FaUsers, FaTasks, FaUserTie, FaFileAlt, FaHome } from "react-icons/fa";
 import Header from "../../components/admin/header";
+import Footer from "../../components/admin/footer";
 
 function AdminLayout() {
   return (
-    <>
-      <Header /> {/* Your existing header component */}
+    <div className="d-flex flex-column min-vh-100">
+      {/* Full Width Header */}
+      <Header />
 
-      <div className="d-flex" style={{ minHeight: "100vh" }}>
+      {/* Middle: Sidebar + Content */}
+      <div className="d-flex flex-grow-1">
         {/* Sidebar */}
         <nav
-          className="bg-dark text-white p-3 vh-100 position-fixed"
-          style={{ width: "250px", overflowY: "auto" }}
+          className="bg-dark text-white p-3"
+          style={{
+            width: "250px",
+            overflowY: "auto"
+          }}
         >
           <h4 className="mb-4 border-bottom pb-2">Admin Panel</h4>
           <ul className="nav flex-column">
@@ -46,17 +52,15 @@ function AdminLayout() {
         </nav>
 
         {/* Main Content */}
-        <main
-          className="flex-grow-1 p-4"
-          style={{ marginLeft: "250px", overflowY: "auto", minHeight: "100vh" }}
-        >
+        <main className="flex-grow-1 p-4" style={{ overflowY: "auto" }}>
           <Outlet />
         </main>
       </div>
-    </>
+
+      {/* Full Width Footer */}
+      <Footer />
+    </div>
   );
 }
-
-
 
 export default AdminLayout;

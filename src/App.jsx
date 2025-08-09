@@ -8,6 +8,9 @@ import Register from "./pages/worker/register";
 import AdminLayout from "./layouts/admin/adminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+
 // You can later add ManageWorkers, ManageWorks, ManageContent
 
 function App() {
@@ -20,6 +23,8 @@ function App() {
         {/* Worker Routes */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
         {/* Admin Routes with Nested Layout */}
         <Route path="/admin" element={<AdminLayout />}>
