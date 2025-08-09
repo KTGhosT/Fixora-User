@@ -1,0 +1,18 @@
+.slider-bg {
+  height: 50vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.slider-caption {
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 10px;
+}
