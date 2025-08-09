@@ -1,119 +1,23 @@
-/* App.css */
-
-/* Ensure full height for html, body, and root */
-header {
-  position: fixed;
-  top: 0;
-  left: 250px; /* sidebar width */
-  right: 0;
-  height: 60px;
-  background-color: white;
-  z-index: 1100;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* Login card animation */
+.login-card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 0.6s ease forwards;
 }
 
-/* Push content down so it’s not hidden under header */
-.flex-grow-1 {
-  margin-left: 250px; /* sidebar width */
-  margin-top: 60px;   /* header height */
-  min-height: calc(100vh - 60px); /* viewport height minus header */
-  background-color: #fff;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-header {
-  position: fixed;
-  top: 0;
-  left: 250px; /* sidebar width */
-  right: 0;
-  height: 60px;
-  background-color: white;
-  z-index: 1100;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Push content down so it’s not hidden under header */
-.flex-grow-1 {
-  margin-left: 250px; /* sidebar width */
-  margin-top: 60px;   /* header height */
-  min-height: calc(100vh - 60px); /* viewport height minus header */
-  background-color: #fff;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-
-/* Sidebar styles */
-.bg-dark {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh; /* full viewport height */
-  width: 250px;
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-
-/* Sidebar header */
-.bg-dark h4 {
-  font-weight: 600;
-  letter-spacing: 1px;
-  border-bottom: 1px solid #495057;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-  color: #fff;
-}
-
-/* Sidebar navigation links */
-.nav-link {
-  display: flex;
-  align-items: center;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  color: #adb5bd;              /* lighter gray */
-  border-radius: 4px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  text-decoration: none;
-}
-
-/* Icon inside nav-link */
-.nav-link svg {
-  margin-right: 8px;
-  font-size: 1.2rem;
-}
-
-/* Hover and active nav-link styles */
-.nav-link:hover,
-.nav-link.active {
-  background-color: #495057;
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* Main content area next to sidebar */
-.flex-grow-1 {
-  margin-left: 250px;
-  margin-top: 60px; /* header height */
-  /* ...other styles */
-}
-
-
-/* Responsive adjustments for small screens */
-@media (max-width: 768px) {
-  .bg-dark {
-    position: relative;        /* Sidebar becomes relative */
-    width: 100%;               /* Full width on mobile */
-    height: auto;
-    box-shadow: none;          /* Remove shadow */
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  .flex-grow-1 {
-    margin-left: 0;            /* Remove margin for mobile */
-    padding: 1rem;
-  }
+/* Button hover effect */
+.btn-primary {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #4a57d3;
+  transform: scale(1.05);
 }

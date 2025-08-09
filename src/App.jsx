@@ -8,27 +8,27 @@ import Register from "./pages/worker/register";
 import AdminLayout from "./layouts/admin/adminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
 
-// Additional Components
-import Navbar from './components/user/Header';
-import Home from './components/user/Home';
-import Services from './components/user/Services';
-import Contact from './components/user/Contact';
-import About from './components/user/About';
-import Footer from './components/user/Footer';
-import Slider from './components/user/Slider';
 import UserLayout from './layouts/user/userlayout';
+// You can later add ManageWorkers, ManageWorks, ManageContent
 
 function App() {
   return (
     <Router>
+
+
+      {/* Routes */}
       <Routes>
-        {/* Home Route with Layout */}
+
         <Route path="/Home" element={<UserLayout />} />
 
         {/* Worker Routes */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
         {/* Admin Routes with Nested Layout */}
         <Route path="/admin" element={<AdminLayout />}>
