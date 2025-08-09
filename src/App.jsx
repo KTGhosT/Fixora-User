@@ -1,18 +1,31 @@
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import './App.css';
-import Dashboard from './pages/worker/dashboard';
-import Register from './pages/worker/register';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
+// Worker Pages
+import Dashboard from "./pages/worker/dashboard";
+import Register from "./pages/worker/register";
+
+// Admin Layout & Pages
+import AdminLayout from "./layouts/admin/adminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import ManageUsers from "./pages/admin/ManageUsers";
+// You can later add ManageWorkers, ManageWorks, ManageContent
 
 function App() {
   return (
     <Router>
-      <nav>
-        <Link to="/">Dashboard</Link> | <Link to="/register">Register</Link>
-      </nav>
 
+
+      {/* Routes */}
       <Routes>
+        {/* Worker Routes */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Admin Routes with Nested Layout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="manage-users" element={<ManageUsers />} />
+        </Route>
       </Routes>
     </Router>
   );
