@@ -29,7 +29,7 @@ function Login() {
       if (res.ok) {
         // You might want to store auth token here (if you have one)
         alert("Login successful!");
-        navigate("/Home"); // Redirect to home or dashboard page
+        navigate("/"); // Redirect to home or dashboard page
       } else {
         setError(data.message || "Login failed");
       }
