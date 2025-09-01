@@ -10,8 +10,9 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
-
+import ManageServices from "./pages/admin/ManageServices";
 import Homepage from './pages/Homepage';
+
 // You can later add ManageWorkers, ManageWorks, ManageContent
 
 function App() {
@@ -34,6 +35,10 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="manage-users" element={<ManageUsers />} />
+        </Route>
+        <Route path="/admin/manageservices" element={<AdminLayout />}>
+          <Route index element={<ManageServices />} />
+          <Route path="ManageServices" element={<ManageServices />} />
         </Route>
       </Routes>
     </Router>

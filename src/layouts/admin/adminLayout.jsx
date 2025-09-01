@@ -48,6 +48,11 @@ function AdminLayout() {
                 <FaFileAlt className="me-2" /> Manage Content
               </Link>
             </li>
+            <li className="nav-item mb-2">
+              <Link to="/admin/ManageServices" className="nav-link text-white">
+                <FaFileAlt className="me-2" /> Manage Services
+              </Link>
+            </li>
           </ul>
         </nav>
 
