@@ -1,23 +1,311 @@
-/* Login card animation */
-.login-card {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeSlideUp 0.6s ease forwards;
+/* Admin Layout Styles with Theme Support */
+:root {
+  /* Dark Theme (Default) */
+  --dark-bg-primary: #2a2a3d;
+  --dark-bg-secondary: #5b2e9d;
+  --dark-bg-tertiary: #4a4062;
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #b8b8cc;
+  --dark-border: #4a4062;
+  --dark-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Light Theme */
+  --light-bg-primary: #f8f9fa;
+  --light-bg-secondary: #6f42c1;
+  --light-bg-tertiary: #e9ecef;
+  --light-text-primary: #212529;
+  --light-text-secondary: #6c757d;
+  --light-border: #dee2e6;
+  --light-shadow: rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeSlideUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
+[data-theme="dark"] {
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --bg-tertiary: var(--dark-bg-tertiary);
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --border: var(--dark-border);
+  --shadow: var(--dark-shadow);
+}
+
+[data-theme="light"] {
+  --bg-primary: var(--light-bg-primary);
+  --bg-secondary: var(--light-bg-secondary);
+  --bg-tertiary: var(--light-bg-tertiary);
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --border: var(--light-border);
+  --shadow: var(--light-shadow);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Header Styles */
+.admin-header {
+  background-color: var(--bg-secondary) !important;
+  box-shadow: 0 2px 10px var(--shadow);
+  z-index: 1000;
+}
+
+.admin-search {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+  width: 200px;
+}
+
+.admin-search::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.8;
+}
+
+.admin-search:focus {
+  box-shadow: 0 0 0 0.2rem rgba(91, 46, 157, 0.25);
+  border-color: var(--bg-secondary);
+}
+
+.admin-icon {
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.admin-icon:hover {
+  color: var(--text-secondary);
+}
+
+.admin-reminder {
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.admin-badge {
+  background-color: #007bff;
+  color: white;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.admin-profile {
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.theme-toggle {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-secondary);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Sidebar Styles */
+.admin-sidebar {
+  background-color: var(--bg-secondary);
+  width: 80px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 2px 0 10px var(--shadow);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.admin-sidebar:hover {
+  width: 200px;
+}
+
+.admin-sidebar:hover .small {
+  display: block !important;
+  margin-top: 5px;
+}
+
+.admin-sidebar .small {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+}
+
+.admin-sidebar .nav-link {
+  transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  text-align: center;
+  color: var(--text-primary) !important;
+}
+
+.admin-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.admin-sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Main Content Styles */
+.admin-main {
+  background-color: var(--bg-primary);
+  overflow-y: auto;
+  transition: background-color 0.3s ease;
+}
+
+.admin-main::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-main::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.admin-main::-webkit-scrollbar-thumb {
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+/* Card Styles */
+.rounded {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 15px var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.rounded:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px var(--shadow);
+}
+
+/* Table Styles */
+.table-dark {
+  background-color: transparent;
+  border-color: var(--border);
+}
+
+.table-dark th,
+.table-dark td {
+  border-color: var(--border);
+  padding: 12px;
+}
+
+.table-dark th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.table-dark tbody tr:hover {
+  background-color: rgba(74, 64, 98, 0.3);
+}
+
+/* Status Indicators */
+.text-success {
+  color: #28a745 !important;
+  font-weight: 600;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+  font-weight: 600;
+}
+
+/* Progress Cards */
+.bg-danger { background-color: #ff6b6b !important; }
+.bg-primary { background-color: #4dabf7 !important; }
+.bg-info { background-color: #00ced1 !important; }
+.bg-warning { background-color: #ffcc00 !important; }
+
+/* Icon Styles */
+svg {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.nav-link:hover svg {
+  transform: scale(1.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-header .d-flex {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .admin-search {
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+  
+  .admin-sidebar {
+    width: 60px !important;
+  }
+  
+  .admin-sidebar:hover {
+    width: 180px !important;
   }
 }
 
-/* Button hover effect */
-.btn-primary {
-  transition: background-color 0.3s ease, transform 0.2s ease;
+@media (max-width: 576px) {
+  .admin-header h4 {
+    font-size: 1.2rem;
+  }
+  
+  .admin-header .d-flex.align-items-center {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .ms-3 {
+    margin-left: 0.5rem !important;
+    margin-right: 0.5rem !important;
+  }
+  
+  .theme-toggle {
+    width: 35px;
+    height: 35px;
+  }
 }
 
-.btn-primary:hover {
-  background-color: #4a57d3;
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hover Effects */
+[style*="cursor: pointer"] {
+  transition: all 0.3s ease;
+}
+
+[style*="cursor: pointer"]:hover {
+  opacity: 0.8;
   transform: scale(1.05);
+}
+
+/* Form Control Focus */
+.form-control:focus {
+  border-color: var(--bg-secondary);
+  box-shadow: 0 0 0 0.2rem rgba(91, 46, 157, 0.25);
 }

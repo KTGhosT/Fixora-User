@@ -5,7 +5,7 @@ import Dashboard from "./pages/worker/dashboard";
 import Register from "./pages/worker/register";
 
 // Admin Layout & Pages
-import AdminLayout from "./layouts/admin/adminLayout";
+import AdminLayout from "./layouts/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
 import Login from "./pages/auth/Login";
@@ -30,6 +30,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/worker/dashboard" element={<Dashboard />} />
 
         {/* Admin Routes with Nested Layout */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -40,6 +41,7 @@ function App() {
           <Route index element={<ManageServices />} />
           <Route path="ManageServices" element={<ManageServices />} />
         </Route>
+        
       </Routes>
     </Router>
   );

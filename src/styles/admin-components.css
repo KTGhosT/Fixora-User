@@ -1,0 +1,258 @@
+/* Existing global styles */
+.admin-layout {
+  background-color: #2a2a3d;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+/* Manage Users and Services Specific Styles */
+.manage-users,
+.manage-services {
+  padding: 20px;
+}
+
+.manage-users h2,
+.manage-services h2 {
+  margin-bottom: 0;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #5b2e9d;
+  border: none;
+  padding: 8px 16px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #4a256f;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+  padding: 8px 16px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-warning,
+.btn-danger {
+  border: none;
+  padding: 4px 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-danger:hover {
+  background-color: #dc3545;
+}
+
+/* Modern Table Styles */
+.modern-table-container {
+  background-color: #4a4062;
+  padding: 20px;
+  border-radius: 10px;
+  animation: slideUp 0.5s ease-out;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  color: #fff;
+}
+
+.modern-table thead {
+  background-color: #5b2e9d;
+}
+
+.modern-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.modern-table tbody tr.table-row {
+  background-color: #2a2a3d;
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modern-table tbody tr.table-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modern-table td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.modern-table .table-responsive {
+  overflow-x: auto;
+}
+
+.modern-table img {
+  border-radius: 5px;
+  max-width: 80px;
+  object-fit: cover;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background-color: #4a4062;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.form-control {
+  background-color: #2a2a3d;
+  border: none;
+  color: #fff;
+  padding: 8px;
+  border-radius: 5px;
+  width: 100%;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 8px #5b2e9d;
+}
+
+.form-label {
+  color: #fff;
+  margin-bottom: 5px;
+  display: block;
+  font-weight: 500;
+}
+
+.form-control[type="file"] {
+  padding: 6px;
+  background-color: #2a2a3d;
+  color: #fff;
+}
+
+.form-control[type="file"]::file-selector-button {
+  background-color: #5b2e9d;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-control[type="file"]::file-selector-button:hover {
+  background-color: #4a256f;
+}
+
+/* Additional Utility Classes */
+.text-muted {
+  color: #6c757d;
+}
+
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+  .modern-table th,
+  .modern-table td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+  .modern-table .table-responsive {
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal-content {
+    max-width: 90%;
+    padding: 15px;
+  }
+  .btn-primary,
+  .btn-secondary {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+  .btn-warning,
+  .btn-danger {
+    padding: 3px 6px;
+    font-size: 0.8rem;
+  }
+  .form-control {
+    font-size: 0.9rem;
+    padding: 6px;
+  }
+  .modal-title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-table th,
+  .modern-table td {
+    font-size: 0.8rem;
+  }
+  .modern-table img {
+    max-width: 60px;
+  }
+  .modal-content {
+    padding: 10px;
+  }
+}
