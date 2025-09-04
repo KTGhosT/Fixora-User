@@ -21,9 +21,12 @@ function Login() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/login", {
+      const res = await fetch("/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },        
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -33,17 +36,37 @@ function Login() {
       const data = await res.json();
 
       if (res.ok) {
+        // Store authentication token and user data
+        if (data.token) {
+          localStorage.setItem("auth_token", data.token);
+        }
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
         // Success animation before navigation
         document.querySelector(".form-container").classList.add("success-animation");
         setTimeout(() => {
-          navigate("/"); // Redirect to home or dashboard page
+          // Redirect based on user role
+          if (data.user?.role === "admin") {
+            navigate("/admin");
+          } else if (data.user?.role === "worker") {
+            navigate("/worker/dashboard");
+          } else {
+            navigate("/");
+          }
         }, 1500);
       } else {
-        setError(data.message || "Login failed");
+        // Better error handling
+        const errorMessage = data.message || 
+                            data.error || 
+                            (data.errors ? Object.values(data.errors).flat().join(", ") : "Login failed");
+        setError(errorMessage);
         setIsSubmitting(false);
       }
     } catch (err) {
-      setError("Server error");
+      console.error("Login error:", err);
+      setError(`Network error: ${err.message}. Please check if the server is running.`);
       setIsSubmitting(false);
     }
   };
