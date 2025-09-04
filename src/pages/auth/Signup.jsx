@@ -21,13 +21,13 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+  
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setIsSubmitting(false);
       return;
     }
-
+  
     try {
       const res = await fetch("http://127.0.0.1:8000/api/signup", {
         method: "POST",
@@ -37,25 +37,31 @@ function Signup() {
           email: formData.email,
           password: formData.password,
           password_confirmation: formData.confirmPassword,
+          role: "customer",
         }),
       });
-
+  
       const data = await res.json();
-
+  
       if (res.ok) {
-        // Success animation before navigation
-        setTimeout(() => {
-          navigate("/login");
-        }, 1500);
+        // Store user locally
+        localStorage.setItem("user", JSON.stringify(data.user));
+  
+        // Redirect
+        if (data.user.role === "admin") navigate("/admin");
+        else if (data.user.role === "worker") navigate("/worker/dashboard");
+        else navigate("/"); // customer or guest
       } else {
-        setError(data.errors ? JSON.stringify(data.errors) : "Signup failed");
+        setError(data.errors ? Object.values(data.errors).flat().join(", ") : "Signup failed");
         setIsSubmitting(false);
       }
     } catch (err) {
-      setError("Server error");
+      console.error("Signup error:", err);
+      setError(`Server error: ${err.message}`);
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <div className="signup-container">

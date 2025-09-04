@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/user/header.css';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/login');
+  };
+
   return (
     <Navbar expand="lg" sticky="top" className="custom-navbar">
       <Container>
@@ -32,11 +48,30 @@ const Header = () => {
 
             <Nav.Link href="#resources">About</Nav.Link>
             <Nav.Link href="#customers">Customers</Nav.Link>
+            <Nav.Link href="#blog">Find a worker</Nav.Link>
             <Nav.Link href="#blog">Feedback Center</Nav.Link>
           </Nav>
+
           <Nav className="navbar-buttons">
-            <Button className="btn-demo me-2">Become a Worker</Button>
-            <Button className="btn-try-free">Log in</Button>
+            {!user && (
+              <>
+                <Button className="btn-demo me-2" onClick={() => navigate('/register')}>
+                  Become a Worker
+                </Button>
+                <Button className="btn-try-free" onClick={() => navigate('/login')}>
+                  Log in
+                </Button>
+              </>
+            )}
+
+            {user && (
+              <>
+                <span className="me-3">Hello, {user.name}</span>
+                <Button className="btn-try-free" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

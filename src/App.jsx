@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Worker Pages
 import Dashboard from "./pages/worker/dashboard";
@@ -8,40 +9,58 @@ import Register from "./pages/worker/register";
 import AdminLayout from "./layouts/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
+import ManageServices from "./pages/admin/ManageServices";
+
+// Auth Pages
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
-import ManageServices from "./pages/admin/ManageServices";
-import Homepage from './pages/Homepage';
 
-// You can later add ManageWorkers, ManageWorks, ManageContent
+// Public Pages
+import Homepage from "./pages/Homepage";
 
 function App() {
+  // ✅ Declare state first
+  const [user, setUser] = useState(null);
+
+  // ✅ Load user from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Failed to parse user:", err);
+        localStorage.removeItem("user");
+      }
+    }
+  }, []);
+
   return (
     <Router>
-
-
-      {/* Routes */}
       <Routes>
-
         <Route path="/" element={<Homepage />} />
 
-        {/* Worker Routes */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/worker/dashboard" element={<Dashboard />} />
+        {/* Auth routes */}
+        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/signup" element={<Signup setUser={setUser} />} />
 
-        {/* Admin Routes with Nested Layout */}
-        <Route path="/admin" element={<AdminLayout />}>
+        {/* Admin routes */}
+        <Route
+          path="/admin/*"
+          element={
+            user && user.role === "admin" ? (
+              <AdminLayout />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        >
           <Route index element={<AdminDashboard />} />
           <Route path="manage-users" element={<ManageUsers />} />
+          <Route path="manage-services" element={<ManageServices />} />
         </Route>
-        <Route path="/admin/manageservices" element={<AdminLayout />}>
-          <Route index element={<ManageServices />} />
-          <Route path="ManageServices" element={<ManageServices />} />
-        </Route>
-        
+
+        {/* Add worker & customer routes similarly */}
       </Routes>
     </Router>
   );
