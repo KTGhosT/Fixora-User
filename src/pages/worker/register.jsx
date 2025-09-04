@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Alert } from 'react-bootstrap';
+import styles from './register.module.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -23,45 +23,51 @@ const Register = () => {
   };
 
   return (
-    <Container className="mt-4">
-      <h2>Register Worker</h2>
-      {success && <Alert variant="success">Worker registered successfully!</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formName">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
+    <div className={`${styles.container} ${styles.mt4}`}>
+      <h2 className={styles.registerTitle}>Register Worker</h2>
+      {success && <div className={`${styles.alert} ${styles.alertSuccess}`}>Worker registered successfully!</div>}
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel} htmlFor="formName">Name</label>
+          <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
+            className={styles.formControl}
+            id="formName"
           />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formEmail">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel} htmlFor="formEmail">Email</label>
+          <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
+            className={styles.formControl}
+            id="formEmail"
           />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formRole">
-          <Form.Label>Role</Form.Label>
-          <Form.Control
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel} htmlFor="formRole">Role</label>
+          <input
             type="text"
             name="role"
             value={formData.role}
             onChange={handleChange}
             required
+            className={styles.formControl}
+            id="formRole"
           />
-        </Form.Group>
-        <Button variant="primary" type="submit">
+        </div>
+        <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
           Register
-        </Button>
-      </Form>
-    </Container>
+        </button>
+      </form>
+    </div>
   );
 };
 

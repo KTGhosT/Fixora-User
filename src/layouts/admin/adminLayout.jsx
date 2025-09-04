@@ -6,7 +6,8 @@ import {
   FaTimes, FaChartLine, FaCog as FaSettings, FaQuestionCircle,
   FaEnvelope, FaCalendarAlt, FaUserCircle, FaShieldAlt
 } from "react-icons/fa";
-import "../../styles/admin.css";
+import styles from "./admin.module.css";
+
 
 function AdminLayout() {
   const [isDarkTheme, setIsDarkTheme] = useState(true);
@@ -80,12 +81,12 @@ function AdminLayout() {
   ];
 
   return (
-    <div className="d-flex flex-column min-vh-100">
+    <div className={`d-flex flex-column min-vh-100 ${styles.adminLayout}`}>
       {/* Header */}
-      <header className="admin-header p-3 d-flex justify-content-between align-items-center">
+      <header className={`${styles.adminHeader} p-3 d-flex justify-content-between align-items-center`}>
         <div className="d-flex align-items-center">
           <button 
-            className="btn me-3 d-md-none"
+            className={`${styles.btn} me-3 d-md-none`}
             onClick={toggleMobileMenu}
             aria-label="Toggle mobile menu"
           >
@@ -93,7 +94,7 @@ function AdminLayout() {
           </button>
           <div className="d-flex align-items-center">
             <div className="me-3">
-              <h4 className="mb-0 gradient-text">{getPageTitle()}</h4>
+              <h4 className={`mb-0 ${styles.gradientText}`}>{getPageTitle()}</h4>
               <small className="text-muted">Welcome back, Admin</small>
             </div>
           </div>
@@ -101,21 +102,21 @@ function AdminLayout() {
         
         <div className="d-flex align-items-center">
           {/* Search Bar */}
-          <div className="position-relative me-3">
-            <FaSearch className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" />
+          <div className={`position-relative me-3`}>
+            <FaSearch className={`position-absolute top-50 start-0 translate-middle-y ms-3 text-muted`} />
             <input
               type="text"
               placeholder="Search anything..."
-              className="form-control admin-search ps-5"
+              className={`form-control ${styles.adminSearch} ps-5`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
           {/* Notifications */}
-          <div className="position-relative me-3" ref={notificationRef}>
+          <div className={`position-relative me-3`} ref={notificationRef}>
             <button 
-              className="btn admin-icon position-relative"
+              className={`${styles.btn} ${styles.adminIcon} position-relative`}
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               aria-label="Notifications"
             >
@@ -128,14 +129,14 @@ function AdminLayout() {
             </button>
             
             {isNotificationOpen && (
-              <div className="position-absolute top-100 end-0 mt-2 glass rounded shadow-lg" 
+              <div className={`position-absolute top-100 end-0 mt-2 ${styles.glass} rounded shadow-lg`} 
                    style={{ width: '320px', zIndex: 1000 }}>
                 <div className="p-3 border-bottom">
                   <h6 className="mb-0">Notifications</h6>
                 </div>
                 <div className="p-0" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                   {notifications.map((notification) => (
-                    <div key={notification.id} className="p-3 border-bottom hover-effect">
+                    <div key={notification.id} className={`p-3 border-bottom ${styles.hoverEffect}`}>
                       <div className="d-flex align-items-start">
                         <div className={`me-3 p-2 rounded-circle bg-${notification.type === 'success' ? 'success' : notification.type === 'warning' ? 'warning' : 'info'}`}>
                           <FaBell className="text-white" size={12} />
@@ -159,7 +160,7 @@ function AdminLayout() {
 
           {/* Theme Toggle */}
           <button 
-            className="btn me-3 theme-toggle"
+            className={`${styles.btn} me-3 ${styles.themeToggle}`}
             onClick={toggleTheme}
             aria-label="Toggle theme"
           >
@@ -169,7 +170,7 @@ function AdminLayout() {
           {/* User Menu */}
           <div className="position-relative" ref={userMenuRef}>
             <button 
-              className="btn d-flex align-items-center admin-profile"
+              className={`${styles.btn} d-flex align-items-center ${styles.adminProfile}`}
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               aria-label="User menu"
             >
@@ -184,7 +185,7 @@ function AdminLayout() {
             </button>
             
             {isUserMenuOpen && (
-              <div className="position-absolute top-100 end-0 mt-2 glass rounded shadow-lg" 
+              <div className={`position-absolute top-100 end-0 mt-2 ${styles.glass} rounded shadow-lg`} 
                    style={{ width: '200px', zIndex: 1000 }}>
                 <div className="p-3 border-bottom">
                   <div className="d-flex align-items-center">
@@ -201,20 +202,20 @@ function AdminLayout() {
                   </div>
                 </div>
                 <div className="p-0">
-                  <Link to="/admin/profile" className="d-flex align-items-center p-3 text-decoration-none hover-effect">
+                  <Link to="/admin/profile" className={`d-flex align-items-center p-3 text-decoration-none ${styles.hoverEffect}`}>
                     <FaUserCircle className="me-3" />
                     <span>Profile</span>
                   </Link>
-                  <Link to="/admin/settings" className="d-flex align-items-center p-3 text-decoration-none hover-effect">
+                  <Link to="/admin/settings" className={`d-flex align-items-center p-3 text-decoration-none ${styles.hoverEffect}`}>
                     <FaCog className="me-3" />
                     <span>Settings</span>
                   </Link>
-                  <Link to="/admin/help" className="d-flex align-items-center p-3 text-decoration-none hover-effect">
+                  <Link to="/admin/help" className={`d-flex align-items-center p-3 text-decoration-none ${styles.hoverEffect}`}>
                     <FaQuestionCircle className="me-3" />
                     <span>Help & Support</span>
                   </Link>
                   <hr className="my-0" />
-                  <button className="d-flex align-items-center p-3 w-100 border-0 bg-transparent text-decoration-none hover-effect">
+                  <button className={`d-flex align-items-center p-3 w-100 border-0 bg-transparent text-decoration-none ${styles.hoverEffect}`}>
                     <FaSignOutAlt className="me-3 text-danger" />
                     <span className="text-danger">Sign Out</span>
                   </button>
@@ -227,7 +228,7 @@ function AdminLayout() {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50" 
+        <div className={`position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50`} 
              style={{ zIndex: 1040 }} 
              onClick={toggleMobileMenu}>
         </div>
@@ -236,19 +237,19 @@ function AdminLayout() {
       {/* Middle: Sidebar + Content */}
       <div className="d-flex flex-grow-1">
         {/* Sidebar */}
-        <nav className={`admin-sidebar p-3 ${isMobileMenuOpen ? 'show' : ''} ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <nav className={`${styles.adminSidebar} p-3 ${isMobileMenuOpen ? styles.show : ''} ${isSidebarCollapsed ? styles.collapsed : ''}`}>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div className="d-flex align-items-center">
               <div className="me-3 p-2 rounded-circle bg-primary">
                 <FaShieldAlt className="text-white" />
               </div>
               <div>
-                <h5 className="mb-0 gradient-text">Admin Panel</h5>
+                <h5 className={`mb-0 ${styles.gradientText}`}>Admin Panel</h5>
                 <small className="text-muted">Management System</small>
               </div>
             </div>
             <button 
-              className="btn d-none d-md-block"
+              className={`${styles.btn} d-none d-md-block`}
               onClick={toggleSidebar}
               aria-label="Toggle sidebar"
             >
@@ -265,7 +266,7 @@ function AdminLayout() {
                 <li key={item.path} className="nav-item mb-2">
                   <Link 
                     to={item.path} 
-                    className={`nav-link d-flex align-items-center ${isActive ? 'active' : ''} stagger-${index + 1}`}
+                    className={`nav-link d-flex align-items-center ${isActive ? styles.active : ''} ${styles.stagger}${index + 1}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <div className="me-3 p-2 rounded-circle d-flex align-items-center justify-content-center">
@@ -285,7 +286,7 @@ function AdminLayout() {
 
           {/* Sidebar Footer */}
           <div className="mt-auto pt-4 border-top">
-            <div className="d-flex align-items-center p-2 rounded hover-effect">
+            <div className={`d-flex align-items-center p-2 rounded ${styles.hoverEffect}`}>
               <div className="me-3 p-2 rounded-circle bg-success">
                 <FaChartLine className="text-white" size={14} />
               </div>
@@ -301,7 +302,7 @@ function AdminLayout() {
         </nav>
 
         {/* Main Content */}
-        <main className="admin-main flex-grow-1 p-4">
+        <main className={`${styles.adminMain} flex-grow-1 p-4`}>
           {/* Breadcrumb */}
           <nav aria-label="breadcrumb" className="mb-4">
             <ol className="breadcrumb">
@@ -320,7 +321,7 @@ function AdminLayout() {
           </nav>
 
           {/* Page Content */}
-          <div className="fade-in">
+          <div className={styles.fadeIn}>
             <Outlet />
           </div>
         </main>

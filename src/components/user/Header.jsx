@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import '../../styles/user/header.css';
+import styles from './Header.module.css';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -20,13 +20,13 @@ const Header = () => {
   };
 
   return (
-    <Navbar expand="lg" sticky="top" className="custom-navbar">
+    <Navbar expand="lg" sticky="top" className={styles.customNavbar}>
       <Container>
         <Navbar.Brand href="/">
           <img
             src="src/assets/user/logo.png"
             alt="Workforce Logo"
-            className="logo"
+            className={styles.logo}
           />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

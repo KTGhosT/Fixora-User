@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../../styles/admin-components.css";
+import styles from "./admin-components.module.css";
 
 function ManageServices() {
   const [services, setServices] = useState([]);
@@ -92,11 +92,11 @@ function ManageServices() {
   };
 
   return (
-    <div className="manage-services">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className={styles.manageServices}>
+      <div className={`d-flex justify-content-between align-items-center mb-4`}>
         <h2>Manage Services</h2>
         <button
-          className="btn btn-primary"
+          className={`${styles.btn} ${styles.btnPrimary}`}
           onClick={() => {
             setFormData({ name: "", icon: "", image: null });
             setEditingService(null);
@@ -109,7 +109,7 @@ function ManageServices() {
       </div>
 
       {/* Services Table */}
-      <div className="modern-table-container">
+      <div className={styles.modernTableContainer}>
         {isLoading && services.length === 0 ? (
           <div className="text-center py-5">
             <div className="spinner-border text-primary" role="status">
@@ -122,7 +122,7 @@ function ManageServices() {
           </div>
         ) : (
           <div className="table-responsive">
-            <table className="table modern-table">
+            <table className={`table ${styles.modernTable}`}>
               <thead>
                 <tr>
                   <th></th>
@@ -134,7 +134,7 @@ function ManageServices() {
               </thead>
               <tbody>
                 {services.map((service, i) => (
-                  <tr key={service.id} className="table-row">
+                  <tr key={service.id} className={styles.tableRow}>
                     <td>{i + 1}</td>
                     <td>{service.name}</td>
                     <td>
@@ -154,14 +154,14 @@ function ManageServices() {
                     </td>
                     <td>
                       <button
-                        className="btn btn-sm btn-warning me-2"
+                        className={`${styles.btn} ${styles.btnSm} ${styles.btnWarning} me-2`}
                         onClick={() => handleEdit(service)}
                         disabled={isLoading}
                       >
                         Edit
                       </button>
                       <button
-                        className="btn btn-sm btn-danger"
+                        className={`${styles.btn} ${styles.btnSm} ${styles.btnDanger}`}
                         onClick={() => handleDelete(service.id)}
                         disabled={isLoading}
                       >
@@ -178,12 +178,12 @@ function ManageServices() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+        <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
           <div
-            className="modal-content"
+            className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="modal-title">
+            <h3 className={styles.modalTitle}>
               {editingService ? "Edit Service" : "Add New Service"}
             </h3>
             <form onSubmit={handleSubmit}>
@@ -221,7 +221,7 @@ function ManageServices() {
               <div className="d-flex justify-content-end gap-2">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className={`${styles.btn} ${styles.btnSecondary}`}
                   onClick={() => setIsModalOpen(false)}
                   disabled={isLoading}
                 >
@@ -229,7 +229,7 @@ function ManageServices() {
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
+                  className={`${styles.btn} ${styles.btnPrimary}`}
                   disabled={isLoading}
                 >
                   {isLoading ? "Saving..." : editingService ? "Update" : "Add"}

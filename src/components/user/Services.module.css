@@ -1,7 +1,7 @@
 /* =========================
    Services Section
 ========================= */
-.services-section {
+.servicesSection {
   background: #f8f9fa;
   position: relative;
   overflow: hidden;
@@ -10,7 +10,7 @@
 }
 
 /* Title */
-.section-title {
+.sectionTitle {
   font-size: 2.5rem;
   font-weight: 700;
   color: #222;
@@ -21,7 +21,7 @@
   cursor: pointer;
 }
 
-.section-title:after {
+.sectionTitle:after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -34,12 +34,13 @@
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.section-title:hover {
+.sectionTitle:hover {
   color: #3b71fe;
   letter-spacing: 1.5px;
   transform: translateY(-2px);
 }
-.section-title:hover:after {
+
+.sectionTitle:hover:after {
   width: 120px;
   height: 5px;
   background: linear-gradient(90deg, #5a9bff, #3b71fe);
@@ -48,7 +49,7 @@
 /* =========================
    Services Grid
 ========================= */
-.services-grid {
+.servicesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 25px;
@@ -56,7 +57,7 @@
 }
 
 /* Card */
-.service-card {
+.serviceCard {
   background: white;
   border-radius: 16px;
   overflow: hidden;
@@ -71,47 +72,47 @@
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.service-card:nth-child(1) { animation-delay: 0.1s; }
-.service-card:nth-child(2) { animation-delay: 0.2s; }
-.service-card:nth-child(3) { animation-delay: 0.3s; }
-.service-card:nth-child(4) { animation-delay: 0.4s; }
-.service-card:nth-child(5) { animation-delay: 0.5s; }
-.service-card:nth-child(6) { animation-delay: 0.6s; }
+.serviceCard:nth-child(1) { animation-delay: 0.1s; }
+.serviceCard:nth-child(2) { animation-delay: 0.2s; }
+.serviceCard:nth-child(3) { animation-delay: 0.3s; }
+.serviceCard:nth-child(4) { animation-delay: 0.4s; }
+.serviceCard:nth-child(5) { animation-delay: 0.5s; }
+.serviceCard:nth-child(6) { animation-delay: 0.6s; }
 
-.service-card:hover {
+.serviceCard:hover {
   transform: translateY(-12px) scale(1.025);
   box-shadow: 0 24px 48px rgba(59, 113, 254, 0.2), 0 4px 12px rgba(0,0,0,0.12);
   border: 1.5px solid #3b71fe33;
   z-index: 2;
 }
 
-.service-card:active {
+.serviceCard:active {
   transform: translateY(-4px) scale(0.99);
   box-shadow: 0 8px 18px rgba(59, 113, 254, 0.10);
   transition: all 0.2s ease-out;
 }
 
 /* Image */
-.service-image {
+.serviceImage {
   height: 220px;
   overflow: hidden;
   position: relative;
 }
 
-.service-img {
+.serviceImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.service-card:hover .service-img {
+.serviceCard:hover .serviceImg {
   transform: scale(1.1) rotate(-1.5deg);
   filter: brightness(0.97) saturate(1.2) contrast(1.05);
 }
 
 /* Gradient Overlay */
-.service-image::after {
+.serviceImage::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -121,14 +122,14 @@
   pointer-events: none;
 }
 
-.service-card:hover .service-image::after {
+.serviceCard:hover .serviceImage::after {
   opacity: 1;
 }
 
 /* =========================
    Content
 ========================= */
-.service-content {
+.serviceContent {
   padding: 22px;
   flex-grow: 1;
   display: flex;
@@ -136,11 +137,11 @@
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.service-card:hover .service-content {
+.serviceCard:hover .serviceContent {
   background: linear-gradient(90deg, #f0f6ff 0%, #f8f9fa 100%);
 }
 
-.service-name {
+.serviceName {
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 14px;
@@ -148,7 +149,7 @@
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.service-card:hover .service-name {
+.serviceCard:hover .serviceName {
   color: #3b71fe;
   letter-spacing: 0.5px;
   text-shadow: 0 2px 8px #3b71fe22;
@@ -156,7 +157,7 @@
 }
 
 /* Rating */
-.service-rating {
+.serviceRating {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
@@ -164,11 +165,11 @@
   transition: all 0.4s ease;
 }
 
-.service-card:hover .service-rating {
+.serviceCard:hover .serviceRating {
   color: #3b71fe;
 }
 
-.rating-stars {
+.ratingStars {
   display: flex;
   align-items: center;
   margin-right: 8px;
@@ -185,26 +186,26 @@
   color: #ffc107;
 }
 
-.service-card:hover .star.filled {
+.serviceCard:hover .star.filled {
   color: #ffb300;
   transform: scale(1.2) rotate(-8deg);
   text-shadow: 0 2px 8px #ffc10766;
 }
 
-.service-card:hover .star.filled:nth-child(1) { transition-delay: 0.05s; }
-.service-card:hover .star.filled:nth-child(2) { transition-delay: 0.1s; }
-.service-card:hover .star.filled:nth-child(3) { transition-delay: 0.15s; }
-.service-card:hover .star.filled:nth-child(4) { transition-delay: 0.2s; }
-.service-card:hover .star.filled:nth-child(5) { transition-delay: 0.25s; }
+.serviceCard:hover .star.filled:nth-child(1) { transition-delay: 0.05s; }
+.serviceCard:hover .star.filled:nth-child(2) { transition-delay: 0.1s; }
+.serviceCard:hover .star.filled:nth-child(3) { transition-delay: 0.15s; }
+.serviceCard:hover .star.filled:nth-child(4) { transition-delay: 0.2s; }
+.serviceCard:hover .star.filled:nth-child(5) { transition-delay: 0.25s; }
 
-.rating-value {
+.ratingValue {
   font-weight: 600;
   margin-left: 6px;
   color: #333;
   transition: all 0.4s ease;
 }
 
-.service-card:hover .rating-value {
+.serviceCard:hover .ratingValue {
   color: #3b71fe;
   transform: translateX(3px);
 }
@@ -215,13 +216,13 @@
   transition: all 0.4s ease;
 }
 
-.service-card:hover .reviews {
+.serviceCard:hover .reviews {
   color: #3b71fe;
   transform: translateX(3px);
 }
 
 /* Price */
-.service-price {
+.servicePrice {
   font-size: 1.15rem;
   font-weight: 700;
   color: #3b71fe;
@@ -229,14 +230,14 @@
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.service-card:hover .service-price {
+.serviceCard:hover .servicePrice {
   color: #2a60e0;
   letter-spacing: 0.8px;
   transform: translateX(5px) scale(1.05);
 }
 
 /* Button */
-.service-btn {
+.serviceBtn {
   background: #3b71fe;
   color: white;
   border: none;
@@ -251,7 +252,7 @@
   overflow: hidden;
 }
 
-.service-btn::before {
+.serviceBtn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -262,7 +263,7 @@
   transition: all 0.6s ease;
 }
 
-.service-btn:hover, .service-card:hover .service-btn {
+.serviceBtn:hover, .serviceCard:hover .serviceBtn {
   background: #2a60e0;
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 8px 24px rgba(59, 113, 254, 0.35);
@@ -270,18 +271,18 @@
   letter-spacing: 0.8px;
 }
 
-.service-btn:hover::before {
+.serviceBtn:hover::before {
   left: 100%;
 }
 
-.service-btn:active {
+.serviceBtn:active {
   background: #1a3fa0;
   transform: scale(0.98);
   transition: all 0.2s ease-out;
 }
 
 /* View All */
-.btn-view-all {
+.btnViewAll {
   background: white;
   color: #3b71fe;
   border: 2px solid #3b71fe;
@@ -296,10 +297,12 @@
   overflow: hidden;
   z-index: 1;
 }
+
 .star.half {
   color: #ffc107;
   position: relative;
 }
+
 .star.half::after {
   content: "★";
   color: #ddd;
@@ -309,7 +312,7 @@
   overflow: hidden;
 }
 
-.btn-view-all::before {
+.btnViewAll::before {
   content: '';
   position: absolute;
   top: 0;
@@ -321,7 +324,7 @@
   z-index: -1;
 }
 
-.btn-view-all:hover {
+.btnViewAll:hover {
   color: white;
   transform: translateY(-4px) scale(1.04);
   box-shadow: 0 10px 28px rgba(59, 113, 254, 0.4);
@@ -329,11 +332,11 @@
   letter-spacing: 1px;
 }
 
-.btn-view-all:hover::before {
+.btnViewAll:hover::before {
   width: 100%;
 }
 
-.btn-view-all:active {
+.btnViewAll:active {
   background: #2a60e0;
   color: #fff;
   transform: scale(0.98);
@@ -341,7 +344,7 @@
 }
 
 /* No Services */
-.no-services {
+.noServices {
   grid-column: 1 / -1;
   text-align: center;
   padding: 50px;
@@ -349,7 +352,8 @@
   font-size: 1.1rem;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.no-services:hover {
+
+.noServices:hover {
   color: #3b71fe;
   transform: scale(1.05);
 }
@@ -383,30 +387,30 @@
    Responsive
 ========================= */
 @media (max-width: 992px) {
-  .services-grid {
+  .servicesGrid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
   }
 }
 
 @media (max-width: 576px) {
-  .services-grid {
+  .servicesGrid {
     grid-template-columns: 1fr;
   }
 
-  .section-title {
+  .sectionTitle {
     font-size: 2rem;
   }
 
-  .service-image {
+  .serviceImage {
     height: 180px;
   }
   
-  .service-card {
+  .serviceCard {
     animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   
-  .service-card:nth-child(n) {
+  .serviceCard:nth-child(n) {
     animation-delay: 0.1s;
   }
 }

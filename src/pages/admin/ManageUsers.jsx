@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../../styles/admin-components.css";
+import styles from "./admin-components.module.css";
 
 function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -78,11 +78,11 @@ function ManageUsers() {
   };
 
   return (
-    <div className="manage-users">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className={styles.manageUsers}>
+      <div className={`d-flex justify-content-between align-items-center mb-4`}>
         <h2>Manage Users</h2>
         <button
-          className="btn btn-primary"
+          className={`${styles.btn} ${styles.btnPrimary}`}
           onClick={() => {
             setFormData({ name: "", email: "" });
             setEditingUser(null);
@@ -95,7 +95,7 @@ function ManageUsers() {
       </div>
 
       {/* Users Table */}
-      <div className="modern-table-container">
+      <div className={styles.modernTableContainer}>
         {isLoading && users.length === 0 ? (
           <div className="text-center py-5">
             <div className="spinner-border text-primary" role="status">
@@ -108,7 +108,7 @@ function ManageUsers() {
           </div>
         ) : (
           <div className="table-responsive">
-            <table className="table modern-table">
+            <table className={`table ${styles.modernTable}`}>
               <thead>
                 <tr>
                   <th></th>
@@ -119,20 +119,20 @@ function ManageUsers() {
               </thead>
               <tbody>
                 {users.map((user, i) => (
-                  <tr key={user.id} className="table-row">
+                  <tr key={user.id} className={styles.tableRow}>
                     <td>{i + 1}</td>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
                     <td>
                       <button
-                        className="btn btn-sm btn-warning me-2"
+                        className={`${styles.btn} ${styles.btnSm} ${styles.btnWarning} me-2`}
                         onClick={() => handleEdit(user)}
                         disabled={isLoading}
                       >
                         Edit
                       </button>
                       <button
-                        className="btn btn-sm btn-danger"
+                        className={`${styles.btn} ${styles.btnSm} ${styles.btnDanger}`}
                         onClick={() => handleDelete(user.id)}
                         disabled={isLoading}
                       >
@@ -149,12 +149,12 @@ function ManageUsers() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+        <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
           <div
-            className="modal-content"
+            className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="modal-title">
+            <h3 className={styles.modalTitle}>
               {editingUser ? "Edit User" : "Add New User"}
             </h3>
             <form onSubmit={handleSubmit}>
@@ -183,7 +183,7 @@ function ManageUsers() {
               <div className="d-flex justify-content-end gap-2">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className={`${styles.btn} ${styles.btnSecondary}`}
                   onClick={() => setIsModalOpen(false)}
                   disabled={isLoading}
                 >
@@ -191,7 +191,7 @@ function ManageUsers() {
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
+                  className={`${styles.btn} ${styles.btnPrimary}`}
                   disabled={isLoading}
                 >
                   {isLoading ? "Saving..." : editingUser ? "Update" : "Add"}

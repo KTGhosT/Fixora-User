@@ -1,9 +1,10 @@
 // src/components/admin/AdminTable.jsx
 import React from "react";
+import styles from "./AdminTable.module.css";
 
 function AdminTable({ headers, data, onEdit, onDelete }) {
   return (
-    <table className="table table-striped">
+    <table className={`${styles.table} ${styles.tableStriped}`}>
       <thead>
         <tr>
           {headers.map((h, i) => (
@@ -19,13 +20,13 @@ function AdminTable({ headers, data, onEdit, onDelete }) {
             <td>{row.email}</td>
             <td>
               <button
-                className="btn btn-warning btn-sm"
+                className={`${styles.btn} ${styles.btnWarning} ${styles.btnSm}`}
                 onClick={() => onEdit(row.id)}
               >
                 Edit
-              </button>{" "}
+              </button>
               <button
-                className="btn btn-danger btn-sm"
+                className={`${styles.btn} ${styles.btnDanger} ${styles.btnSm}`}
                 onClick={() => onDelete(row.id)}
               >
                 Delete

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import bg1 from "../../assets/user/bg1.jpg"; // Update with your image paths
 import bg2 from "../../assets/user/bg2.jpg";
 import bg3 from "../../assets/user/bg3.jpg";
-import "../../styles/user/HomeHero.css"; // We'll create this CSS file
+import styles from './HomeHero.module.css'
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -48,13 +48,13 @@ const Home = () => {
 
   return (
     <>
-      <section className="hero-slider">
+      <section className={styles.heroSlider}>
         {/* Slide indicators */}
-        <div className="slide-indicators">
+        <div className={styles.slideIndicators}>
           {slides.map((_, index) => (
             <button
               key={index}
-              className={`indicator ${index === currentSlide ? 'active' : ''}`}
+              className={`${styles.indicator} ${index === currentSlide ? styles.active : ''}`}
               onClick={() => goToSlide(index)}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -62,10 +62,10 @@ const Home = () => {
         </div>
 
         {/* Navigation arrows */}
-        <button className="slide-nav prev" onClick={goToPrevSlide} aria-label="Previous slide">
+        <button className={`${styles.slideNav} ${styles.prev}`} onClick={goToPrevSlide} aria-label="Previous slide">
           &#8249;
         </button>
-        <button className="slide-nav next" onClick={goToNextSlide} aria-label="Next slide">
+        <button className={`${styles.slideNav} ${styles.next}`} onClick={goToNextSlide} aria-label="Next slide">
           &#8250;
         </button>
 
@@ -73,43 +73,43 @@ const Home = () => {
         {slides.map((slide, index) => (
           <div
             key={index}
-            className={`slide ${index === currentSlide ? 'active' : ''}`}
+            className={`${styles.slide} ${index === currentSlide ? styles.active : ''}`}
             style={{ backgroundImage: `url(${slide.image})` }}
           >
-            <div className="slide-overlay"></div>
-            <div className="container">
-              <div className="slide-content">
-                <h1 className="slide-title" data-aos="fade-down">
+            <div className={styles.slideOverlay}></div>
+            <div className={styles.container}>
+              <div className={styles.slideContent}>
+                <h1 className={styles.slideTitle} data-aos="fade-down">
                   {slide.title}
                 </h1>
-                <p className="slide-subtitle" data-aos="fade-up" data-aos-delay="300">
+                <p className={styles.slideSubtitle} data-aos="fade-up" data-aos-delay="300">
                   {slide.subtitle}
                 </p>
                 
                 {/* Search Box similar to Angi */}
-                <div className="hero-search-box" data-aos="zoom-in" data-aos-delay="500">
+                <div className={styles.heroSearchBox} data-aos="zoom-in" data-aos-delay="500">
                   <h3>Find a Pro for any project</h3>
-                  <div className="search-form">
+                  <div className={styles.searchForm}>
                     <input 
                       type="text" 
                       placeholder="What service do you need?" 
-                      className="search-input"
+                      className={styles.searchInput}
                     />
                     <input 
                       type="text" 
                       placeholder="Zip Code" 
-                      className="zip-input"
+                      className={styles.zipInput}
                     />
-                    <button className="search-btn">Search</button>
+                    <button className={styles.searchBtn}>Search</button>
                   </div>
                 </div>
 
                 {/* Buttons */}
-                <div className="hero-buttons" data-aos="fade-up" data-aos-delay="700">
-                  <a href="#services" className="btn btn-primary">
+                <div className={styles.heroButtons} data-aos="fade-up" data-aos-delay="700">
+                  <a href="#services" className={`${styles.btn} ${styles.btnPrimary}`}>
                     View Services
                   </a>
-                  <a href="#about" className="btn btn-outline-light">
+                  <a href="#about" className={`${styles.btn} ${styles.btnOutlineLight}`}>
                     Learn More
                   </a>
                 </div>

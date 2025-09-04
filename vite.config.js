@@ -12,5 +12,25 @@ export default defineConfig({
         secure: false,
       }
     }
+  },
+  build: {
+    cssCodeSplit: true, // Split CSS into separate files
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Group related components for better caching
+          'admin': [
+            './src/layouts/admin/AdminLayout',
+            './src/pages/admin/Dashboard',
+            './src/pages/admin/ManageUsers',
+            './src/pages/admin/ManageServices'
+          ],
+          'worker': [
+            './src/pages/worker/dashboard',
+            './src/pages/worker/register'
+          ]
+        }
+      }
+    }
   }
 })

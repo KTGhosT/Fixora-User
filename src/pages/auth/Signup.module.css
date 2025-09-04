@@ -1,18 +1,12 @@
-/* Login.css */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.login-container {
+/* Signup.module.css */
+.signupContainer {
   display: flex;
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
 }
 
-.welcome-panel {
+.welcomePanel {
   flex: 1;
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   display: flex;
@@ -23,7 +17,7 @@
   overflow: hidden;
 }
 
-.welcome-panel::before {
+.welcomePanel::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -34,59 +28,61 @@
   transform: rotate(30deg);
 }
 
-.welcome-content {
+.welcomeContent {
   text-align: center;
   z-index: 1;
   padding: 2rem;
   max-width: 400px;
 }
 
-.welcome-content h1 {
+.welcomeContent h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
   font-weight: 700;
 }
 
-.welcome-content p {
+.welcomeContent p {
   font-size: 1.1rem;
   margin-bottom: 2.5rem;
   line-height: 1.6;
   opacity: 0.9;
 }
 
-.switch-btn {
+.switchBtn {
   background: transparent;
   border: 2px solid white;
   color: white;
   padding: 12px 40px;
   border-radius: 30px;
- 极ont-size: 1rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   outline: none;
 }
 
-.switch-btn:hover {
+.switchBtn:hover {
   background: white;
   color: #6a11cb;
 }
 
-.form-panel {
+.formPanel {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   background: #f9f9f9;
+  overflow-y: auto;
+  padding: 20px;
 }
 
-.form-container {
+.formContainer {
   width: 100%;
   max-width: 400px;
   padding: 2rem;
 }
 
-.form-container h2 {
+.formContainer h2 {
   font-size: 2rem;
   margin-bottom: 2rem;
   color: #333;
@@ -94,7 +90,7 @@
   font-weight: 700;
 }
 
-.error-message {
+.errorMessage {
   background: #ffebee;
   color: #c62828;
   padding: 12px;
@@ -103,14 +99,14 @@
   text-align: center;
 }
 
-.social-buttons {
+.socialButtons {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 1.5rem;
 }
 
-.social-btn {
+.socialBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,7 +120,7 @@
   font-weight: 500;
 }
 
-.social-btn:hover {
+.socialBtn:hover {
   background: #f5f5f5;
 }
 
@@ -152,17 +148,17 @@
   font-size: 0.9rem;
 }
 
-.login-form {
+.signupForm {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.input-group {
+.inputGroup {
   position: relative;
 }
 
-.input-group input {
+.inputGroup input {
   width: 100%;
   padding: 16px;
   border: 1px solid #ddd;
@@ -172,14 +168,14 @@
   background: #f9f9f9;
 }
 
-.input-group input:focus {
+.inputGroup input:focus {
   border-color: #6a11cb;
   outline: none;
   background: white;
   box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.1);
 }
 
-.input-group label {
+.inputGroup label {
   position: absolute;
   top: 16px;
   left: 16px;
@@ -190,46 +186,15 @@
   padding: 0 5px;
 }
 
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
+.inputGroup input:focus + label,
+.inputGroup input:not(:placeholder-shown) + label {
   top: -8px;
   font-size: 0.8rem;
   color: #6a11cb;
   background: white;
 }
 
-.remember-forgot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: -0.5rem;
-}
-
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.remember-me input {
-  cursor: pointer;
-}
-
-.forgot-password {
-  color: #6a11cb;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: color 0.2s ease;
-}
-
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
-.submit-btn {
+.submitBtn {
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   color: white;
   border: none;
@@ -242,16 +207,16 @@
   margin-top: 1rem;
 }
 
-.submit-btn:hover:not(:disabled) {
+.submitBtn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
 }
 
-.submit-btn:active:not(:disabled) {
+.submitBtn:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.submit-btn:disabled {
+.submitBtn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -275,7 +240,7 @@
   100% { transform: rotate(360deg); }
 }
 
-.success-animation {
+.successAnimation {
   animation: success 1.5s ease forwards;
 }
 
@@ -294,25 +259,26 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .login-container {
-    flex-direction: column-reverse;
+  .signupContainer {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
   }
   
-  .welcome-panel {
+  .welcomePanel {
     padding: 2rem;
+    min-height: 40vh;
   }
   
-  .welcome-content {
+  .welcomeContent {
     max-width: 100%;
   }
   
-  .form-container {
-    padding: 1.5rem;
+  .formPanel {
+    min-height: 60vh;
   }
   
-  .remember-forgot {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+  .formContainer {
+    padding: 1.5rem;
   }
 }

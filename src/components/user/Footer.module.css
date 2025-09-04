@@ -1,0 +1,220 @@
+/* Footer.css */
+.footer {
+  background: #2c3e50;
+  color: #fff;
+  margin-top: auto;
+}
+
+.footerMain {
+  padding: 50px 0 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footerContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-between;
+}
+
+.appDownload {
+  flex: 1;
+  min-width: 280px;
+}
+
+.appDownload h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.appDownload p {
+  color: #ecf0f1;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.downloadButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.appBtn {
+  display: flex;
+  align-items: center;
+  background: #000;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s;
+  min-width: 180px;
+}
+
+.appBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.appStore {
+  background: #000;
+}
+
+.googlePlay {
+  background: #000;
+}
+
+.btnIcon {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.btnText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.available {
+  font-size: 0.7rem;
+  opacity: 0.9;
+}
+
+.store {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.footerColumn {
+  min-width: 150px;
+}
+
+.footerColumn h4 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.footerColumn a {
+  display: block;
+  color: #ecf0f1;
+  text-decoration: none;
+  margin-bottom: 10px;
+  transition: color 0.3s;
+  opacity: 0.9;
+}
+
+.footerColumn a:hover {
+  color: #3b71fe;
+  opacity: 1;
+}
+
+/* Footer Bottom */
+.footerBottom {
+  padding: 20px 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.footerBottomContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.legalLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.legalLinks a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+  opacity: 0.9;
+}
+
+.legalLinks a:hover {
+  color: #3b71fe;
+  opacity: 1;
+}
+
+.separator {
+  color: #7f8c8d;
+}
+
+.copyright {
+  text-align: center;
+}
+
+.copyright p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.currentTime {
+  display: block;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+.footerLove {
+  text-align: center;
+}
+
+.heart {
+  color: #e74c3c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footerContent {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .footerLinks {
+    width: 100%;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .footerColumn {
+    min-width: calc(50% - 20px);
+  }
+  
+  .downloadButtons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .footerColumn {
+    min-width: 100%;
+  }
+  
+  .legalLinks {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .separator {
+    display: none;
+  }
+  
+  .appBtn {
+    min-width: 160px;
+  }
+}

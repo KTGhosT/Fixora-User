@@ -1,112 +1,129 @@
 /* Existing global styles */
-.admin-layout {
+.adminLayout {
   background-color: #2a2a3d;
   color: #fff;
   font-family: Arial, sans-serif;
 }
 
 /* Manage Users and Services Specific Styles */
-.manage-users,
-.manage-services {
+.manageUsers,
+.manageServices {
   padding: 20px;
 }
 
-.manage-users h2,
-.manage-services h2 {
+.manageUsers h2,
+.manageServices h2 {
   margin-bottom: 0;
 }
 
 /* Button Styles */
-.btn-primary {
-  background-color: #5b2e9d;
+.btn {
   border: none;
   padding: 8px 16px;
   transition: background-color 0.3s ease;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
 }
 
-.btn-primary:hover {
+.btnPrimary {
+  background-color: #5b2e9d;
+  color: #fff;
+}
+
+.btnPrimary:hover {
   background-color: #4a256f;
 }
 
-.btn-secondary {
+.btnSecondary {
   background-color: #6c757d;
-  border: none;
-  padding: 8px 16px;
-  transition: background-color 0.3s ease;
+  color: #fff;
 }
 
-.btn-secondary:hover {
+.btnSecondary:hover {
   background-color: #5a6268;
 }
 
-.btn-warning,
-.btn-danger {
-  border: none;
+.btnWarning {
+  background-color: #ffc107;
+  color: #212529;
   padding: 4px 8px;
-  transition: background-color 0.3s ease;
+  font-size: 0.875rem;
 }
 
-.btn-warning:hover {
+.btnWarning:hover {
   background-color: #e0a800;
 }
 
-.btn-danger:hover {
+.btnDanger {
   background-color: #dc3545;
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+}
+
+.btnDanger:hover {
+  background-color: #c82333;
+}
+
+.btnSm {
+  padding: 4px 8px;
+  font-size: 0.875rem;
 }
 
 /* Modern Table Styles */
-.modern-table-container {
+.modernTableContainer {
   background-color: #4a4062;
   padding: 20px;
   border-radius: 10px;
   animation: slideUp 0.5s ease-out;
 }
 
-.modern-table {
+.modernTable {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 10px;
   color: #fff;
 }
 
-.modern-table thead {
+.modernTable thead {
   background-color: #5b2e9d;
 }
 
-.modern-table th {
+.modernTable th {
   padding: 12px;
   text-align: left;
   font-weight: 600;
 }
 
-.modern-table tbody tr.table-row {
+.tableRow {
   background-color: #2a2a3d;
   border-radius: 8px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.modern-table tbody tr.table-row:hover {
+.tableRow:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.modern-table td {
+.modernTable td {
   padding: 12px;
   vertical-align: middle;
 }
 
-.modern-table .table-responsive {
+.tableResponsive {
   overflow-x: auto;
 }
 
-.modern-table img {
+.modernTable img {
   border-radius: 5px;
   max-width: 80px;
   object-fit: cover;
 }
 
 /* Modal Styles */
-.modal-overlay {
+.modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -120,7 +137,7 @@
   animation: fadeIn 0.3s ease-out;
 }
 
-.modal-content {
+.modalContent {
   background-color: #4a4062;
   padding: 20px;
   border-radius: 10px;
@@ -130,14 +147,14 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.modal-title {
+.modalTitle {
   font-size: 1.5rem;
   margin-bottom: 20px;
   color: #fff;
   font-weight: 600;
 }
 
-.form-control {
+.formControl {
   background-color: #2a2a3d;
   border: none;
   color: #fff;
@@ -147,25 +164,25 @@
   transition: box-shadow 0.3s ease;
 }
 
-.form-control:focus {
+.formControl:focus {
   outline: none;
   box-shadow: 0 0 8px #5b2e9d;
 }
 
-.form-label {
+.formLabel {
   color: #fff;
   margin-bottom: 5px;
   display: block;
   font-weight: 500;
 }
 
-.form-control[type="file"] {
+.formControl[type="file"] {
   padding: 6px;
   background-color: #2a2a3d;
   color: #fff;
 }
 
-.form-control[type="file"]::file-selector-button {
+.formControl[type="file"]::file-selector-button {
   background-color: #5b2e9d;
   border: none;
   padding: 6px 12px;
@@ -175,16 +192,16 @@
   transition: background-color 0.3s ease;
 }
 
-.form-control[type="file"]::file-selector-button:hover {
+.formControl[type="file"]::file-selector-button:hover {
   background-color: #4a256f;
 }
 
 /* Additional Utility Classes */
-.text-muted {
+.textMuted {
   color: #6c757d;
 }
 
-.spinner-border {
+.spinnerBorder {
   width: 2rem;
   height: 2rem;
 }
@@ -213,46 +230,46 @@
 
 /* Enhanced Responsive Design */
 @media (max-width: 768px) {
-  .modern-table th,
-  .modern-table td {
+  .modernTable th,
+  .modernTable td {
     padding: 8px;
     font-size: 0.9rem;
   }
-  .modern-table .table-responsive {
+  .tableResponsive {
     -webkit-overflow-scrolling: touch;
   }
-  .modal-content {
+  .modalContent {
     max-width: 90%;
     padding: 15px;
   }
-  .btn-primary,
-  .btn-secondary {
+  .btnPrimary,
+  .btnSecondary {
     padding: 6px 12px;
     font-size: 0.9rem;
   }
-  .btn-warning,
-  .btn-danger {
+  .btnWarning,
+  .btnDanger {
     padding: 3px 6px;
     font-size: 0.8rem;
   }
-  .form-control {
+  .formControl {
     font-size: 0.9rem;
     padding: 6px;
   }
-  .modal-title {
+  .modalTitle {
     font-size: 1.2rem;
   }
 }
 
 @media (max-width: 480px) {
-  .modern-table th,
-  .modern-table td {
+  .modernTable th,
+  .modernTable td {
     font-size: 0.8rem;
   }
-  .modern-table img {
+  .modernTable img {
     max-width: 60px;
   }
-  .modal-content {
+  .modalContent {
     padding: 10px;
   }
 }

@@ -1,67 +1,79 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import LoadingSpinner from "./components/LoadingSpinner";
 
-// Worker Pages
-import Dashboard from "./pages/worker/dashboard";
-import Register from "./pages/worker/register";
-
-// Admin Layout & Pages
-import AdminLayout from "./layouts/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/Dashboard";
-import ManageUsers from "./pages/admin/ManageUsers";
-import ManageServices from "./pages/admin/ManageServices";
-
-// Auth Pages
-import Login from "./pages/auth/Login";
-import Signup from "./pages/auth/Signup";
-
-// Public Pages
-import Homepage from "./pages/Homepage";
+// Lazy load components to prevent CSS modules from loading unnecessarily
+const Dashboard = lazy(() => import("./pages/worker/dashboard"));
+const Register = lazy(() => import("./pages/worker/register"));
+const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
+const ManageServices = lazy(() => import("./pages/admin/ManageServices"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const Signup = lazy(() => import("./pages/auth/Signup"));
+const Homepage = lazy(() => import("./pages/Homepage"));
 
 function App() {
-  // ✅ Declare state first
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Load user from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Failed to parse user:", err);
-        localStorage.removeItem("user");
-      }
+    const token = localStorage.getItem("token");
+    if (token) {
+      setUser({ token });
     }
+    setLoading(false);
   }, []);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-
-        {/* Auth routes */}
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/signup" element={<Signup setUser={setUser} />} />
-
-        {/* Admin routes */}
-        <Route
-          path="/admin/*"
-          element={
-            user && user.role === "admin" ? (
-              <AdminLayout />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="manage-users" element={<ManageUsers />} />
-          <Route path="manage-services" element={<ManageServices />} />
-        </Route>
-
-        {/* Add worker & customer routes similarly */}
-      </Routes>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/worker/dashboard"
+            element={
+              user ? (
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Dashboard />
+                </Suspense>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/worker/register"
+            element={
+              user ? (
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Register />
+                </Suspense>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/admin/*"
+            element={
+              user ? (
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminLayout />
+                </Suspense>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+        </Routes>
+      </div>
     </Router>
   );
 }
