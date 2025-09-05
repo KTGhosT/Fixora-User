@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./admin-components.module.css";
+import tableStyles from "../../components/admin/AdminTable.module.css";
 
 function ManageUsers() {
   const [users, setUsers] = useState([]);
-  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", role: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +46,7 @@ function ManageUsers() {
         await axios.post("http://127.0.0.1:8000/api/users", formData);
       }
       fetchUsers();
-      setFormData({ name: "", email: "" });
+      setFormData({ name: "", email: "", role: "" });
       setIsModalOpen(false);
       setEditingUser(null);
     } catch (error) {
@@ -58,7 +59,7 @@ function ManageUsers() {
   // Edit User
   const handleEdit = (user) => {
     setEditingUser(user);
-    setFormData({ name: user.name, email: user.email });
+    setFormData({ name: user.name, email: user.email, role: user.role || "" });
     setIsModalOpen(true);
   };
 
@@ -84,7 +85,7 @@ function ManageUsers() {
         <button
           className={`${styles.btn} ${styles.btnPrimary}`}
           onClick={() => {
-            setFormData({ name: "", email: "" });
+            setFormData({ name: "", email: "", role: "" });
             setEditingUser(null);
             setIsModalOpen(true);
           }}
@@ -107,32 +108,35 @@ function ManageUsers() {
             No users found in the system.
           </div>
         ) : (
-          <div className="table-responsive">
-            <table className={`table ${styles.modernTable}`}>
+          <div className={tableStyles.tableResponsive}>
+            <table className={`${tableStyles.table} ${tableStyles.tableStriped}`}>
               <thead>
                 <tr>
-                  <th></th>
+                  <th>#</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Role</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((user, i) => (
-                  <tr key={user.id} className={styles.tableRow}>
+                  <tr key={user.id} className={tableStyles.tableRow}>
                     <td>{i + 1}</td>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
+                    <td>{user.role || "User"}</td>
                     <td>
                       <button
-                        className={`${styles.btn} ${styles.btnSm} ${styles.btnWarning} me-2`}
+                        className={`${tableStyles.btn} ${tableStyles.btnSm} ${tableStyles.btnWarning}`}
+                        style={{ marginRight: "0.5rem" }}
                         onClick={() => handleEdit(user)}
                         disabled={isLoading}
                       >
                         Edit
                       </button>
                       <button
-                        className={`${styles.btn} ${styles.btnSm} ${styles.btnDanger}`}
+                        className={`${tableStyles.btn} ${tableStyles.btnSm} ${tableStyles.btnDanger}`}
                         onClick={() => handleDelete(user.id)}
                         disabled={isLoading}
                       >
@@ -179,6 +183,21 @@ function ManageUsers() {
                   onChange={handleChange}
                   required
                 />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Role</label>
+                <select
+                  name="role"
+                  className="form-control"
+                  value={formData.role}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select role</option>
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                  {/* Add more roles as needed */}
+                </select>
               </div>
               <div className="d-flex justify-content-end gap-2">
                 <button

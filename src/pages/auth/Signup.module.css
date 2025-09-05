@@ -1,13 +1,21 @@
-/* Signup.module.css */
+/* Signup.module.css - Reduced size for better UX */
 .signupContainer {
   display: flex;
-  height: 100vh;
-  width: 100vw;
+  height: 80vh;
+  min-height: 420px;
+  max-height: 600px;
+  width: 100%;
+  max-width: 820px;
+  margin: 5vh auto;
   overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(106, 17, 203, 0.10), 0 1.5px 8px rgba(0,0,0,0.04);
+  background: #fff;
 }
 
 .welcomePanel {
   flex: 1;
+  min-width: 0;
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   display: flex;
   justify-content: center;
@@ -15,6 +23,7 @@
   color: white;
   position: relative;
   overflow: hidden;
+  padding: 1.2rem 0.5rem;
 }
 
 .welcomePanel::before {
@@ -24,27 +33,27 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
   transform: rotate(30deg);
 }
 
 .welcomeContent {
   text-align: center;
   z-index: 1;
-  padding: 2rem;
-  max-width: 400px;
+  padding: 1.2rem 0.5rem;
+  max-width: 300px;
 }
 
 .welcomeContent h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  margin-bottom: 1rem;
   font-weight: 700;
 }
 
 .welcomeContent p {
-  font-size: 1.1rem;
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
   opacity: 0.9;
 }
 
@@ -52,9 +61,9 @@
   background: transparent;
   border: 2px solid white;
   color: white;
-  padding: 12px 40px;
+  padding: 10px 28px;
   border-radius: 30px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -73,18 +82,18 @@
   align-items: center;
   background: #f9f9f9;
   overflow-y: auto;
-  padding: 20px;
+  padding: 1rem 0.5rem;
 }
 
 .formContainer {
   width: 100%;
-  max-width: 400px;
-  padding: 2rem;
+  max-width: 340px;
+  padding: 1.2rem 0.5rem;
 }
 
 .formContainer h2 {
-  font-size: 2rem;
-  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
   color: #333;
   text-align: center;
   font-weight: 700;
@@ -93,31 +102,33 @@
 .errorMessage {
   background: #ffebee;
   color: #c62828;
-  padding: 12px;
+  padding: 10px;
   border-radius: 4px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   text-align: center;
+  font-size: 0.97rem;
 }
 
 .socialButtons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 1.5rem;
+  gap: 10px;
+  margin-bottom: 1rem;
 }
 
 .socialBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px;
+  gap: 8px;
+  padding: 10px;
   border: 1px solid #ddd;
   background: white;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
+  font-size: 0.97rem;
 }
 
 .socialBtn:hover {
@@ -127,7 +138,7 @@
 .divider {
   position: relative;
   text-align: center;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
 
 .divider::before {
@@ -143,7 +154,7 @@
 .divider span {
   position: relative;
   background: #f9f9f9;
-  padding: 0 15px;
+  padding: 0 10px;
   color: #777;
   font-size: 0.9rem;
 }
@@ -151,7 +162,7 @@
 .signupForm {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .inputGroup {
@@ -160,10 +171,10 @@
 
 .inputGroup input {
   width: 100%;
-  padding: 16px;
+  padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.97rem;
   transition: all 0.3s ease;
   background: #f9f9f9;
 }
@@ -177,13 +188,14 @@
 
 .inputGroup label {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 12px;
+  left: 12px;
   color: #777;
   pointer-events: none;
   transition: all 0.3s ease;
   background: #f9f9f9;
-  padding: 0 5px;
+  padding: 0 4px;
+  font-size: 0.97rem;
 }
 
 .inputGroup input:focus + label,
@@ -198,18 +210,18 @@
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   color: white;
   border: none;
-  padding: 16px;
+  padding: 12px;
   border-radius: 4px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 1rem;
+  margin-top: 0.7rem;
 }
 
 .submitBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.2);
 }
 
 .submitBtn:active:not(:disabled) {
@@ -226,8 +238,8 @@
 }
 
 .spinner {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border: 2px solid transparent;
   border-top: 2px solid white;
   border-radius: 50%;
@@ -241,7 +253,7 @@
 }
 
 .successAnimation {
-  animation: success 1.5s ease forwards;
+  animation: success 1.2s ease forwards;
 }
 
 @keyframes success {
@@ -249,8 +261,8 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(1.05);
-    background: rgba(72, 187, 120, 0.1);
+    transform: scale(1.04);
+    background: rgba(72, 187, 120, 0.08);
   }
   100% {
     transform: scale(1);
@@ -263,22 +275,29 @@
     flex-direction: column;
     height: auto;
     min-height: 100vh;
+    max-width: 98vw;
+    margin: 0.5rem auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(106, 17, 203, 0.10);
   }
   
   .welcomePanel {
-    padding: 2rem;
-    min-height: 40vh;
+    padding: 1.2rem 0.5rem;
+    min-height: 120px;
   }
   
   .welcomeContent {
     max-width: 100%;
+    padding: 0.7rem 0.2rem;
   }
   
   .formPanel {
-    min-height: 60vh;
+    min-height: unset;
+    padding: 1rem 0.2rem;
   }
   
   .formContainer {
-    padding: 1.5rem;
+    padding: 1rem 0.2rem;
+    max-width: 98vw;
   }
 }

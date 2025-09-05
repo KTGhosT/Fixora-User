@@ -1,127 +1,83 @@
-import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import bg1 from "../../assets/user/bg1.jpg"; // Update with your image paths
-import bg2 from "../../assets/user/bg2.jpg";
-import bg3 from "../../assets/user/bg3.jpg";
-import styles from './HomeHero.module.css'
+import React from 'react';
+import styles from './HomeHero.module.css';
 
-const Home = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const slides = [
-    {
-      image: bg1,
-      title: "Welcome to Fixora",
-      subtitle: "Your one-stop solution for home services – plumber, electrician, and more."
-    },
-    {
-      image: bg2,
-      title: "Quality Home Services",
-      subtitle: "Professional technicians for all your home repair and maintenance needs."
-    },
-    {
-      image: bg3,
-      title: "Trusted Professionals",
-      subtitle: "Verified experts ready to help with your home projects."
-    }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [slides.length]);
-
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
-
-  const goToPrevSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
-  };
-
-  const goToNextSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
-  };
-
+const UniqueHero = () => {
   return (
-    <>
-      <section className={styles.heroSlider}>
-        {/* Slide indicators */}
-        <div className={styles.slideIndicators}>
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              className={`${styles.indicator} ${index === currentSlide ? styles.active : ''}`}
-              onClick={() => goToSlide(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Navigation arrows */}
-        <button className={`${styles.slideNav} ${styles.prev}`} onClick={goToPrevSlide} aria-label="Previous slide">
-          &#8249;
-        </button>
-        <button className={`${styles.slideNav} ${styles.next}`} onClick={goToNextSlide} aria-label="Next slide">
-          &#8250;
-        </button>
-
-        {/* Slides */}
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`${styles.slide} ${index === currentSlide ? styles.active : ''}`}
-            style={{ backgroundImage: `url(${slide.image})` }}
-          >
-            <div className={styles.slideOverlay}></div>
-            <div className={styles.container}>
-              <div className={styles.slideContent}>
-                <h1 className={styles.slideTitle} data-aos="fade-down">
-                  {slide.title}
-                </h1>
-                <p className={styles.slideSubtitle} data-aos="fade-up" data-aos-delay="300">
-                  {slide.subtitle}
-                </p>
-                
-                {/* Search Box similar to Angi */}
-                <div className={styles.heroSearchBox} data-aos="zoom-in" data-aos-delay="500">
-                  <h3>Find a Pro for any project</h3>
-                  <div className={styles.searchForm}>
-                    <input 
-                      type="text" 
-                      placeholder="What service do you need?" 
-                      className={styles.searchInput}
-                    />
-                    <input 
-                      type="text" 
-                      placeholder="Zip Code" 
-                      className={styles.zipInput}
-                    />
-                    <button className={styles.searchBtn}>Search</button>
-                  </div>
-                </div>
-
-                {/* Buttons */}
-                <div className={styles.heroButtons} data-aos="fade-up" data-aos-delay="700">
-                  <a href="#services" className={`${styles.btn} ${styles.btnPrimary}`}>
-                    View Services
-                  </a>
-                  <a href="#about" className={`${styles.btn} ${styles.btnOutlineLight}`}>
-                    Learn More
-                  </a>
-                </div>
-              </div>
+    <section className={styles.hero} id="home">
+      {/* Background Elements */}
+      <div className={styles.heroBackground}>
+        <div className={styles.constructionGrid}></div>
+        <div className={styles.blueprintOverlay}></div>
+        <div className={styles.gradientOverlay}></div>
+      </div>
+      
+      <div className={styles.container}>
+        <div className={styles.heroContent}>
+          {/* Badge */}
+          
+          
+          {/* Main Title */}
+          <h1 className={styles.heroTitle} data-aos="fade-up" data-aos-delay="200">
+            <span className={styles.titleLine}>WELCOME TO</span>
+            <span className={styles.titleHighlight}>FIXORA APP</span>
+          </h1>
+          
+          {/* Description */}
+          <p className={styles.heroDescription} data-aos="fade-up" data-aos-delay="400">
+            Simplify your workforce management with Fixora. Effortlessly schedule, track, and optimize your team's productivity—all in one powerful app.
+          </p>
+          
+          {/* Stats */}
+          <div className={styles.statsContainer} data-aos="fade-up" data-aos-delay="600">
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>100+</span>
+              <span className={styles.statLabel}>Services</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>50+</span>
+              <span className={styles.statLabel}>Wrokers</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>99%</span>
+              <span className={styles.statLabel}>User Satisfaction</span>
             </div>
           </div>
-        ))}
-      </section>
-
-    
-    </>
+          
+          {/* CTA Buttons */}
+          <div className={styles.heroButtons} data-aos="fade-up" data-aos-delay="800">
+            <a href="#contact" className={`${styles.btn} ${styles.btnPrimary}`}>
+              <span className={styles.btnIcon}></span>
+              FIND SERVICES
+            </a>
+            <a href="#quote" className={`${styles.btn} ${styles.btnSecondary}`}>
+              <span className={styles.btnIcon}></span>
+              BECOME A WORKER
+            </a>
+          </div>
+        </div>
+        
+        {/* Visual Element - Construction Tools */}
+        <div className={styles.heroVisual} data-aos="zoom-in" data-aos-delay="1000">
+          <div className={styles.toolsContainer}>
+            <div className={`${styles.tool} ${styles.spanner}`}>🔧</div>
+            <div className={`${styles.tool} ${styles.hammer}`}>🔨</div>
+            <div className={`${styles.tool} ${styles.screwdriver}`}>🪛</div>
+            <div className={`${styles.tool} ${styles.drill}`}>⚡</div>
+            <div className={`${styles.tool} ${styles.pliers}`}>🔩</div>
+            <div className={`${styles.tool} ${styles.saw}`}>🪚</div>
+            <div className={`${styles.tool} ${styles.level}`}>📏</div>
+            <div className={`${styles.tool} ${styles.toolbox}`}>🧰</div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Scroll Indicator */}
+      <div className={styles.scrollIndicator}>
+        <div className={styles.scrollText}>Scroll Down</div>
+        <div className={styles.scrollArrow}></div>
+      </div>
+    </section>
   );
 };
 
-export default Home;
+export default UniqueHero;

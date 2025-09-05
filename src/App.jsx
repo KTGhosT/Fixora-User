@@ -36,7 +36,7 @@ function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
+          {/* <Route
             path="/worker/dashboard"
             element={
               user ? (
@@ -47,7 +47,7 @@ function App() {
                 <Navigate to="/login" />
               )
             }
-          />
+          /> */}
           <Route
             path="/worker/register"
             element={
@@ -61,17 +61,20 @@ function App() {
             }
           />
           <Route
-            path="/admin/*"
+            path="/admin"
             element={
-              user ? (
-                <Suspense fallback={<LoadingSpinner />}>
-                  <AdminLayout />
-                </Suspense>
-              ) : (
-                <Navigate to="/login" />
-              )
+              <Suspense fallback={<LoadingSpinner />}>
+                <AdminLayout />
+              </Suspense>
             }
-          />
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="manage-users" element={<ManageUsers />} />
+            <Route path="ManageServices" element={<ManageServices />} />
+          </Route>
+          <Route path="/worker/dashboard" element={<Dashboard />} />
+          <Route path="/worker/register" element={<Register />} />
+          <Route path="/worker" element={<Navigate to="/worker/dashboard" />} />
         </Routes>
       </div>
     </Router>
