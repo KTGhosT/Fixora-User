@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../services/api";
 import styles from "./admin-components.module.css";
 import tableStyles from "../../layouts/admin/admin.module.css";
 
@@ -9,24 +9,52 @@ function ManageUsers() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch users on load
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = () => {
+  const fetchUsers = async () => {
     setIsLoading(true);
-    axios
-      .get("http://127.0.0.1:8000/api/users")
-      .then((response) => {
-        setUsers(response.data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-        setIsLoading(false);
+    setError(null);
+    
+    try {
+      // Get auth token from localStorage
+      const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+      
+      const response = await axiosInstance.get("/users", {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` })
+        }
       });
+      
+      // Handle different response formats
+      if (response.data && Array.isArray(response.data)) {
+        setUsers(response.data);
+      } else if (response.data && response.data.users) {
+        setUsers(response.data.users);
+      } else if (response.data && response.data.data) {
+        setUsers(response.data.data);
+      } else {
+        console.warn("Unexpected API response format:", response.data);
+        setUsers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setError(error.response?.data?.message || error.message || "Failed to fetch users");
+      
+      // If it's a 401/403 error, redirect to login
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("auth_token");
+        window.location.href = "/login";
+        return;
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Handle form input
@@ -38,19 +66,32 @@ function ManageUsers() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
+      const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+      
       if (editingUser) {
-        await axios.put(`http://127.0.0.1:8000/api/users/${editingUser.id}`, formData);
+        await axiosInstance.put(`/users/${editingUser.id}`, formData, {
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` })
+          }
+        });
       } else {
-        await axios.post("http://127.0.0.1:8000/api/users", formData);
+        await axiosInstance.post("/users", formData, {
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` })
+          }
+        });
       }
-      fetchUsers();
+      
+      await fetchUsers();
       setFormData({ name: "", email: "", role: "" });
       setIsModalOpen(false);
       setEditingUser(null);
     } catch (error) {
       console.error("Error saving user:", error);
+      setError(error.response?.data?.message || error.message || "Failed to save user");
     } finally {
       setIsLoading(false);
     }
@@ -68,11 +109,21 @@ function ManageUsers() {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     setIsLoading(true);
+    setError(null);
+    
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/users/${id}`);
+      const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
+      
+      await axiosInstance.delete(`/users/${id}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` })
+        }
+      });
+      
       setUsers(users.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
+      setError(error.response?.data?.message || error.message || "Failed to delete user");
     } finally {
       setIsLoading(false);
     }
@@ -87,6 +138,7 @@ function ManageUsers() {
           onClick={() => {
             setFormData({ name: "", email: "", role: "" });
             setEditingUser(null);
+            setError(null);
             setIsModalOpen(true);
           }}
           disabled={isLoading}
@@ -95,6 +147,19 @@ function ManageUsers() {
         </button>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="alert alert-danger mb-4" role="alert">
+          <strong>Error:</strong> {error}
+          <button 
+            type="button" 
+            className="btn-close float-end" 
+            onClick={() => setError(null)}
+            aria-label="Close"
+          ></button>
+        </div>
+      )}
+
       {/* Users Table */}
       <div className={styles.modernTableContainer}>
         {isLoading && users.length === 0 ? (
@@ -102,10 +167,18 @@ function ManageUsers() {
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
+            <p className="mt-2">Loading users...</p>
           </div>
         ) : users.length === 0 ? (
           <div className="text-center py-4 text-muted">
-            No users found in the system.
+            <p>No users found in the system.</p>
+            <button 
+              className="btn btn-outline-primary"
+              onClick={fetchUsers}
+              disabled={isLoading}
+            >
+              Retry
+            </button>
           </div>
         ) : (
           <div className={tableStyles.tableResponsive}>
@@ -196,7 +269,7 @@ function ManageUsers() {
                   <option value="">Select role</option>
                   <option value="admin">Admin</option>
                   <option value="user">User</option>
-                  {/* Add more roles as needed */}
+                  <option value="worker">Worker</option>
                 </select>
               </div>
               <div className="d-flex justify-content-end gap-2">

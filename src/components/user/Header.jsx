@@ -95,7 +95,7 @@ const UniqueHeader = ({ user, setUser }) => {
                 <li><a href="#about" className={styles.navLink}>ABOUT</a></li>
                 <li><a href="#services" className={styles.navLink}>SERVICES</a></li>
                 <li><a href="#projects" className={styles.navLink}>PROJECTS</a></li>
-                <li><a href="#pricing" className={styles.navLink}>PRICING</a></li>
+                <li><a href="/worker/register" className={styles.navLink}>BECOME A WORKER</a></li>
                 <li><a href="#blog" className={styles.navLink}>BLOG</a></li>
                 <li><a href="#contact" className={styles.navLink}>FEEDBACK CENTER</a></li>
               </ul>

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Modal, Form, Alert, ProgressBar } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './register.module.css';
+import styles from './register.module.css';
+import axios from 'axios'; // Assuming you're using axios for API calls
 
 const RegisterPage = () => {
   const [jobs] = useState([
@@ -54,7 +55,8 @@ const RegisterPage = () => {
     experience: '',
     availability: '',
     resume: null,
-    coverLetter: ''
+    coverLetter: '',
+    jobId: null,
   });
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
@@ -67,6 +69,11 @@ const RegisterPage = () => {
     "https://images.unsplash.com/photo-1581578731404-b20773b74047?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
   ];
 
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 5000); // Auto-slide every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   };
@@ -77,21 +84,23 @@ const RegisterPage = () => {
 
   const handleJobClick = (job) => {
     setSelectedJob(job);
+    setFormData((prev) => ({ ...prev, jobId: job.id }));
     setShowModal(true);
   };
 
   const handleClose = () => {
     setShowModal(false);
     setSelectedJob(null);
-    setFormData({ 
-      name: '', 
-      email: '', 
-      phone: '', 
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
       address: '',
       experience: '',
       availability: '',
       resume: null,
-      coverLetter: ''
+      coverLetter: '',
+      jobId: null,
     });
     setSuccess(false);
     setErrors({});
@@ -100,86 +109,59 @@ const RegisterPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\d{10,15}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Phone number is invalid';
-    }
-    
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
-    }
-    
-    if (!formData.experience.trim()) {
-      newErrors.experience = 'Experience level is required';
-    }
-    
-    if (!formData.availability.trim()) {
-      newErrors.availability = 'Availability is required';
-    }
-    
-    if (!formData.resume) {
-      newErrors.resume = 'Resume is required';
-    }
-    
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
+    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    else if (!/^\d{10,15}$/.test(formData.phone.replace(/\D/g, ''))) newErrors.phone = 'Phone number is invalid';
+    if (!formData.address.trim()) newErrors.address = 'Address is required';
+    if (!formData.experience.trim()) newErrors.experience = 'Experience level is required';
+    if (!formData.availability.trim()) newErrors.availability = 'Availability is required';
+    if (!formData.resume) newErrors.resume = 'Resume is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: files ? files[0] : value
+      [name]: files ? files[0] : value,
     }));
-    
-    // Clear error when user types
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleProgress = () => {
-    setProgress(prev => Math.min(prev + 20, 100));
+    setProgress((prev) => Math.min(prev + 25, 100));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-    
+    if (!validateForm()) return;
     setIsSubmitting(true);
     handleProgress();
-    
+
+    const formDataToSend = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value instanceof File) formDataToSend.append(key, value);
+      else if (key === 'jobId' && value) formDataToSend.append(key, value);
+      else formDataToSend.append(key, value);
+    });
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await axios.post('/api/register-worker', formDataToSend, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setProgress(percentCompleted);
+        },
+      });
       handleProgress();
-      
-      console.log('Registration submitted:', { ...formData, jobId: selectedJob.id });
       setSuccess(true);
-      handleProgress();
-      
-      // Reset form after success
-      setTimeout(() => {
-        handleClose();
-      }, 2000);
+      setTimeout(handleClose, 2000);
     } catch (error) {
-      console.error('Submission error:', error);
       setErrors({ submit: 'Failed to submit application. Please try again.' });
+      console.error('Submission error:', error);
     } finally {
       setIsSubmitting(false);
       handleProgress();
@@ -189,46 +171,52 @@ const RegisterPage = () => {
   return (
     <Container fluid className="p-0">
       {/* Slider Section */}
-      <div className="slider-container">
-        <div className="slider">
-          <img src={slides[currentSlide]} alt={`Slide ${currentSlide}`} className="slide-image" />
-          <div className="slider-overlay">
-            <h1 className="slider-title">Explore Jobs</h1>
-            <div className="job-categories">
-              <span className="category">Electrician</span>
-              <span className="category">Plumber</span>
-              <span className="category">Cleaner</span>
-              <span className="category">Gardener</span>
+      <div className={styles['slider-container']}>
+        <div className={styles.slider}>
+          <img src={slides[currentSlide]} alt={`Slide ${currentSlide}`} className={styles['slide-image']} />
+          <div className={styles['slider-overlay']}>
+            <h1 className={styles['slider-title']}>Explore Jobs</h1>
+            <div className={styles['job-categories']}>
+              {jobs.map((job) => (
+                <span key={job.id} className={styles.category} onClick={() => handleJobClick(job)}>
+                  {job.title}
+                </span>
+              ))}
             </div>
           </div>
-          <button className="slider-btn prev" onClick={prevSlide}>&#10094;</button>
-          <button className="slider-btn next" onClick={nextSlide}>&#10095;</button>
+          <button className={`${styles['slider-btn']} ${styles.prev}`} onClick={prevSlide}>&#10094;</button>
+          <button className={`${styles['slider-btn']} ${styles.next}`} onClick={nextSlide}>&#10095;</button>
         </div>
       </div>
 
       {/* Job Listings */}
       <Container className="py-5">
-        <h2 className="text-center mb-5 section-title">Available Positions</h2>
+        <h2 className={`text-center mb-5 ${styles['section-title']}`}>Available Positions</h2>
         <Row>
-          {jobs.map(job => (
+          {jobs.map((job) => (
             <Col md={6} lg={3} key={job.id} className="mb-4">
-              <Card className="job-card h-100 shadow-sm">
-                <div className="job-image">
-                  <img src={job.image} alt={job.title} className="card-img-top" />
+              <Card className={`${styles['job-card']} h-100 shadow-sm`}>
+                <div className={styles['job-image']}>
+                  <img
+                    src={job.image}
+                    alt={job.title}
+                    className="card-img-top"
+                    onLoad={() => console.log('Image loaded')}
+                  />
                 </div>
                 <Card.Body className="d-flex flex-column">
                   <Card.Title className="text-primary">{job.title}</Card.Title>
                   <Card.Subtitle className="mb-2 text-muted">{job.company}</Card.Subtitle>
                   <Card.Text className="flex-grow-1">
-                    <p><strong>Location:</strong> {job.location}</p>
-                    <p><strong>Salary:</strong> {job.salary}</p>
+                    <p>
+                      <strong>Location:</strong> {job.location}
+                    </p>
+                    <p>
+                      <strong>Salary:</strong> {job.salary}
+                    </p>
                     <p>{job.description.substring(0, 100)}...</p>
                   </Card.Text>
-                  <Button 
-                    variant="primary" 
-                    onClick={() => handleJobClick(job)}
-                    className="mt-auto"
-                  >
+                  <Button variant="primary" onClick={() => handleJobClick(job)} className="mt-auto">
                     Apply Now
                   </Button>
                 </Card.Body>
@@ -252,7 +240,6 @@ const RegisterPage = () => {
           ) : (
             <Form onSubmit={handleSubmit}>
               <ProgressBar now={progress} className="mb-3" />
-              
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
@@ -263,11 +250,8 @@ const RegisterPage = () => {
                       value={formData.name}
                       onChange={handleChange}
                       isInvalid={!!errors.name}
-                      required
                     />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.name}
-                    </Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -279,15 +263,11 @@ const RegisterPage = () => {
                       value={formData.email}
                       onChange={handleChange}
                       isInvalid={!!errors.email}
-                      required
                     />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.email}
-                    </Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>
-              
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
@@ -298,11 +278,8 @@ const RegisterPage = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       isInvalid={!!errors.phone}
-                      required
                     />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.phone}
-                    </Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">{errors.phone}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -314,15 +291,11 @@ const RegisterPage = () => {
                       value={formData.address}
                       onChange={handleChange}
                       isInvalid={!!errors.address}
-                      required
                     />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.address}
-                    </Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">{errors.address}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>
-              
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
@@ -332,7 +305,6 @@ const RegisterPage = () => {
                       value={formData.experience}
                       onChange={handleChange}
                       isInvalid={!!errors.experience}
-                      required
                     >
                       <option value="">Select Experience</option>
                       <option value="entry">Entry Level</option>
@@ -340,9 +312,7 @@ const RegisterPage = () => {
                       <option value="senior">Senior Level</option>
                       <option value="expert">Expert</option>
                     </Form.Select>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.experience}
-                    </Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">{errors.experience}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -353,7 +323,6 @@ const RegisterPage = () => {
                       value={formData.availability}
                       onChange={handleChange}
                       isInvalid={!!errors.availability}
-                      required
                     >
                       <option value="">Select Availability</option>
                       <option value="immediate">Immediate</option>
@@ -361,13 +330,10 @@ const RegisterPage = () => {
                       <option value="2weeks">Within 2 Weeks</option>
                       <option value="1month">Within 1 Month</option>
                     </Form.Select>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.availability}
-                    </Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>
-              
               <Form.Group className="mb-3">
                 <Form.Label>Cover Letter</Form.Label>
                 <Form.Control
@@ -379,7 +345,6 @@ const RegisterPage = () => {
                   placeholder="Tell us about yourself and why you're interested in this position..."
                 />
               </Form.Group>
-              
               <Form.Group className="mb-3">
                 <Form.Label>Upload Resume *</Form.Label>
                 <Form.Control
@@ -388,31 +353,20 @@ const RegisterPage = () => {
                   onChange={handleChange}
                   accept=".pdf,.doc,.docx"
                   isInvalid={!!errors.resume}
-                  required
                 />
-                <Form.Text className="text-muted">
-                  Supported formats: PDF, DOC, DOCX
-                </Form.Text>
-                <Form.Control.Feedback type="invalid">
-                  {errors.resume}
-                </Form.Control.Feedback>
+                <Form.Text className="text-muted">Supported formats: PDF, DOC, DOCX</Form.Text>
+                <Form.Control.Feedback type="invalid">{errors.resume}</Form.Control.Feedback>
               </Form.Group>
-              
-              {errors.submit && (
-                <Alert variant="danger" className="mb-3">
-                  {errors.submit}
-                </Alert>
-              )}
-              
-              <Button 
-                variant="primary" 
-                type="submit" 
+              {errors.submit && <Alert variant="danger" className="mb-3">{errors.submit}</Alert>}
+              <Button
+                variant="primary"
+                type="submit"
                 className="w-100 mt-3"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" />
                     Processing...
                   </>
                 ) : (

@@ -1,31 +1,22 @@
 /* 
   Modern React CSS Module for Admin Pages
-  - Uses CSS Modules for local scoping
-  - Designed for use with React functional components and hooks
+  - Designed specifically for the ManageUsers component
   - Responsive and accessible
 */
 
-/* Layout */
-.adminLayout {
-  background: #2a2a3d;
-  color: #fff;
-  font-family: system-ui, Arial, sans-serif;
-  min-height: 100vh;
-}
-
-/* Section Containers */
-.manageUsers,
-.manageServices {
+/* Main container */
+.manageUsers {
   padding: 1.25rem;
   width: 100%;
   box-sizing: border-box;
+  color: #fff;
 }
 
-.manageUsers h2,
-.manageServices h2 {
+.manageUsers h2 {
   margin-bottom: 0;
   font-size: 2rem;
   font-weight: 700;
+  color: #fff;
 }
 
 /* Button Styles */
@@ -64,36 +55,7 @@
   background: #5a6268;
 }
 
-.btnWarning {
-  background: #ffc107;
-  color: #212529;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-.btnWarning:hover,
-.btnWarning:focus-visible {
-  background: #e0a800;
-}
-
-.btnDanger {
-  background: #dc3545;
-  color: #fff;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-.btnDanger:hover,
-.btnDanger:focus-visible {
-  background: #c82333;
-}
-
-.btnSm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-/* Modern Table Styles */
+/* Table Styles */
 .modernTableContainer {
   background: #232336;
   padding: 1.5rem 1.25rem;
@@ -104,7 +66,26 @@
   overflow-x: auto;
 }
 
-.modernTable {
+/* Table responsive container */
+.tableResponsive {
+  overflow-x: auto;
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #5b2e9d #232336;
+}
+
+.tableResponsive::-webkit-scrollbar {
+  height: 8px;
+  background: #232336;
+}
+
+.tableResponsive::-webkit-scrollbar-thumb {
+  background: #5b2e9d;
+  border-radius: 4px;
+}
+
+/* Table styles */
+.table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 0.75rem;
@@ -114,11 +95,11 @@
   letter-spacing: 0.01em;
 }
 
-.modernTable thead {
+.table thead {
   background: transparent;
 }
 
-.modernTable th {
+.table th {
   padding: 1rem 0.75rem;
   text-align: left;
   font-weight: 700;
@@ -132,11 +113,16 @@
   box-shadow: 0 2px 8px rgba(91,46,157,0.08);
 }
 
-.modernTable th:first-child {
+.table th:first-child {
   border-top-left-radius: 0.75rem;
 }
-.modernTable th:last-child {
+
+.table th:last-child {
   border-top-right-radius: 0.75rem;
+}
+
+.tableStriped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .tableRow {
@@ -152,7 +138,7 @@
   background: linear-gradient(90deg, #3a2e5a 60%, #5b2e9d 100%);
 }
 
-.modernTable td {
+.table td {
   padding: 1rem 0.75rem;
   vertical-align: middle;
   border: none;
@@ -161,36 +147,40 @@
   background: transparent;
 }
 
-.modernTable td:first-child {
+.table td:first-child {
   border-bottom-left-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
 }
-.modernTable td:last-child {
+
+.table td:last-child {
   border-bottom-right-radius: 0.75rem;
   border-top-right-radius: 0.75rem;
 }
 
-.tableResponsive {
-  overflow-x: auto;
-  width: 100%;
-  scrollbar-width: thin;
-  scrollbar-color: #5b2e9d #232336;
+/* Table buttons */
+.table .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
 }
 
-.tableResponsive::-webkit-scrollbar {
-  height: 8px;
-  background: #232336;
-}
-.tableResponsive::-webkit-scrollbar-thumb {
-  background: #5b2e9d;
-  border-radius: 4px;
+.table .btnWarning {
+  background: #ffc107;
+  color: #212529;
 }
 
-.modernTable img {
-  border-radius: 0.3125rem;
-  max-width: 5rem;
-  object-fit: cover;
-  box-shadow: 0 2px 8px rgba(91,46,157,0.10);
+.table .btnWarning:hover,
+.table .btnWarning:focus-visible {
+  background: #e0a800;
+}
+
+.table .btnDanger {
+  background: #dc3545;
+  color: #fff;
+}
+
+.table .btnDanger:hover,
+.table .btnDanger:focus-visible {
+  background: #c82333;
 }
 
 /* Modal Styles */
@@ -250,26 +240,6 @@
   font-weight: 500;
 }
 
-.formControl[type="file"] {
-  padding: 0.375rem;
-  background: #2a2a3d;
-  color: #fff;
-}
-
-.formControl[type="file"]::file-selector-button {
-  background: #5b2e9d;
-  border: none;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.3125rem;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.formControl[type="file"]::file-selector-button:hover {
-  background: #4a256f;
-}
-
 /* Utility Classes */
 .textMuted {
   color: #6c757d;
@@ -297,16 +267,10 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
 /* Responsive Design */
 @media (max-width: 900px) {
-  .modernTable th,
-  .modernTable td {
+  .table th,
+  .table td {
     padding: 0.65rem 0.5rem;
     font-size: 0.98rem;
   }
@@ -317,8 +281,8 @@
 }
 
 @media (max-width: 768px) {
-  .modernTable th,
-  .modernTable td {
+  .table th,
+  .table td {
     padding: 0.5rem 0.35rem;
     font-size: 0.95rem;
   }
@@ -334,8 +298,7 @@
     padding: 0.375rem 0.75rem;
     font-size: 0.95rem;
   }
-  .btnWarning,
-  .btnDanger {
+  .table .btn {
     padding: 0.1875rem 0.5rem;
     font-size: 0.85rem;
   }
@@ -349,15 +312,15 @@
 }
 
 @media (max-width: 480px) {
-  .modernTable th,
-  .modernTable td {
+  .table th,
+  .table td {
     font-size: 0.85rem;
     padding: 0.35rem 0.2rem;
   }
-  .modernTable img {
-    max-width: 3.75rem;
-  }
   .modalContent {
     padding: 0.5rem;
+  }
+  .manageUsers h2 {
+    font-size: 1.5rem;
   }
 }

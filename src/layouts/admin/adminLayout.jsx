@@ -242,8 +242,18 @@ function AdminLayout() {
                     <span>Help & Support</span>
                   </Link>
                   <hr className="my-0" />
-                  <button className={`d-flex align-items-center p-3 w-100 border-0 bg-transparent text-decoration-none ${styles.hoverEffect}`}
+                  <button
+                    className={`d-flex align-items-center p-3 w-100 border-0 bg-transparent text-decoration-none ${styles.hoverEffect}`}
                     tabIndex={0}
+                    onClick={() => {
+                      // Remove token and role from localStorage
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("role");
+                      // Optionally, clear other user-related data here
+
+                      // Redirect to login page
+                      window.location.href = "/login";
+                    }}
                   >
                     <FaSignOutAlt className="me-3 text-danger" />
                     <span className="text-danger">Sign Out</span>

@@ -1,132 +1,265 @@
-import React, { useState } from "react";
-import { Container, Card, Button, Nav, ListGroup } from "react-bootstrap";
-import { motion, AnimatePresence } from "framer-motion";
-import "bootstrap/dist/css/bootstrap.min.css";
+// Account.jsx
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../services/api"; // Use your configured instance
+import styles from "./account.module.css";
 
-const Account = () => {
-  const [activeTab, setActiveTab] = useState("profile");
+const Sidebar = () => (
+  <div className={styles.sidebar}>
+    <div className={styles.logoContainer}>
+      <img
+        src="https://via.placeholder.com/150"
+        alt="Logo"
+        className={styles.logo}
+      />
+    </div>
+    <ul className={styles.menuList}>
+      {[
+        "Overview",
+        "Messages",
+        "Transactions",
+        "Calendar",
+        "Map",
+        "Settings",
+      ].map((item) => (
+        <li key={item} className={styles.menuItem}>
+          <a
+            href="#"
+            className={`${styles.menuLink} ${
+              item === "Settings" ? styles.active : ""
+            }`}
+          >
+            {item}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
-  const orders = [
-    { id: 1, service: "Plumbing - Leak Fix", date: "2025-09-01", status: "Completed" },
-    { id: 2, service: "Carpenter - Door Repair", date: "2025-08-20", status: "In Progress" },
-  ];
+const ProfileForm = ({ user, setUser }) => {
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    birthday: "",
+    gender: "",
+    email: "",
+    phone: "",
+    address: "",
+    number: "",
+    city: "",
+    state: "",
+    zip: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const cancellations = [
-    { id: 1, service: "Electrician - Wiring", date: "2025-08-10", reason: "Customer cancelled" },
-  ];
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        birthday: user.birthday || "",
+        gender: user.gender || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        number: user.number || "",
+        city: user.city || "",
+        state: user.state || "",
+        zip: user.zip || "",
+      });
+    }
+  }, [user]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setMessage(""); // Clear any previous messages
+  };
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axiosInstance.put("/profile", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      // Update user data
+      setUser(res.data.user);
+      setMessage("Profile updated successfully!");
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      console.error("Profile update error:", err);
+      
+      // Better error handling
+      if (err.response) {
+        // Server responded with error status
+        setMessage(err.response.data.message || "Failed to update profile");
+      } else if (err.request) {
+        // Request was made but no response received
+        setMessage("Network error. Please check your connection.");
+      } else {
+        // Something else happened
+        setMessage("An unexpected error occurred");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <Container className="py-5">
-      <Card className="shadow-lg rounded-4 mx-auto" style={{ maxWidth: "600px" }}>
-        {/* Profile Header */}
-        <Card.Body className="text-center">
-          <img
-            src="https://i.pravatar.cc/150"
-            alt="User"
-            className="rounded-circle mb-3"
-            style={{ width: "120px", height: "120px", objectFit: "cover" }}
-          />
-          <h4 className="fw-bold">Vaisnavi</h4>
-          <p className="text-muted">@vaisnaviraj</p>
-        </Card.Body>
+    <div className={styles.profileCard}>
+      <div className={styles.profileHeader}>
+        <h2 className={styles.profileTitle}>General information</h2>
+        <button 
+          onClick={handleSave} 
+          className={styles.saveButton}
+          disabled={isLoading}
+        >
+          {isLoading ? "Saving..." : "Save All"}
+        </button>
+      </div>
 
-        {/* Navigation Tabs */}
-        <Nav variant="tabs" className="justify-content-center" activeKey={activeTab}>
-          <Nav.Item>
-            <Nav.Link eventKey="profile" onClick={() => setActiveTab("profile")}>
-              Profile
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="orders" onClick={() => setActiveTab("orders")}>
-              Orders
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="cancellations" onClick={() => setActiveTab("cancellations")}>
-              Cancellations
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
+      {message && (
+        <div className={`${styles.message} ${message.includes("successfully") ? styles.success : styles.error}`}>
+          {message}
+        </div>
+      )}
 
-        {/* Tab Content */}
-        <Card.Body>
-          <AnimatePresence mode="wait">
-            {activeTab === "profile" && (
-              <motion.div
-                key="profile"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4 }}
+      <div className={styles.formGrid}>
+        {[
+          { label: "First Name", name: "first_name", type: "text" },
+          { label: "Last Name", name: "last_name", type: "text" },
+          { label: "Birthday", name: "birthday", type: "date" },
+          { label: "Gender", name: "gender", type: "select", options: ["Male", "Female", "Other"] },
+          { label: "Email", name: "email", type: "email", readOnly: true },
+          { label: "Phone", name: "phone", type: "text" },
+          { label: "Address", name: "address", type: "text" },
+          { label: "Number", name: "number", type: "text" },
+          { label: "City", name: "city", type: "text" },
+          { label: "State", name: "state", type: "select", options: ["California", "New York", "Texas", "Florida"] },
+          { label: "ZIP", name: "zip", type: "text" },
+        ].map((field) => (
+          <div key={field.name} className={styles.inputGroup}>
+            <label className={styles.label}>{field.label}</label>
+            {field.type === "select" ? (
+              <select
+                name={field.name}
+                value={formData[field.name] || ""}
+                onChange={handleChange}
+                className={styles.input}
+                disabled={field.readOnly}
               >
-                <ListGroup variant="flush" className="text-start">
-                  <ListGroup.Item>📍 Located in Sri Lanka</ListGroup.Item>
-                  <ListGroup.Item>👤 Joined in March 2025</ListGroup.Item>
-                  <ListGroup.Item>💬 English (Conversational), Tamil (Fluent)</ListGroup.Item>
-                  <ListGroup.Item>⏰ Preferred hours: Mon-Sun, 8:00 AM – 9:00 PM</ListGroup.Item>
-                </ListGroup>
-                <div className="d-flex justify-content-center gap-2 mt-3">
-                  <Button variant="outline-dark">Preview Public Profile</Button>
-                  <Button variant="primary">Edit</Button>
-                </div>
-              </motion.div>
+                <option value="">Select {field.label}</option>
+                {field.options.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={field.type}
+                name={field.name}
+                value={formData[field.name] || ""}
+                onChange={handleChange}
+                placeholder={field.label}
+                readOnly={field.readOnly || false}
+                className={`${styles.input} ${field.readOnly ? styles.readOnly : ""}`}
+              />
             )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-            {activeTab === "orders" && (
-              <motion.div
-                key="orders"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.4 }}
-              >
-                <h5 className="mb-3 text-center">My Orders</h5>
-                <ListGroup>
-                  {orders.map((order) => (
-                    <ListGroup.Item key={order.id} className="d-flex justify-content-between">
-                      <div>
-                        <strong>{order.service}</strong>
-                        <br />
-                        <small>{order.date}</small>
-                      </div>
-                      <span
-                        className={`badge rounded-pill ${
-                          order.status === "Completed" ? "bg-success" : "bg-warning"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </motion.div>
-            )}
+const ProfileCard = ({ user }) => (
+  <div className={styles.profileSidebar}>
+    <div className={styles.profileStatus}>
+      <span className={styles.statusIndicator}>•</span>
+      <img
+        src="https://via.placeholder.com/30"
+        alt="User"
+        className={styles.userIcon}
+      />
+    </div>
+    <img
+      src="https://via.placeholder.com/150"
+      alt="Profile"
+      className={styles.profileImage}
+    />
+    <h3 className={styles.profileName}>{user?.first_name} {user?.last_name}</h3>
+    <p className={styles.profileRole}>{user?.role}</p>
+    <p className={styles.profileLocation}>{user?.city}, {user?.state}</p>
+  </div>
+);
 
-            {activeTab === "cancellations" && (
-              <motion.div
-                key="cancellations"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 50 }}
-                transition={{ duration: 0.4 }}
-              >
-                <h5 className="mb-3 text-center">My Cancellations</h5>
-                <ListGroup>
-                  {cancellations.map((cancel) => (
-                    <ListGroup.Item key={cancel.id}>
-                      <strong>{cancel.service}</strong> <br />
-                      <small>{cancel.date}</small> <br />
-                      <span className="text-danger">{cancel.reason}</span>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Card.Body>
-      </Card>
-    </Container>
+const Account = () => {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("No authentication token found");
+          setIsLoading(false);
+          return;
+        }
+
+        const res = await axiosInstance.get("/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(res.data.user);
+      } catch (err) {
+        console.error("User fetch error:", err);
+        
+        if (err.response?.status === 401) {
+          setError("Authentication failed. Please login again.");
+          // Optionally redirect to login
+        } else if (err.response) {
+          setError(err.response.data.message || "Failed to fetch user data");
+        } else {
+          setError("Network error. Please check your connection.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Loading user data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <Sidebar />
+      <div className={styles.content}>
+        <ProfileForm user={user} setUser={setUser} />
+        <ProfileCard user={user} />
+      </div>
+    </div>
   );
 };
 

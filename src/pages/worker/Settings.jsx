@@ -7,10 +7,12 @@ const Settings = () => {
   // User profile state
   const [profile, setProfile] = useState({
     name: 'John Doe',
+    status : 'active',
     email: 'john@example.com',
     phone: '+1234567890',
     bio: 'Software developer with 5 years of experience',
     location: 'New York, USA',
+    workRole: 'carpenter', // Added work role field, default to 'carpenter'
     profilePhoto: 'https://via.placeholder.com/150',
     cv: null,
     projects: [],
