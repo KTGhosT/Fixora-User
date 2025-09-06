@@ -2,10 +2,13 @@ import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner";
 import ProtectedRoute from "./ProtectedRoute"; // ✅ import your ProtectedRoute
+import Plumber from "./pages/Service/Plumber";
 
 // Lazy load components
 const Dashboard = lazy(() => import("./pages/worker/dashboard"));
-const Register = lazy(() => import("./pages/worker/register"));
+const RegisterPage = lazy(() => import("./pages/worker/register"));
+const Settings = lazy(() => import("./pages/worker/Settings"));
+const WorkerWorks = lazy(() => import("./pages/worker/works"));
 const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
@@ -15,6 +18,7 @@ const Signup = lazy(() => import("./pages/auth/Signup"));
 const Homepage = lazy(() => import("./pages/Homepage"));
 const Services = lazy(() => import("./pages/Services"));
 const UniqueHeader = lazy(() => import("./components/user/Header"));
+const Booking = lazy(() => import("./pages/Booking"));
 
 function App() {
   const [user, setUser] = useState(null);
@@ -52,6 +56,8 @@ function App() {
               </Suspense>
             }
           />
+
+          <Route path="/plumber" element={<Plumber />} />
 
           {/* Worker Routes */}
           <Route
@@ -94,6 +100,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    
   );
 }
 

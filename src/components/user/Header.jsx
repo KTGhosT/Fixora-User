@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
 
+
 const UniqueHeader = ({ user, setUser }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
