@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner";
+import Plumber from "./pages/Service/Plumber";
 
 // Lazy load components to prevent CSS modules from loading unnecessarily
 const Dashboard = lazy(() => import("./pages/worker/dashboard"));
@@ -14,6 +15,7 @@ const ManageServices = lazy(() => import("./pages/admin/ManageServices"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const Homepage = lazy(() => import("./pages/Homepage"));
+const Booking = lazy(() => import("./pages/Booking"));
 
 function App() {
   const [user, setUser] = useState(null);
@@ -38,6 +40,8 @@ function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/plumber" element={<Plumber />} />
+
           {/* <Route
             path="/worker/dashboard"
             element={
@@ -75,9 +79,7 @@ function App() {
             <Route path="ManageServices" element={<ManageServices />} />
           </Route>
           <Route path="/worker/dashboard" element={<Dashboard />} />
-          <Route path="/pages/worker/register" element={<RegisterPage />} />
-          <Route path="/worker/Settings" element={<Settings />} />
-          <Route path="/worker/WorkerWorks" element={<WorkerWorks />} />
+          <Route path="/worker/register" element={<Register />} />
           <Route path="/worker" element={<Navigate to="/worker/dashboard" />} />
         </Routes>
       </div>
