@@ -91,7 +91,7 @@ const UniqueHeader = ({ user, setUser }) => {
             {/* Navigation */}
             <nav className={`${styles.nav} ${isMobileMenuOpen ? styles.navOpen : ''}`}>
               <ul className={styles.navList}>
-                <li><a href="#home" className={styles.navLink}>HOME</a></li>
+                <li><a href="/" className={styles.navLink}>HOME</a></li>
                 <li><a href="#about" className={styles.navLink}>ABOUT</a></li>
                 <li><a href="#services" className={styles.navLink}>SERVICES</a></li>
                 <li><a href="#projects" className={styles.navLink}>PROJECTS</a></li>
