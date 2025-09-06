@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
 
+
 const UniqueHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
