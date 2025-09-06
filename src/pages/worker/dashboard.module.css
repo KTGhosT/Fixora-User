@@ -461,3 +461,133 @@
     font-size: 0.85rem;
   }
 }
+/* Mobile-style Calendar Styles */
+.mobile-calendar {
+  width: 100%;
+}
+
+.mobile-calendar .calendar-header {
+  padding: 0 10px;
+}
+
+.mobile-calendar .calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.mobile-calendar .calendar-day-header {
+  padding: 8px 0;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.mobile-calendar .calendar-day {
+  position: relative;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f8f9fa;
+  padding: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.mobile-calendar .calendar-day:hover {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.mobile-calendar .calendar-day.today {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.mobile-calendar .calendar-day.selected {
+  background-color: #bbdefb;
+  border-color: #1976d2;
+}
+
+.mobile-calendar .day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.mobile-calendar .day-number {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.mobile-calendar .today-indicator {
+  font-size: 0.6rem;
+  background-color: #2196f3;
+  color: white;
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+.mobile-calendar .day-events {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.mobile-calendar .event-item {
+  font-size: 0.7rem;
+  background-color: #e3f2fd;
+  border-radius: 3px;
+  padding: 2px 4px;
+  margin-bottom: 2px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.mobile-calendar .event-time {
+  font-weight: 500;
+  color: #1976d2;
+}
+
+.mobile-calendar .event-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-calendar .more-events {
+  background-color: #ffcdd2;
+  color: #c62828;
+  text-align: center;
+}
+
+/* Real-time Clock Styles */
+.real-time-display {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.real-time-display .current-date h5 {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.real-time-display .current-time h2 {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .mobile-calendar .calendar-day {
+    min-height: 70px;
+  }
+  
+  .mobile-calendar .event-item {
+    font-size: 0.65rem;
+  }
+}
