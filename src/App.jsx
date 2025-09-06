@@ -18,6 +18,7 @@ const Homepage = lazy(() => import("./pages/Homepage"));
 const Services = lazy(() => import("./pages/Services"));
 const UniqueHeader = lazy(() => import("./components/user/Header"));
 const Booking = lazy(() => import("./pages/Booking"));
+const Account = lazy(() => import("./pages/user/Account"));
 
 function HeaderWrapper({ user, setUser }) {
   const location = useLocation();
@@ -121,6 +122,15 @@ function App() {
             <Route path="manage-users" element={<ManageUsers />} />
             <Route path="manage-services" element={<ManageServices />} />
           </Route>
+
+        <Route
+          path="/user/account"
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <Account />
+            </Suspense>
+          }
+        />
         </Routes>
       </div>
     </Router>
