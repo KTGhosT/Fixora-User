@@ -1,4 +1,6 @@
+// dashboard.jsx
 import React from 'react';
+import { Link } from 'react-router-dom'; // Add this import
 import styles from './dashboard.module.css';
 
 const Dashboard = () => {
@@ -10,46 +12,46 @@ const Dashboard = () => {
           <h2>WorkerDash</h2>
         </div>
         <nav className={styles.navMenu}>
-          <a href="#" className={`${styles.navItem} ${styles.active}`}>
+          <Link to="/" className={`${styles.navItem} ${styles.active}`}>
             <i className="icon-dashboard"></i>
             <span>Dashboard</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="/worker/WorkerWorks" className={styles.navItem}>
             <i className="icon-orders"></i>
-            <span>Orders</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+            <span>Works</span>
+          </Link>
+          <Link to="#" className={styles.navItem}>
             <i className="icon-tasks"></i>
             <span>Tasks</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="#" className={styles.navItem}>
             <i className="icon-sales"></i>
             <span>Sales</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="#" className={styles.navItem}>
             <i className="icon-payments"></i>
             <span>Payments</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="#" className={styles.navItem}>
             <i className="icon-inventory"></i>
             <span>Inventory</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="#" className={styles.navItem}>
             <i className="icon-clients"></i>
             <span>Clients</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="#" className={styles.navItem}>
             <i className="icon-reports"></i>
             <span>Reports</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="#" className={styles.navItem}>
             <i className="icon-calls"></i>
             <span>Calls</span>
-          </a>
-          <a href="#" className={styles.navItem}>
+          </Link>
+          <Link to="/worker/settings" className={styles.navItem}>
             <i className="icon-settings"></i>
             <span>Settings</span>
-          </a>
+          </Link>
         </nav>
         <div className={styles.userProfile}>
           <div className={styles.avatar}>
@@ -62,7 +64,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Rest of your dashboard content remains the same */}
       <div className={styles.mainContent}>
         <div className={styles.header}>
           <h1>Worker Dashboard</h1>

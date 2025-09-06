@@ -4,7 +4,9 @@ import LoadingSpinner from "./components/LoadingSpinner";
 
 // Lazy load components to prevent CSS modules from loading unnecessarily
 const Dashboard = lazy(() => import("./pages/worker/dashboard"));
-const Register = lazy(() => import("./pages/worker/register"));
+const RegisterPage = lazy(() => import("./pages/worker/register"));
+const Settings = lazy(() => import("./pages/worker/Settings"));
+const WorkerWorks = lazy(() => import("./pages/worker/works"));
 const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
@@ -56,7 +58,7 @@ function App() {
                   <Register />
                 </Suspense>
               ) : (
-                <Navigate to="/login" />
+                <Navigate to="/pages/worker/register" />
               )
             }
           />
@@ -73,11 +75,14 @@ function App() {
             <Route path="ManageServices" element={<ManageServices />} />
           </Route>
           <Route path="/worker/dashboard" element={<Dashboard />} />
-          <Route path="/worker/register" element={<Register />} />
+          <Route path="/pages/worker/register" element={<RegisterPage />} />
+          <Route path="/worker/Settings" element={<Settings />} />
+          <Route path="/worker/WorkerWorks" element={<WorkerWorks />} />
           <Route path="/worker" element={<Navigate to="/worker/dashboard" />} />
         </Routes>
       </div>
     </Router>
+    
   );
 }
 
