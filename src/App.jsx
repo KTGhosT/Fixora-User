@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner";
-import ProtectedRoute from "./ProtectedRoute"; // ✅ import your ProtectedRoute
+import ProtectedRoute from "./ProtectedRoute";
 import Plumber from "./pages/Service/Plumber";
 
 // Lazy load components
@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role"); // ✅ store role separately
+    const role = localStorage.getItem("role");
     if (token && role) {
       setUser({ token, role });
     }
@@ -39,7 +39,9 @@ function App() {
 
   return (
     <Router>
-      <UniqueHeader user={user} setUser={setUser} />
+      <Suspense fallback={<LoadingSpinner />}>
+        <UniqueHeader user={user} setUser={setUser} />
+      </Suspense>
       <div className="App">
         <Routes>
           {/* Public Routes */}
@@ -47,7 +49,6 @@ function App() {
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/signup" element={<Signup />} />
           
-
           <Route
             path="/services"
             element={
@@ -75,7 +76,7 @@ function App() {
             element={
               <ProtectedRoute user={user} role="worker">
                 <Suspense fallback={<LoadingSpinner />}>
-                  <Register />
+                  <RegisterPage />
                 </Suspense>
               </ProtectedRoute>
             }
@@ -100,7 +101,6 @@ function App() {
         </Routes>
       </div>
     </Router>
-    
   );
 }
 
