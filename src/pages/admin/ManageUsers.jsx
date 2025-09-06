@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./admin-components.module.css";
-import tableStyles from "../../components/admin/AdminTable.module.css";
+import tableStyles from "../../layouts/admin/admin.module.css";
 
 function ManageUsers() {
   const [users, setUsers] = useState([]);

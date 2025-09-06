@@ -11,14 +11,14 @@ const LoadingSpinner = () => {
           </div>
         </div>
       </div>
-      
+
       <div className={styles.spannerText}>FIXORA</div>
-      <div className={styles.subText}>Loading your workspace...</div>
-      
+      <div className={styles.subText}>Connecting skilled workers...</div>
+
       <div className={styles.progressBar}>
         <div className={styles.progressFill}></div>
       </div>
-      
+
       <div className={styles.dots}>
         <div className={styles.dot}></div>
         <div className={styles.dot}></div>

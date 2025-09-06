@@ -1,8 +1,9 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner";
+import ProtectedRoute from "./ProtectedRoute"; // ✅ import your ProtectedRoute
 
-// Lazy load components to prevent CSS modules from loading unnecessarily
+// Lazy load components
 const Dashboard = lazy(() => import("./pages/worker/dashboard"));
 const Register = lazy(() => import("./pages/worker/register"));
 const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
@@ -12,6 +13,8 @@ const ManageServices = lazy(() => import("./pages/admin/ManageServices"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const Homepage = lazy(() => import("./pages/Homepage"));
+const Services = lazy(() => import("./pages/Services"));
+const UniqueHeader = lazy(() => import("./components/user/Header"));
 
 function App() {
   const [user, setUser] = useState(null);
@@ -19,8 +22,9 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      setUser({ token });
+    const role = localStorage.getItem("role"); // ✅ store role separately
+    if (token && role) {
+      setUser({ token, role });
     }
     setLoading(false);
   }, []);
@@ -31,50 +35,62 @@ function App() {
 
   return (
     <Router>
+      <UniqueHeader user={user} setUser={setUser} />
       <div className="App">
         <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/login" element={<Login />} />
+          {/* Public Routes */}
+          <Route path="/" element={<Homepage user={user} setUser={setUser} />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/signup" element={<Signup />} />
-          {/* <Route
+          
+
+          <Route
+            path="/services"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <Services />
+              </Suspense>
+            }
+          />
+
+          {/* Worker Routes */}
+          <Route
             path="/worker/dashboard"
             element={
-              user ? (
+              <ProtectedRoute user={user} role="worker">
                 <Suspense fallback={<LoadingSpinner />}>
                   <Dashboard />
                 </Suspense>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          /> */}
-          <Route
-            path="/worker/register"
-            element={
-              user ? (
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Register />
-                </Suspense>
-              ) : (
-                <Navigate to="/login" />
-              )
+              </ProtectedRoute>
             }
           />
           <Route
+            path="/worker/register"
+            element={
+              <ProtectedRoute user={user} role="worker">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Register />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/worker" element={<Navigate to="/worker/dashboard" />} />
+
+          {/* Admin Routes */}
+          <Route
             path="/admin"
             element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <AdminLayout />
-              </Suspense>
+              <ProtectedRoute user={user} role="admin">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminLayout />
+                </Suspense>
+              </ProtectedRoute>
             }
           >
             <Route index element={<AdminDashboard />} />
             <Route path="manage-users" element={<ManageUsers />} />
-            <Route path="ManageServices" element={<ManageServices />} />
+            <Route path="manage-services" element={<ManageServices />} />
           </Route>
-          <Route path="/worker/dashboard" element={<Dashboard />} />
-          <Route path="/worker/register" element={<Register />} />
-          <Route path="/worker" element={<Navigate to="/worker/dashboard" />} />
         </Routes>
       </div>
     </Router>

@@ -13,6 +13,9 @@ export default defineConfig({
       }
     }
   },
+  optimizeDeps: {
+    include: ["three", "@react-three/fiber", "@react-three/drei", "@splinetool/react-spline"],
+  },
   build: {
     cssCodeSplit: true, // Split CSS into separate files
     rollupOptions: {

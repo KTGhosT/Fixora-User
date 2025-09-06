@@ -1,21 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
+import { useNavigate } from 'react-router-dom';
 
-const UniqueHeader = () => {
+const UniqueHeader = ({ user, setUser }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
+
+    // check localStorage for user
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    setUser(null);   // now this updates App state too
+    navigate("/login");
   };
 
   return (
@@ -84,7 +101,14 @@ const UniqueHeader = () => {
               
               {/* Call to Action Button */}
               <div className={styles.headerCta}>
-                <a href="/login" className={styles.ctaButton}>LOGIN</a>
+                {user ? (
+                  <div className={styles.profileMenu}>
+                    <span>👤 {user.name}</span>
+                    <button onClick={logout}>Logout</button>
+                  </div>
+                ) : (
+                  <a href="/login" className={styles.ctaButton}>LOGIN</a>
+                )}
               </div>
             </nav>
 

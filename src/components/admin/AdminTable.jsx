@@ -1,6 +1,6 @@
 // src/components/admin/AdminTable.jsx
 import React from "react";
-import styles from "./AdminTable.module.css";
+import styles from "./Admin.module.css";
 
 function AdminTable({ headers, data, onEdit, onDelete }) {
   return (

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 
-function Login() {
+function Login({ setUser }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ 
     email: "", 
@@ -36,27 +36,20 @@ function Login() {
       const data = await res.json();
 
       if (res.ok) {
-        // Store authentication token and user data
-        if (data.token) {
-          localStorage.setItem("auth_token", data.token);
-        }
-        if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-        }
-
-        // Success animation before navigation
-        document.querySelector(`.${styles.formContainer}`).classList.add(styles.successAnimation);
-        setTimeout(() => {
-          // Redirect based on user role
-          if (data.user?.role === "admin") {
-            navigate("/admin");
-          } else if (data.user?.role === "worker") {
-            navigate("/worker/dashboard");
-          } else {
-            navigate("/");
-          }
-        }, 1500);
-      } else {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.user.role.toLowerCase());
+      
+        // Update App state
+        setUser({ token: data.token, role: data.user.role.toLowerCase() });
+      
+        // Redirect
+        if (data.user.role.toLowerCase() === "admin") navigate("/admin");
+        else if (data.user.role.toLowerCase() === "worker") navigate("/worker/dashboard");
+        else navigate("/");
+      }
+      
+      
+       else {
         // Better error handling
         const errorMessage = data.message || 
                             data.error || 

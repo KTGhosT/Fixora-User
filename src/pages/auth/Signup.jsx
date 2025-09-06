@@ -50,7 +50,7 @@ function Signup() {
         // Redirect
         if (data.user.role === "admin") navigate("/admin");
         else if (data.user.role === "worker") navigate("/worker/dashboard");
-        else navigate("/"); // customer or guest
+        else navigate("/login"); // customer or guest
       } else {
         setError(data.errors ? Object.values(data.errors).flat().join(", ") : "Signup failed");
         setIsSubmitting(false);

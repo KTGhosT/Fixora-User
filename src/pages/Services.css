@@ -1,0 +1,476 @@
+/* 🔹 Global Styles */
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #121212; 
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 300vh; 
+    width: 100vw;
+  }
+  
+  /* 🔹 Navbar */
+  .navbar {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 10px 20px;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  }
+  
+  .navbar h1 {
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+  }
+  
+  .navbar div button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .navbar div button:hover {
+    color: #1e90ff;
+  }
+  
+  /* 🔹 3D Background */
+  .background-3d {
+    flex-shrink: 0;
+    width: 100%;
+    height: 800px; 
+    position: relative;
+    background: #000000; 
+    z-index: 1;
+  }
+  
+  .background-3d canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    outline: none;
+    pointer-events: none;
+  }
+  
+  /* 🔹 Foreground UI */
+  .foreground-ui {
+    flex-grow: 1;
+    background: rgba(170, 166, 166, 0.75);
+    padding: 40px 30px; 
+    z-index: 10;
+    box-shadow: 0 -4px 10px rgba(255, 254, 254, 0.7);
+  }
+  
+  /* 🔹 First Spline Section */
+  .spline-section {
+    margin-top: 120px;
+    width: 100vw;
+    height: 720px; 
+    background: #111111;
+    overflow: hidden;
+    position: relative;
+    transform: scale(1.2);
+  }
+  
+  .spline-section iframe,
+  .spline-section canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    border: none;
+  }
+  
+  /* 🔹 Glowing Heading in First Spline Section */
+  .spline-heading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #00eaff;
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .spline-heading h1 {
+    font-size: 3.8rem;
+    font-weight: 900;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #00eaff;
+    text-shadow: 
+      0 0 8px #00eaff,
+      0 0 15px #101212,
+      0 0 30px #1e90ff,
+      0 0 60px #1e90ff;
+    animation: neonPulse 3s ease-in-out infinite alternate;
+  }
+  
+  .spline-heading p {
+    margin-top: 15px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #cceeff;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(0, 234, 255, 0.6);
+    animation: fadeGlow 4s ease-in-out infinite alternate;
+  }
+  
+  /* 🔹 Neon Animations */
+  @keyframes neonPulse {
+    from {
+      text-shadow: 
+        0 0 8px #1c3638,
+        0 0 15px #00eaff,
+        0 0 25px #000000,
+        0 0 40px #1e90ff;
+    }
+    to {
+      text-shadow: 
+        0 0 15px #193739,
+        0 0 30px #1e90ff,
+        0 0 60px #1e90ff,
+        0 0 100px #00eaff;
+    }
+  }
+  
+  @keyframes fadeGlow {
+    from { opacity: 0.7; text-shadow: 0 0 6px rgba(0,234,255,0.4); }
+    to   { opacity: 1;   text-shadow: 0 0 12px rgba(0,234,255,0.8); }
+  }
+  
+  /* 🔹 Corner Service Boxes */
+  .corner-services {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  
+  /* 🔹 Corner Services Title */
+  .corner-services::before {
+    content: "Services";
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-weight: 700; /* bold */
+    font-size: 1.5rem;
+    color: #ffffff;
+    z-index: 20;
+    pointer-events: none;
+    font-family: 'Montserrat', sans-serif;
+    text-shadow: 0 0 6px rgba(0,234,255,0.5);
+  }
+  
+  .service-box {
+    position: absolute;
+    width: 380px;
+    height: 290px;
+    background: rgba(20, 20, 20, 0.85);
+    border-radius: 16px;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.8);
+    transform: scale(0.95);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  
+  .service-box:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 10px 25px rgba(122, 159, 247, 0.9);
+  }
+  
+  .service-box video {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+  
+  .service-box h3 {
+    margin: 8px 0 4px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .service-box p {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin: 0;
+  }
+  
+  /* 🔹 Service Box Positions */
+  .top-left { top: 4.5%; left: 14%; }
+  .top-right { top: 4.5%; right: 14%; }
+  .bottom-left { bottom: 4.5%; left: 14%; }
+  .bottom-right { bottom: 4.5%; right: 14%; }
+  
+  /* 🔹 New Spline Section */
+  .new-spline-section {
+    display: flex;
+    width: 100%;
+    min-height: 500px;
+    margin: 200px 0 150px; 
+    gap: 50px;
+    align-items: center;
+    background: #1f1f1f; /* dark ash background */
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+  }
+  
+  /* Left text with gradient heading */
+  .new-spline-left {
+    flex: 1;
+    z-index: 5;
+  }
+  
+  .new-spline-left h2 {
+    font-size: 4.5rem;
+    font-weight: 800;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(90deg, #1e90ff, #ff69b4, #00ffcc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+  }
+  
+  .new-spline-left p {
+    font-size: 1.3rem;
+    font-weight: 700; /* bold paragraph text */
+    line-height: 1.8;
+    color: #ccc;
+    background: rgba(9, 9, 9, 0.5); /* semi-transparent dark ash behind paragraph */
+    padding: 1px 2px;
+    border-radius: 10px;
+  }
+  
+  /* Right side spline frame */
+  .new-spline-right {
+    flex: 1.2;
+    height: 450px;
+    background: #1c1c1c; /* dark ash background */
+    border-radius: 20px;
+    overflow: hidden;
+    clip-path: inset(0px 5px 52px 0%);
+  }
+  
+  .new-spline-right iframe,
+  .new-spline-right canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    border: none;
+    pointer-events: none;
+  }
+  
+  .new-spline-right:hover iframe,
+  .new-spline-right:hover canvas {
+    pointer-events: auto;
+  }
+  
+  /* 🔹 WOW Modern Section */
+  .wow-section {
+    display: flex;
+    width: 100%;
+    min-height: 750px;
+    padding: 10px 3%;
+    gap: 0px;
+    align-items: center;
+    background: linear-gradient(150deg, #252525, #000000, #222020);
+    position: relative;
+    z-index: 5;
+  }
+  
+  .wow-left {
+    flex: 1.5;
+    display: flex;             /* vertical stacking */
+    flex-direction: column;
+    justify-content: flex-start; /* align heading and paragraph at top */
+  }
+  
+  .wow-left h2 {
+    font-size: 6rem;
+    font-weight: 800;
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 40px;
+    background: linear-gradient(90deg, #1e90ff, #ff69b4, #00ffcc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .wow-left p {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #bbb;
+    line-height: 1.8;
+    width: 100%;               /* full width */
+    max-width: 100%;           /* remove max-width limit */
+    white-space: normal;       /* allow wrapping */
+    overflow-wrap: break-word; /* break long words */
+    word-wrap: break-word;     /* support browsers */
+    display: block;
+    margin: 0;
+  }
+  
+  .wow-right {
+    flex: 1.5;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  /* 🔹 WOW Boxes Animation */
+  @keyframes zoomGlow {
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(30,144,255,0.12); }
+    50% { transform: scale(1.05); box-shadow: 0 10px 28px rgba(30,144,255,0.6); }
+  }
+  
+  .wow-box {
+    background: rgba(226, 218, 218, 0.05);
+    border: 1px solid rgba(124, 102, 102, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    text-align: center;
+    padding: 12px;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    animation: zoomGlow 12s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 2s);
+    transition: transform 0.3s ease, border 0.3s ease;
+  }
+  
+  .wow-box:hover {
+    transform: scale(1.08);
+    border: 1px solid rgba(30,144,255,0.7);
+  }
+  
+  .wow-box img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 18px;
+    margin-bottom: 10px;
+    transition: transform 0.5s ease, filter 0.5s ease;
+  }
+  
+  .wow-box:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.2) saturate(1.3) drop-shadow(0 0 10px #1e90ff);
+  }
+  
+  .wow-box p {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  
+  /* 🔹 Services Section */
+  .services {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 80px; 
+  }
+  
+  .service-card {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 12px;
+    padding: 20px;
+    width: 240px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .service-card:hover {
+    transform: scale(1.05);
+    background-color: rgba(2, 2, 2, 0.95);
+  }
+  
+  .service-card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  
+  .service-card p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  
+  /* 🔹 Footer */
+  .footer {
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.85);
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    color: white;
+    font-weight: 500;
+    margin-top: 150px;
+    z-index: 100;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.7);
+  }
+  
+  /* 🔹 Responsive */
+  @media (max-width: 1024px) {
+    .new-spline-section { flex-direction: column; gap: 30px; }
+    .new-spline-right { height: 400px; }
+    .service-box { width: 180px; height: 150px; }
+    .wow-right { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); }
+    .spline-heading h1 { font-size: 2.8rem; }
+    .spline-heading p { font-size: 1rem; }
+  }
+  
+  @media (max-width: 600px) {
+    .services { flex-direction: column; align-items: center; gap: 20px; }
+    .service-card { width: 90%; }
+    .navbar div button { margin-left: 10px; font-size: 0.9rem; }
+    .spline-section { height: 400px; }
+    .new-spline-right { height: 280px; }
+    .new-spline-left h2 { font-size: 2.5rem; }
+    .new-spline-left p { font-size: 0.9rem; }
+    .wow-left h2 { font-size: 2rem; }
+    .wow-left p { font-size: 1rem; }
+    .wow-right { grid-template-columns: 1fr; grid-template-rows: repeat(6, 1fr); gap: 15px; }
+    .spline-heading h1 { font-size: 2rem; }
+  }
+  
