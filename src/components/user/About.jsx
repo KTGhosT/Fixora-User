@@ -8,7 +8,7 @@ const About = () => (
         {/* Left Image */}
         <div className={`${styles.colMd6} ${styles.mb4}`}>
           <img
-            src="src/assets/user/about.jpg"
+            src="src/assets/Home/HouseKeeping.png"
             alt="Fixora workforce"
             className={styles.aboutImage}
             loading="lazy"

@@ -1,5 +1,5 @@
-import React, { Component, useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import React, { Component, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 class ErrorBoundary extends Component {
   state = { hasError: false };
@@ -17,7 +17,6 @@ class ErrorBoundary extends Component {
       return (
         <div className="text-center mt-5">
           <h1>Something went wrong. Please check the console for details.</h1>
-          <p>Ensure Three.js is properly loaded.</p>
         </div>
       );
     }
@@ -26,10 +25,10 @@ class ErrorBoundary extends Component {
 }
 
 const Carpenter = () => {
-  const mountRef = useRef(null);
   const carouselRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Auto-scroll reviews every 4 seconds
+  // Auto-scroll hero every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       if (carouselRef.current) {
@@ -43,150 +42,32 @@ const Carpenter = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Initialize Bootstrap carousel after component mounts
   useEffect(() => {
-    if (!mountRef.current) return;
+    const loadBootstrapJS = () => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
+      script.async = true;
+      document.body.appendChild(script);
 
-    // Three.js Setup - Create a carpenter-themed animation
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    mountRef.current.appendChild(renderer.domElement);
-
-    camera.position.z = 8;
-
-    // Create carpenter-themed 3D elements
-    const createWoodPlank = (x, y, z, rotationY = 0) => {
-      const geometry = new THREE.BoxGeometry(2, 0.2, 0.5);
-      const material = new THREE.MeshStandardMaterial({ 
-        color: 0x8B4513, // Saddle brown for wood
-        roughness: 0.8,
-        metalness: 0.1
-      });
-      const plank = new THREE.Mesh(geometry, material);
-      plank.position.set(x, y, z);
-      plank.rotation.y = rotationY;
-      return plank;
+      return () => {
+        document.body.removeChild(script);
+      };
     };
 
-    const createHammer = (x, y, z) => {
-      // Hammer handle
-      const handleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 8);
-      const handleMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-      const handle = new THREE.Mesh(handleGeometry, handleMaterial);
-      handle.rotation.x = Math.PI / 2;
-      
-      // Hammer head
-      const headGeometry = new THREE.BoxGeometry(0.15, 0.1, 0.3);
-      const headMaterial = new THREE.MeshStandardMaterial({ color: 0x696969 }); // Dim gray for metal
-      const head = new THREE.Mesh(headGeometry, headMaterial);
-      head.position.set(0, 0, 0.4);
-      
-      const hammerGroup = new THREE.Group();
-      hammerGroup.add(handle);
-      hammerGroup.add(head);
-      hammerGroup.position.set(x, y, z);
-      
-      return hammerGroup;
-    };
-
-    const createSaw = (x, y, z) => {
-      // Saw blade
-      const bladeGeometry = new THREE.BoxGeometry(0.02, 0.3, 0.8);
-      const bladeMaterial = new THREE.MeshStandardMaterial({ color: 0xC0C0C0 }); // Silver for metal
-      const blade = new THREE.Mesh(bladeGeometry, bladeMaterial);
-      
-      // Saw handle
-      const handleGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.2);
-      const handleMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-      const handle = new THREE.Mesh(handleGeometry, handleMaterial);
-      handle.position.set(0, -0.1, -0.3);
-      
-      const sawGroup = new THREE.Group();
-      sawGroup.add(blade);
-      sawGroup.add(handle);
-      sawGroup.position.set(x, y, z);
-      
-      return sawGroup;
-    };
-
-    const createNail = (x, y, z) => {
-      const geometry = new THREE.CylinderGeometry(0.02, 0.02, 0.3, 8);
-      const material = new THREE.MeshStandardMaterial({ color: 0x696969 });
-      const nail = new THREE.Mesh(geometry, material);
-      nail.position.set(x, y, z);
-      return nail;
-    };
-
-    // Add carpentry elements
-    scene.add(createWoodPlank(0, 0, 0));
-    scene.add(createWoodPlank(-1.2, 0, 0, Math.PI/2));
-    scene.add(createWoodPlank(1.2, 0, 0, -Math.PI/2));
-    
-    // Add hammer
-    const hammer = createHammer(0, 0.5, 0);
-    scene.add(hammer);
-    
-    // Add saw
-    const saw = createSaw(0, 0.5, 1.5);
-    scene.add(saw);
-    
-    // Add nails
-    const nails = [];
-    for (let i = 0; i < 8; i++) {
-      const nail = createNail(
-        Math.random() * 2 - 1, 
-        0.3 + Math.random() * 0.2, 
-        Math.random() * 2 - 1
-      );
-      scene.add(nail);
-      nails.push(nail);
+    if (typeof window.bootstrap === 'undefined') {
+      loadBootstrapJS();
     }
 
-    // Add lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const light = new THREE.DirectionalLight(0xffffff, 0.5);
-    light.position.set(2, 2, 5);
-    scene.add(light);
-
-    let offset = 0;
-    const animate = () => {
-      requestAnimationFrame(animate);
-      
-      // Animate hammer
-      hammer.rotation.y += 0.01;
-      hammer.position.y = 0.5 + Math.sin(Date.now() * 0.003) * 0.2;
-      
-      // Animate saw
-      saw.rotation.y += 0.008;
-      
-      // Animate nails
-      nails.forEach((nail, index) => {
-        const time = Date.now() * 0.001 + index * 0.5;
-        nail.rotation.y = time * 0.3;
-        nail.position.y = 0.3 + Math.sin(time) * 0.1;
-      });
-      
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    const handleResize = () => {
-      if (!mountRef.current) return;
-      camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    };
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement);
+    if (carouselRef.current) {
+      const carouselElement = carouselRef.current;
+      if (carouselElement && typeof window.bootstrap !== 'undefined') {
+        new window.bootstrap.Carousel(carouselElement, {
+          interval: false,
+          ride: false,
+        });
       }
-      renderer.dispose();
-    };
+    }
   }, []);
 
   return (
@@ -196,176 +77,321 @@ const Carpenter = () => {
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet"
       />
-      
+
+      <style>
+        {`
+          /* Full-Screen Hero Carousel */
+          .hero-slider {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #8B4513;
+          }
+
+          .carousel-item {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.8s ease-in-out;
+          }
+
+          .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+            opacity: 0;
+            transform: scale(0.05);
+            transition: opacity 0.4s ease-in-out, transform 0.6s ease-in-out;
+          }
+
+          .carousel-item.active img {
+            opacity: 1;
+            transform: scale(1);
+          }
+
+          /* Blur Box Overlay */
+          .blur-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 800px;
+            padding: 2rem;
+            background: rgba(69, 67, 67, 0.4);
+            backdrop-filter: blur(0.5px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-align: center;
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
+          }
+
+          /* Animated Text */
+          .animated-text {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid white;
+            animation: typing 4s steps(30, end), blink 0.7s step-end infinite;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+          }
+
+          @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+          }
+
+          @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: white; }
+          }
+
+          .lead-text {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+          }
+
+          .btn-book-now {
+            background-color: #D2691E;
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(210, 105, 30, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+          }
+
+          .btn-book-now:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
+          }
+
+          /* Controls */
+          .carousel-control-prev-icon,
+          .carousel-control-next-icon {
+            width: 40px;
+            height: 40px;
+            background-size: 100% 100%;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+          }
+
+          .carousel-control-prev-icon:hover,
+          .carousel-control-next-icon:hover {
+            opacity: 1;
+          }
+
+          /* Responsive */
+          @media (max-width: 768px) {
+            .animated-text {
+              font-size: 2rem;
+            }
+            .lead-text {
+              font-size: 1.2rem;
+            }
+            .btn-book-now {
+              padding: 0.6rem 1.2rem;
+              font-size: 0.9rem;
+            }
+          }
+
+          /* Service Card */
+          .service-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          }
+
+          .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+          }
+
+          .service-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+          }
+
+          .service-card:hover .service-img {
+            transform: scale(1.05);
+          }
+
+          .service-title {
+            font-size: 1.3rem;
+            color: #8B4513;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+          }
+
+          .service-desc {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            text-align: center;
+          }
+
+          /* Review Carousel - Horizontal Scroll Layout */
+          .review-scroller {
+            overflow-x: auto;
+            padding: 20px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #8B4513 #f8f9fa;
+          }
+
+          .review-scroller::-webkit-scrollbar {
+            height: 8px;
+          }
+
+          .review-scroller::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 4px;
+          }
+
+          .review-scroller::-webkit-scrollbar-thumb {
+            background-color: #8B4513;
+            border-radius: 4px;
+          }
+
+          .review-row {
+            display: flex;
+            gap: 20px;
+            padding: 10px 0;
+            min-width: max-content;
+          }
+
+          .review-card {
+            min-width: 300px;
+            flex: 0 0 auto;
+          }
+
+          .review-card .card {
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+          }
+
+          .review-card .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+          }
+
+          /* Star Rating */
+          .stars {
+            font-size: 1.2rem;
+            color: #D2691E;
+            margin-top: 0.5rem;
+            letter-spacing: 2px;
+          }
+
+          /* Fade-in Animation */
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          /* Responsive */
+          @media (max-width: 768px) {
+            .review-card {
+              min-width: 250px;
+            }
+            .stars {
+              font-size: 1rem;
+            }
+            .review-scroller {
+              padding: 10px 0;
+            }
+          }
+
+          @media (max-width: 576px) {
+            .review-card {
+              min-width: 220px;
+            }
+            .review-row {
+              gap: 15px;
+            }
+          }
+        `}
+      </style>
+
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        {/* Hero Section */}
-        <section className="hero-section position-relative" style={{ backgroundColor: '#5D4037', minHeight: '100vh', paddingTop: '80px', paddingBottom: '80px' }}>
-          <style>
-            {`
-              .hero-section {
-                position: relative;
-                overflow: hidden;
-              }
-              .hero-overlay {
-                background: rgba(0,0,0,0.4);
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                z-index: 1;
-              }
-              .hero-content {
-                position: relative;
-                z-index: 2;
-                padding: 2rem;
-              }
-              .animated-text {
-                display: inline-block;
-                overflow: hidden;
-                white-space: nowrap;
-                border-right: 2px solid #fff;
-                animation: typing 4s steps(30, end), blink 0.7s step-end infinite;
-                max-width: 100%;
-              }
-              @keyframes typing {
-                from { width: 0; }
-                to { width: 100%; }
-              }
-              @keyframes blink {
-                from, to { border-color: transparent }
-                50% { border-color: white }
-              }
-              .carousel-img {
-                height: 600px;
-                object-fit: cover;
-                width: 100%;
-                border-radius: 12px;
-              }
-              .three-js-container {
-                height: 400px;
-                width: 100%;
-                max-width: 800px;
-                margin: 2rem auto;
-                background: rgba(255,255,255,0.1);
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-              }
-              .fade-in {
-                animation: fadeIn 1.5s ease-in;
-              }
-              @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-              }
-              .review-slide {
-                animation: slideIn 0.8s ease-out;
-                padding: 2rem;
-              }
-              @keyframes slideIn {
-                from { transform: translateX(50px); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-              }
-              .hover-card {
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-              }
-              .hover-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-              }
-              .carousel-indicators {
-                bottom: 20px;
-              }
-              .carousel-control-prev-icon,
-              .carousel-control-next-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
-              }
-              @media (max-width: 768px) {
-                .hero-section {
-                  min-height: auto;
-                  padding-top: 120px;
-                  padding-bottom: 60px;
-                }
-                .carousel-img {
-                  height: 400px;
-                }
-                .three-js-container {
-                  height: 300px;
-                }
-              }
-            `}
-          </style>
-          
-          <div className="hero-overlay"></div>
-          <div className="container hero-content">
-            <div className="row justify-content-center mb-5">
-              <div className="col-lg-10">
-                <div className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
-                  <div className="carousel-inner rounded-4 overflow-hidden">
-                    {[
-                      { src: 'https://images.unsplash.com/photo-1595341888016-a392ef81b7de', alt: 'Carpentry Tools' },
-                      { src: 'https://images.unsplash.com/photo-1583684948017-4a7565914f25', alt: 'Woodworking' },
-                      { src: 'https://images.unsplash.com/photo-1506315693250-4f4d9a4c7b75', alt: 'Furniture Making' },
-                    ].map((img, i) => (
-                      <div key={i} className={`carousel-item ${i === 0 ? 'active' : ''}`}>
-                        <img src={img.src} className="d-block w-100 carousel-img" alt={img.alt} />
-                      </div>
-                    ))}
-                  </div>
-                  <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Previous</span>
-                  </button>
-                  <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Next</span>
-                  </button>
-                  <div className="carousel-indicators">
-                    {[0, 1, 2].map((i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        data-bs-target="#heroCarousel"
-                        data-bs-slide-to={i}
-                        className={`${i === 0 ? 'active' : ''}`}
-                        aria-current={i === 0 ? 'true' : 'false'}
-                        aria-label={`Slide ${i + 1}`}
-                      ></button>
-                    ))}
+        {/* Full-Screen Hero Carousel */}
+        <section className="hero-slider">
+          <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
+            <div className="carousel-inner">
+              {[
+                { src: 'https://images.unsplash.com/photo-1608613304899-ea8098577e38?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Carpentry Tools' },
+                { src: 'https://images.unsplash.com/photo-1595844730289-b248c919d6f9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Woodworking' },
+                { src: 'https://images.unsplash.com/photo-1611021061218-761c355ed331?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Furniture Making' },
+              ].map((img, i) => (
+                <div key={i} className={`carousel-item${i === 0 ? ' active' : ''}`}>
+                  <img src={img.src} alt={img.alt} />
+                  <div className="blur-box">
+                    <h1 className="animated-text">Expert Carpenter Services</h1>
+                    <p className="lead-text">Precision Craftsmanship & Quality Woodwork</p>
+                    <button
+                      className="btn-book-now"
+                      onClick={() => navigate('/Booking')}
+                    >
+                      Book Now
+                    </button>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
-            
-            <div className="row justify-content-center mb-5">
-              <div className="col-lg-8">
-                <div className="three-js-container" ref={mountRef}></div>
-              </div>
-            </div>
-            
-            <div className="text-center text-white mb-5">
-              <h1 className="display-1 fw-bold animated-text mb-4" style={{ fontSize: '4rem' }}>
-                Expert Carpenter Services
-              </h1>
-              <p className="lead fade-in mb-5" style={{ fontSize: '1.5rem' }}>
-                Precision Craftsmanship & Quality Woodwork
-              </p>
-              <div className="d-flex justify-content-center">
-                <button className="btn btn-warning btn-lg px-5 py-3" onClick={() => alert('Booking form would open here')}>
-                  Book Now
-                </button>
-              </div>
+
+            {/* Controls */}
+            <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Previous</span>
+            </button>
+            <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Next</span>
+            </button>
+
+            {/* Indicators */}
+            <div className="carousel-indicators">
+              {[0, 1, 2].map((i) => (
+                <button
+                  key={i}
+                  type="button"
+                  data-bs-target="#heroCarousel"
+                  data-bs-slide-to={i}
+                  className={i === 0 ? 'active' : ''}
+                  aria-current={i === 0 ? 'true' : 'false'}
+                  aria-label={`Slide ${i + 1}`}
+                ></button>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* About */}
+        {/* About Us Section */}
         <section id="about" className="py-5 bg-white">
           <div className="container">
             <div className="row justify-content-center">
               <div className="col-lg-8 text-center">
                 <h2 className="mb-4 display-6">About Our Services</h2>
-                <p className="lead">With 20+ years of experience, our master carpenters provide professional solutions for custom furniture, repairs, and installations.</p>
+                <p className="lead">
+                  With 20+ years of experience, our master carpenters provide professional solutions for custom furniture, repairs, and installations.
+                </p>
                 <div className="row mt-5 text-center">
                   <div className="col-md-4">
                     <div className="p-4">
@@ -391,7 +417,7 @@ const Carpenter = () => {
           </div>
         </section>
 
-        {/* Services */}
+        {/* Services Section */}
         <section id="services" className="py-5 bg-light">
           <div className="container">
             <div className="row justify-content-center mb-5">
@@ -402,19 +428,33 @@ const Carpenter = () => {
             </div>
             <div className="row justify-content-center g-4">
               {[
-                { title: 'Custom Furniture', desc: 'Handcrafted tables, chairs, cabinets and more tailored to your specifications.', img: 'https://images.unsplash.com/photo-1583684948017-4a7565914f25' },
-                { title: 'Repairs & Restoration', desc: 'Expert repair of damaged wood furniture and restoration of antique pieces.', img: 'https://images.unsplash.com/photo-1595341888016-a392ef81b7de' },
-                { title: 'Cabinetry', desc: 'Custom kitchen and bathroom cabinets designed for your space and needs.', img: 'https://images.unsplash.com/photo-1506315693250-4f4d9a4c7b75' },
-                { title: 'Deck & Fence Building', desc: 'Professional construction of decks, fences, and outdoor wooden structures.', img: 'https://images.unsplash.com/photo-1618220179428-22790b461013' },
+                {
+                  title: 'Custom Furniture',
+                  desc: 'Handcrafted tables, chairs, cabinets and more tailored to your specifications.',
+                  img: 'https://images.unsplash.com/photo-1687422810663-c316494f725a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                },
+                {
+                  title: 'Repairs & Restoration',
+                  desc: 'Expert repair of damaged wood furniture and restoration of antique pieces.',
+                  img: 'https://images.unsplash.com/photo-1708889404035-8b596c5c51a2?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                },
+                {
+                  title: 'Cabinetry',
+                  desc: 'Custom kitchen and bathroom cabinets designed for your space and needs.',
+                  img: 'https://images.unsplash.com/photo-1646324554833-f0b6a479fa5d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                },
+                {
+                  title: 'Deck & Fence Building',
+                  desc: 'Professional construction of decks, fences, and outdoor wooden structures.',
+                  img: 'https://images.unsplash.com/photo-1708889404014-2a3eee420ca0?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="card h-100 shadow-sm hover-card border-0">
-                    <div style={{ height: '180px', overflow: 'hidden' }}>
-                      <img src={s.img} alt={s.title} className="card-img-top w-100 h-100" style={{ objectFit: 'cover', transition: 'transform 0.5s ease' }} />
-                    </div>
-                    <div className="card-body text-center p-4">
-                      <h5 className="card-title fw-bold text-warning">{s.title}</h5>
-                      <p className="card-text text-muted">{s.desc}</p>
+                  <div className="service-card" onClick={() => alert(`Learn more about ${s.title}`)}>
+                    <img src={s.img} alt={s.title} className="service-img" />
+                    <div className="p-4 text-center">
+                      <h5 className="service-title">{s.title}</h5>
+                      <p className="service-desc">{s.desc}</p>
                     </div>
                   </div>
                 </div>
@@ -423,7 +463,7 @@ const Carpenter = () => {
           </div>
         </section>
 
-        {/* Reviews */}
+        {/* Reviews Section */}
         <section id="reviews" className="py-5 bg-white">
           <div className="container">
             <div className="row justify-content-center mb-5">
@@ -432,34 +472,146 @@ const Carpenter = () => {
                 <p className="lead">Hear what our satisfied customers have to say about our services.</p>
               </div>
             </div>
+
             <div className="row justify-content-center">
-              <div className="col-lg-8">
-                <div className="carousel slide" data-bs-ride="carousel" id="reviewCarousel" ref={carouselRef}>
-                  <div className="carousel-inner">
+              <div className="col-12">
+                <div className="review-scroller">
+                  <div className="review-row">
                     {[
-                      { name: 'Robert J.', review: 'Built a custom dining table for us - absolutely stunning craftsmanship! ★★★★★', avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
-                      { name: 'Emily T.', review: 'Restored my grandmother\'s antique cabinet - looks better than new! Highly recommend.', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
-                      { name: 'David M.', review: 'Professional, punctual, and the quality of work exceeded my expectations. ★★★★☆', avatar: 'https://randomuser.me/api/portraits/men/67.jpg' },
+                      {
+                        name: 'Robert J.',
+                        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+                        review: 'Built a custom dining table for us - absolutely stunning craftsmanship!',
+                        rating: 5,
+                      },
+                      {
+                        name: 'Emily T.',
+                        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+                        review: "Restored my grandmother's antique cabinet - looks better than new! Highly recommend.",
+                        rating: 5,
+                      },
+                      {
+                        name: 'David M.',
+                        avatar: 'https://randomuser.me/api/portraits/men/67.jpg',
+                        review: 'Professional, punctual, and the quality of work exceeded my expectations.',
+                        rating: 4,
+                      },
+                      {
+                        name: 'Susan P.',
+                        avatar: 'https://randomuser.me/api/portraits/women/56.jpg',
+                        review: 'Transformed our overgrown garden into a beautiful oasis!',
+                        rating: 5,
+                      },
+                      {
+                        name: 'Mike T.',
+                        avatar: 'https://randomuser.me/api/portraits/men/23.jpg',
+                        review: 'Consistent, reliable service. Our furniture has never looked better.',
+                        rating: 5,
+                      },
+                      {
+                        name: 'Carol L.',
+                        avatar: 'https://randomuser.me/api/portraits/women/78.jpg',
+                        review: 'Professional team that takes pride in their work. Highly recommend!',
+                        rating: 5,
+                      },
                     ].map((r, i) => (
-                      <div key={i} className={`carousel-item ${i === 0 ? 'active' : ''}`}>
-                        <div className="text-center review-slide p-4 bg-light rounded-3">
-                          <img src={r.avatar} alt={r.name} className="rounded-circle mb-3" style={{ width: '80px', height: '80px', objectFit: 'cover' }} />
-                          <h5 className="mb-3 fw-bold">{r.name}</h5>
-                          <p className="lead mb-0 fst-italic">"{r.review}"</p>
+                      <div key={i} className="review-card">
+                        <div className="card shadow-sm border-0 text-center p-4 h-100">
+                          <img
+                            src={r.avatar}
+                            alt={r.name}
+                            className="rounded-circle mb-3"
+                            style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                          />
+                          <h5 className="fw-bold mb-3">{r.name}</h5>
+                          <p className="text-muted fst-italic mb-2">{r.review}</p>
+                          <div className="stars">
+                            {[...Array(5)].map((_, j) => (
+                              <span key={j}>
+                                {j < r.rating ? '★' : '☆'}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className="d-flex justify-content-center mt-4">
-                    <button className="carousel-control-prev" type="button" data-bs-target="#reviewCarousel" data-bs-slide="prev">
-                      <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                      <span className="visually-hidden">Previous</span>
-                    </button>
-                    <button className="carousel-control-next" type="button" data-bs-target="#reviewCarousel" data-bs-slide="next">
-                      <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                      <span className="visually-hidden">Next</span>
-                    </button>
-                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="py-5 bg-light" style={{ backgroundColor: '#f8fafc' }}>
+          <div className="container">
+            <div className="row justify-content-center mb-5">
+              <div className="col-lg-8 text-center">
+                <h2 className="mb-4 display-6">Frequently Asked Questions</h2>
+                <p className="lead text-muted">Everything you need to know about our carpentry services.</p>
+              </div>
+            </div>
+            <div className="row justify-content-center">
+              <div className="col-lg-10">
+                <div className="accordion" id="faqAccordion">
+                  {[
+                    {
+                      question: 'What types of wood do you work with?',
+                      answer:
+                        'We work with a wide variety of woods including oak, maple, cherry, walnut, pine, and exotic hardwoods. We can recommend the best wood for your project based on your needs and budget.',
+                    },
+                    {
+                      question: 'How long does a custom furniture project take?',
+                      answer:
+                        'Timeline varies based on complexity, but most custom furniture projects take 4-8 weeks from design to completion. We provide detailed timelines during our consultation.',
+                    },
+                    {
+                      question: 'Do you offer design services?',
+                      answer:
+                        'Yes! Our master carpenters provide complete design services, including 3D renderings, material selection, and space planning to ensure your vision comes to life.',
+                    },
+                    {
+                      question: 'Can you match existing furniture or woodwork?',
+                      answer:
+                        'Absolutely. We specialize in matching existing finishes, styles, and wood grains to create seamless additions or repairs to your current furniture or woodwork.',
+                    },
+                    {
+                      question: 'Do you provide free estimates?',
+                      answer:
+                        'Yes! We offer free, no-obligation estimates for all projects. Our estimates include detailed breakdowns of materials, labor, and timeline.',
+                    },
+                    {
+                      question: 'What warranty do you offer on your work?',
+                      answer:
+                        'We stand behind our craftsmanship with a 2-year warranty on all workmanship. Materials are covered by their respective manufacturer warranties.',
+                    },
+                  ].map((faq, index) => (
+                    <div className="accordion-item mb-3 shadow-sm rounded-3 border-0" key={index}>
+                      <h3 className="accordion-header">
+                        <button
+                          className="accordion-button fw-bold fs-5 py-3 px-4 collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target={`#faq-${index}`}
+                          aria-expanded="false"
+                          aria-controls={`faq-${index}`}
+                          style={{
+                            backgroundColor: '#fff',
+                            borderRadius: '12px',
+                            transition: 'box-shadow 0.3s ease',
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.08)')}
+                          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
+                        >
+                          <span className="me-3">🪵</span>
+                          {faq.question}
+                        </button>
+                      </h3>
+                      <div id={`faq-${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div className="accordion-body py-4 px-4 fs-5 text-muted">{faq.answer}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

@@ -1,80 +1,78 @@
-import React from 'react';
-import styles from './HomeHero.module.css';
+import React, { useState, useEffect } from "react";
+import styles from "./HomeHero.module.css";
+import HomePageImage from "../../assets/Home/HomePage.jpg";
+import ElectricianImage from "../../assets/Home/Electrician.png";
+import PlumberImage from "../../assets/Home/Plumber.png";
 
 const UniqueHero = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [HomePageImage, ElectricianImage, PlumberImage];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) =>
+        prev === images.length - 1 ? 0 : prev + 1
+      );
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className={styles.hero} id="home">
-      {/* Background Elements */}
-      <div className={styles.heroBackground}>
-        <div className={styles.constructionGrid}></div>
-        <div className={styles.blueprintOverlay}></div>
-        <div className={styles.gradientOverlay}></div>
-      </div>
-      
+    <section className={styles.hero} id="home" aria-label="Hero Section">
       <div className={styles.container}>
+        {/* Hero Visual */}
+        <div className={styles.heroVisual} data-aos="zoom-in" data-aos-delay="800">
+          <div className={styles.slider}>
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Slide ${index + 1}`}
+                className={`${styles.heroImage} ${
+                  index === currentImageIndex ? styles.active : ""
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Hero Content */}
         <div className={styles.heroContent}>
-          {/* Badge */}
-          
-          
-          {/* Main Title */}
+          <h2 className={styles.heroSubtitle} data-aos="fade-up" data-aos-delay="100">
+            Online Service Provider
+          </h2>
           <h1 className={styles.heroTitle} data-aos="fade-up" data-aos-delay="200">
-            <span className={styles.titleLine}>WELCOME TO</span>
-            <span className={styles.titleHighlight}>FIXORA APP</span>
+            Creating a <span className={styles.titleHighlight}>Better Future</span> through Online Service
           </h1>
-          
-          {/* Description */}
-          <p className={styles.heroDescription} data-aos="fade-up" data-aos-delay="400">
-            Simplify your workforce management with Fixora. Effortlessly schedule, track, and optimize your team's productivity—all in one powerful app.
-          </p>
-          
+
           {/* Stats */}
-          <div className={styles.statsContainer} data-aos="fade-up" data-aos-delay="600">
+          <div className={styles.heroStats} data-aos="fade-up" data-aos-delay="500">
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>100+</span>
-              <span className={styles.statLabel}>Services</span>
+              <span className={styles.statNumber}>500+</span>
+              <span className={styles.statLabel}>Services Completed</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>50+</span>
-              <span className={styles.statLabel}>Wrokers</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statNumber}>99%</span>
-              <span className={styles.statLabel}>User Satisfaction</span>
+              <span className={styles.statNumber}>200+</span>
+              <span className={styles.statLabel}>Happy Customers</span>
             </div>
           </div>
-          
-          {/* CTA Buttons */}
-          <div className={styles.heroButtons} data-aos="fade-up" data-aos-delay="800">
-            <a href="#contact" className={`${styles.btn} ${styles.btnPrimary}`}>
-              <span className={styles.btnIcon}></span>
-              FIND SERVICES
-            </a>
-            <a href="#quote" className={`${styles.btn} ${styles.btnSecondary}`}>
-              <span className={styles.btnIcon}></span>
+
+          {/* Buttons */}
+          <div className={styles.heroButtons} data-aos="fade-up" data-aos-delay="600">
+            <a href="#services" className={`${styles.btn} ${styles.btnPrimary}`}>
               BECOME A WORKER
             </a>
-          </div>
-        </div>
-        
-        {/* Visual Element - Construction Tools */}
-        <div className={styles.heroVisual} data-aos="zoom-in" data-aos-delay="1000">
-          <div className={styles.toolsContainer}>
-            <div className={`${styles.tool} ${styles.spanner}`}>🔧</div>
-            <div className={`${styles.tool} ${styles.hammer}`}>🔨</div>
-            <div className={`${styles.tool} ${styles.screwdriver}`}>🪛</div>
-            <div className={`${styles.tool} ${styles.drill}`}>⚡</div>
-            <div className={`${styles.tool} ${styles.pliers}`}>🔩</div>
-            <div className={`${styles.tool} ${styles.saw}`}>🪚</div>
-            <div className={`${styles.tool} ${styles.level}`}>📏</div>
-            <div className={`${styles.tool} ${styles.toolbox}`}>🧰</div>
+            <a href="#contact" className={`${styles.btn} ${styles.btnSecondary}`}>
+              FIND A WORKER
+            </a>
           </div>
         </div>
       </div>
-      
+
       {/* Scroll Indicator */}
       <div className={styles.scrollIndicator}>
-        <div className={styles.scrollText}>Scroll Down</div>
         <div className={styles.scrollArrow}></div>
+        <span className={styles.scrollText}>Scroll</span>
       </div>
     </section>
   );

@@ -41,7 +41,7 @@ const ServicesSection = () => {
       <div className={styles.container}>
         {/* Left Side - Image */}
         <div className={styles.imageWrapper}>
-          <img src="src/assets/user/bg1.jpg" alt="Fixora Worker" className={styles.image} />
+          <img src="src/assets/Home/ElectricianGirl.png" alt="Fixora Worker" className={styles.image} />
         </div>
 
         {/* Right Side - Services */}
