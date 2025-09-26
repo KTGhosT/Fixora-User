@@ -2,9 +2,9 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000",
-  withCredentials: true, // Enable credentials for cookie-based auth
+  withCredentials: false,
   headers: {
-    "Content-Type": "application/json",
+    // "Content-Type": "application/json",
     "Accept": "application/json",
   },
 });
@@ -31,8 +31,8 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401) {
       // Token expired or invalid, clear it
       localStorage.removeItem('auth_token');
-      // Only redirect if not already on login page
-      if (window.location.pathname !== '/login') {
+      // Only redirect if not already on login page and not checking profile
+      if (window.location.pathname !== '/login' && !error.config?.url?.includes('/api/profile')) {
         window.location.href = '/login';
       }
     }

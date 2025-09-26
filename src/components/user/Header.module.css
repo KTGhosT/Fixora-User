@@ -1,78 +1,145 @@
-/* Announcement Bar */
-.announcementBar {
-  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 80%);
-  color: #fff;
-  padding: 12px 0;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  box-shadow: 0 2px 10px rgba(106, 17, 203, 0.2);
-}
+/* Header.module.css — Enhanced with Transparency + Advanced Animations */
 
-.announcementBar p {
-  margin: 0;
-}
-
-/* Header Styles */
 .header {
-  position: sticky;
-  top: 0;
-  background: linear-gradient(90deg, #1a2d3c 0%, #2e5a7d 100%);
-  color: #fff;
-  padding: 14px 0;
-  transition: padding 0.4s ease, box-shadow 0.4s ease;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1200px;
+  background: rgba(255, 255, 255, 0.7); /* More transparent */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 24px;
+  padding: 0;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4); /* Inner glow for depth */
+  transition:
+    all 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s ease-out;
   z-index: 1000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  will-change: transform, box-shadow, backdrop-filter;
+  border: 1px solid rgba(255, 255, 255, 0.4); /* Lighter border */
+  animation: gentlePulse 8s ease-in-out infinite; /* Subtle pulsing effect */
+  /* Ensure header doesn't interfere with content */
+  pointer-events: auto;
 }
 
+@keyframes gentlePulse {
+  0%, 100% { opacity: 0.95; }
+  50% { opacity: 0.85; }
+}
+
+/* Floating on scroll — smoother, less aggressive */
 .header.scrolled {
-  padding: 10px 0;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -3px);
 }
 
-/* Header Content */
+/* Gentle hover lift with enhanced transparency effect */
+.header:hover {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(28px) saturate(220%);
+  -webkit-backdrop-filter: blur(28px) saturate(220%);
+  transform: translate(-50%, -5px) !important;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.12),
+    0 6px 20px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  animation: none; /* Stop pulsing on hover */
+}
+
+/* === CONTENT CONTAINER — Perfectly aligned === */
 .headerContent {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 1.5rem 2rem;
   width: 100%;
-  margin: 0 auto;
+  box-sizing: border-box;
+  transition: padding 0.3s ease;
+  min-height: 80px; /* Ensure consistent height */
 }
 
-/* Logo */
+.header.scrolled .headerContent {
+  padding: 1rem 1.5rem;
+  min-height: 70px; /* Slightly smaller when scrolled */
+}
+
+/* === LOGO SECTION === */
 .logo {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  padding: 0 20px;
+  transition: all 0.3s ease;
+  align-items: flex-start;
+  gap: 0.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #007bff, transparent);
+  transition: width 0.5s ease;
+}
+
+.logo:hover {
+  transform: translateY(-2px);
+}
+
+.logo:hover::after {
+  width: 100%;
 }
 
 .logoText {
-  font-size: 34px;
-  font-weight: 900;
-  color: #fff;
-  letter-spacing: -1.2px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
   line-height: 1;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
+  background: linear-gradient(90deg, #1a1a1a, #007bff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.4s ease;
 }
 
 .logo:hover .logoText {
-  transform: scale(1.05);
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .logoSubtext {
-  font-size: 12px;
-  font-weight: 600;
-  color: #a0aec0;
-  letter-spacing: 1.8px;
-  text-transform: uppercase;
-  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #666;
+  transition: all 0.3s ease;
+  line-height: 1.2;
+  opacity: 0.8;
 }
 
-/* Navigation */
+.logo:hover .logoSubtext {
+  color: #007bff;
+  opacity: 1;
+  transform: translateX(5px);
+}
+
+/* === NAVIGATION — Desktop === */
 .nav {
   display: flex;
   align-items: center;
@@ -83,83 +150,95 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  gap: 1.5rem;
   align-items: center;
-  gap: 30px;
 }
 
 .navLink {
-  color: #e2e8f0;
+  padding: 0.5rem 0.75rem;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 16px;
-  transition: color 0.3s ease, transform 0.3s ease;
+  color: #333;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   position: relative;
-  padding: 10px 0;
+  overflow: hidden;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 123, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.navLink:hover::before {
+  left: 100%;
 }
 
 .navLink:hover {
-  color: #fff;
-  transform: translateY(-3px);
+  color: #007bff;
+  background: rgba(0, 123, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
 }
 
-.navLink::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2.5px;
-  bottom: -2px;
-  left: 0;
-  background: #2ecc71;
-  transition: width 0.4s ease;
-}
-
-.navLink:hover::after {
-  width: 100%;
-}
-
-/* Dropdown */
+/* === DROPDOWN === */
 .dropdownContainer {
-  position: relative;
-}
-
-.dropdownToggle {
   position: relative;
   display: flex;
   align-items: center;
-  background: none;
-  border: none;
-  color: #e2e8f0;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: color 0.3s ease, transform 0.3s ease;
-  padding: 10px 0;
 }
 
-.dropdownToggle:hover {
-  color: #fff;
-  transform: translateY(-3px);
+.dropdownToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .dropdownToggle::after {
   content: '';
   position: absolute;
+  bottom: 0;
+  left: 50%;
   width: 0;
-  height: 2.5px;
-  bottom: -2px;
-  left: 0;
-  background: #2ecc71;
-  transition: width 0.4s ease;
+  height: 2px;
+  background: #007bff;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
 }
 
 .dropdownToggle:hover::after {
-  width: 100%;
+  width: 70%;
+}
+
+.dropdownToggle:hover {
+  background: rgba(0, 123, 255, 0.08);
+  transform: translateY(-2px);
 }
 
 .dropdownArrow {
+  transition: transform 0.3s ease;
   display: inline-flex;
-  margin-left: 6px;
-  transition: transform 0.4s ease;
+  align-items: center;
+  justify-content: center;
 }
 
 .dropdownArrow.arrowOpen {
@@ -168,382 +247,469 @@
 
 .dropdownMenu {
   position: absolute;
-  top: 100%;
-  left: 0;
-  width: 320px;
-  background: #2a4057;
-  border-radius: 12px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
-  padding: 18px;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scaleY(0.85);
+  transform-origin: top;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  min-width: 280px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(15px);
-  transition: all 0.4s ease;
-  z-index: 1000;
-  color: #e2e8f0;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  z-index: 1001;
+  padding: 0.75rem 0;
 }
 
 .dropdownMenu.dropdownOpen {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateX(-50%) scaleY(1);
 }
 
 .dropdownContent {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0 0.5rem;
 }
 
 .dropdownLink {
   display: flex;
   align-items: center;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 0.85rem 1rem;
   text-decoration: none;
-  color: #e2e8f0;
-  transition: all 0.3s ease;
-  gap: 12px;
+  color: #333;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dropdownLink::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 123, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.dropdownLink:hover::before {
+  left: 100%;
 }
 
 .dropdownLink:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: rgba(248, 249, 250, 0.7);
   transform: translateX(6px);
+  color: #007bff;
 }
 
 .serviceIcon {
-  font-size: 20px;
-  width: 24px;
+  font-size: 1.25rem;
+  width: 26px;
   text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.dropdownLink:hover .serviceIcon {
+  transform: scale(1.2) rotate(5deg);
 }
 
 .serviceName {
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: transform 0.3s ease;
+}
+
+.dropdownLink:hover .serviceName {
+  transform: translateX(3px);
 }
 
 .serviceDesc {
-  font-size: 12.5px;
-  color: #a0aec0;
-  margin-top: 3px;
+  font-size: 0.8rem;
+  color: #777;
+  transition: color 0.3s ease;
 }
 
-/* Header Actions */
+.dropdownLink:hover .serviceDesc {
+  color: #007bff;
+}
+
+/* === AUTH BUTTONS === */
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 0 20px;
+  gap: 1rem;
 }
 
-/* Floating Auth Button */
-.floatingAuthButton {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.5s ease;
-}
-
-.floatingAuthButton:hover {
-  transform: translateY(-5px);
-}
-
-.floatingAuthButton:active {
-  transform: translateY(2px);
-}
-
-.authButton {
-  display: flex;
-  align-items: center;
-  padding: 12px 30px;
-  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  border-radius: 30px;
-  transition: all 0.5s ease;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.authButton::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
-  transition: all 0.7s ease;
-  z-index: -1;
-}
-
-.authButton:hover::before {
-  left: 0;
-}
-
-.authButtonText {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.authButtonIcon {
-  transition: transform 0.4s ease;
-}
-
-.authButton:hover .authButtonIcon {
-  transform: translateX(5px);
-}
-
-.authButtonSecondary {
-  display: flex;
-  align-items: center;
-  padding: 12px 30px;
-  background: #fff;
-  color: #2d3748;
-  text-decoration: none;
-  font-weight: 700;
-  border-radius: 30px;
-  transition: all 0.5s ease;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  margin-left: 10px;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.authButtonSecondary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
-  transition: all 0.7s ease;
-  z-index: -1;
-}
-
-.authButtonSecondary:hover::before {
-  left: 0;
-}
-
-.authButtonSecondary:hover {
-  color: #fff;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
-  border-color: #2ecc71;
-}
-
-.authButtonSecondary:active {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(46, 204, 113, 0.2);
-}
-
-.authButtonSecondary .authButtonIcon {
-  transition: transform 0.4s ease;
-}
-
-.authButtonSecondary:hover .authButtonIcon {
-  transform: translateX(5px);
-}
-
-/* Profile Menu */
 .profileMenu {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 1rem;
 }
 
-.profileButton {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  color: #e2e8f0;
-  cursor: pointer;
-  transition: all 0.4s ease;
-}
-
-.profileButton:hover {
-  background: rgba(255, 255, 255, 0.25);
-  color: #fff;
-  transform: translateY(-3px);
-}
-
+.profileButton,
 .logoutButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.15);
+  gap: 0.5rem;
+  background: none;
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  color: #e2e8f0;
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
-  transition: all 0.4s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.profileButton::before,
+.logoutButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.profileButton:hover::before,
+.logoutButton:hover::before {
+  left: 100%;
+}
+
+.profileButton:hover {
+  background: rgba(0, 123, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.logoutButton {
+  color: #ff4d4f;
 }
 
 .logoutButton:hover {
-  background: rgba(255, 255, 255, 0.25);
-  color: #fff;
-  transform: translateY(-3px);
+  background: rgba(255, 77, 79, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.15);
 }
 
-/* Mobile Menu Toggle */
+.floatingAuthButton {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.authButton,
+.authButtonSecondary {
+  padding: 0.6rem 1.25rem;
+  border-radius: 14px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.authButton::after,
+.authButtonSecondary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.7s ease;
+}
+
+.authButton:hover::after,
+.authButtonSecondary:hover::after {
+  left: 100%;
+}
+
+.authButton {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+.authButton:hover {
+  background: linear-gradient(135deg, #0056b3, #00408a);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 6px 18px rgba(0, 0, 123, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.authButtonSecondary {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+}
+
+.authButtonSecondary:hover {
+  background: linear-gradient(135deg, #1e7e34, #145523);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 6px 18px rgba(40, 167, 69, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* === MOBILE MENU TOGGLE === */
 .menuToggle {
   display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 28px;
-  height: 20px;
-  background: transparent;
+  background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
-  z-index: 1001;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.menuToggle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 123, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.menuToggle:hover::before {
+  left: 100%;
+}
+
+.menuToggle:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: rotate(90deg);
 }
 
 .menuToggle span {
-  height: 3.5px;
-  width: 100%;
-  background-color: #e2e8f0;
-  border-radius: 3px;
-  transition: all 0.4s ease;
-  transform-origin: left;
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: #333;
+  margin: 5px 0;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+  position: relative;
 }
 
 .menuToggle.active span:nth-child(1) {
-  transform: rotate(45deg);
+  transform: rotate(45deg) translate(5px, 5px);
+  background: #007bff;
 }
 
 .menuToggle.active span:nth-child(2) {
   opacity: 0;
+  transform: translateX(-10px);
 }
 
 .menuToggle.active span:nth-child(3) {
-  transform: rotate(-45deg);
+  transform: rotate(-45deg) translate(5px, -5px);
+  background: #007bff;
 }
 
-/* Mobile Responsive */
-@media (max-width: 968px) {
-  .menuToggle {
-    display: flex;
-    margin-right: 20px;
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 768px) {
+  .header {
+    width: 94%;
+    top: 16px;
+    border-radius: 20px;
+    animation: mobileFloat 5s ease-in-out infinite;
   }
   
-  .nav {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 70%;
-    height: 100vh;
-    background: #1e3e5a;
+  @keyframes mobileFloat {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -4px); }
+  }
+
+  .headerContent {
+    padding: 1rem;
     flex-direction: column;
-    align-items: flex-start;
-    padding: 90px 25px 25px;
-    box-shadow: -6px 0 35px rgba(0, 0, 0, 0.3);
-    transition: right 0.5s ease;
-    overflow-y: auto;
+    align-items: stretch;
+    gap: 1rem;
+    min-height: auto; /* Allow flexible height on mobile */
   }
-  
+
+  .logo {
+    align-items: center;
+    text-align: center;
+  }
+
+  .logoText {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .logoSubtext {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .menuToggle {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    z-index: 1002;
+  }
+
+  .nav {
+    display: none;
+    position: absolute;
+    top: calc(100% + 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.12),
+      0 6px 16px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    padding: 1.5rem;
+    width: 92vw;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 1001;
+    animation: mobileNavSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  @keyframes mobileNavSlide {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -15px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+    }
+  }
+
   .nav.navOpen {
-    right: 0;
+    display: flex;
   }
-  
+
   .navList {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  .navLink,
+  .dropdownToggle {
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
     width: 100%;
+    text-align: left;
   }
-  
-  .navList li {
-    width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  }
-  
-  .navLink {
-    padding: 14px 0;
-    width: 100%;
-    justify-content: space-between;
-    color: #e2e8f0;
-  }
-  
-  .navLink:hover {
-    color: #fff;
-    transform: translateX(6px);
-  }
-  
+
   .dropdownMenu {
     position: static;
-    width: 100%;
-    background: #2a4057;
+    transform: none;
     box-shadow: none;
-    padding: 12px 0 12px 25px;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    display: none;
-    margin: 12px 0;
+    border: none;
+    padding: 0.75rem 0 0 0;
+    margin-top: 0.5rem;
+    max-height: 220px;
+    overflow-y: auto;
+    animation: dropdownSlideDown 0.3s ease-out;
+    background: transparent;
+    backdrop-filter: none;
   }
-  
-  .dropdownMenu.dropdownOpen {
-    display: block;
-    transform: none;
+
+  @keyframes dropdownSlideDown {
+    from {
+      opacity: 0;
+      transform: scaleY(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scaleY(1);
+    }
   }
-  
-  .headerActions {
-    margin: 25px 0 0;
-    width: 100%;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .floatingAuthButton {
-    width: 100%;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .authButton, .authButtonSecondary {
+
+  .authButton,
+  .authButtonSecondary {
     width: 100%;
     justify-content: center;
+    padding: 0.7rem;
+    font-size: 1rem;
   }
-  
+
   .profileMenu {
     flex-direction: column;
+    gap: 0.75rem;
     width: 100%;
-    gap: 12px;
   }
-  
-  .profileButton, .logoutButton {
+
+  .profileButton,
+  .logoutButton {
     width: 100%;
     justify-content: center;
+    padding: 0.7rem;
   }
 }
 
-@media (max-width: 480px) {
-  .logoText {
-    font-size: 28px;
+/* === ENHANCED FLOATING ANIMATION === */
+@keyframes floatingGently {
+  0%, 100% {
+    transform: translate(-50%, 0);
   }
-  
-  .announcementBar {
-    font-size: 13px;
-    padding: 10px 0;
+  25% {
+    transform: translate(-50%, -6px) rotate(0.5deg);
   }
-  
-  .authButton {
-    padding: 12px 22px;
-    font-size: 15px;
+  50% {
+    transform: translate(-50%, -4px) rotate(-0.5deg);
+  }
+  75% {
+    transform: translate(-50%, -8px) rotate(0.5deg);
   }
 }
+
+.header.animateFloat {
+  animation: floatingGently 4s ease-in-out infinite;
+}
+
+/* Add a subtle glow effect on focus/interaction */
+.header:focus-within {
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+
+
+

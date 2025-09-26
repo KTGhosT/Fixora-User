@@ -1,28 +1,7 @@
-import React, { Component, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-class ErrorBoundary extends Component {
-  state = { hasError: false };
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Error in component:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="text-center mt-5">
-          <h1>Something went wrong. Please check the console for details.</h1>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
+// ErrorBoundary removed to fix the error (class fields are not supported in some setups without extra Babel plugins)
 
 const Plumber = () => {
   const carouselRef = useRef(null);
@@ -42,53 +21,44 @@ const Plumber = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll reviews every 4 seconds
-  // (No review carousel with controls in this code, so this effect is not needed)
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const reviewCarousel = document.getElementById('reviewCarousel');
-  //     if (reviewCarousel) {
-  //       const nextButton = reviewCarousel.querySelector('.carousel-control-next');
-  //       if (nextButton) {
-  //         nextButton.click();
-  //       }
-  //     }
-  //   }, 4000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   // Initialize Bootstrap carousel after component mounts
   useEffect(() => {
+    let script;
     const loadBootstrapJS = () => {
-      const script = document.createElement('script');
+      script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
       script.async = true;
       document.body.appendChild(script);
 
-      return () => {
-        document.body.removeChild(script);
+      script.onload = () => {
+        if (carouselRef.current && window.bootstrap) {
+          new window.bootstrap.Carousel(carouselRef.current, {
+            interval: false,
+            ride: false,
+          });
+        }
       };
     };
 
     if (typeof window.bootstrap === 'undefined') {
       loadBootstrapJS();
+    } else if (carouselRef.current && window.bootstrap) {
+      new window.bootstrap.Carousel(carouselRef.current, {
+        interval: false,
+        ride: false,
+      });
     }
 
-    if (carouselRef.current) {
-      const carouselElement = carouselRef.current;
-      if (carouselElement && typeof window.bootstrap !== 'undefined') {
-        new window.bootstrap.Carousel(carouselElement, {
-          interval: false,
-          ride: false,
-        });
+    return () => {
+      if (script && document.body.contains(script)) {
+        document.body.removeChild(script);
       }
-    }
+    };
   }, []);
 
   return (
-    <ErrorBoundary>
-      {/* Bootstrap CSS */
+    <>
+      {/* Bootstrap CSS */}
       <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -633,7 +603,7 @@ const Plumber = () => {
           </div>
         </section>
       </div>
-    </ErrorBoundary>
+    </>
   );
 };
 

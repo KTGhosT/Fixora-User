@@ -1,7 +1,125 @@
 import React, { useState, useEffect } from "react";
-import styles from "./CustomerFeedback.module.css";
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Modal,
+  TextField,
+  Rating,
+  Card,
+  CardContent,
+  Avatar,
+  IconButton,
+  Grid,
+  Fade,
+  Slide,
+  useTheme,
+  useMediaQuery,
+  Paper,
+  Chip,
+  Divider
+} from "@mui/material";
+import {
+  Close,
+  Star,
+  StarBorder,
+  FormatQuote,
+  ArrowDownward,
+  Person,
+  Work
+} from "@mui/icons-material";
+import { styled, keyframes } from "@mui/system";
 import UniqueHeader from "../components/user/Header";
 import Footer from "../components/user/Footer";
+
+// Styled components with custom animations
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+`;
+
+const pulseAnimation = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
+
+const StyledSection = styled(Paper)(({ theme, background }) => ({
+  minHeight: "80vh",
+  background: background || `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+  borderRadius: theme.spacing(3),
+  margin: theme.spacing(4, 0),
+  padding: theme.spacing(6),
+  position: "relative",
+  overflow: "hidden",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(255, 255, 255, 0.1)",
+    backdropFilter: "blur(10px)",
+  }
+}));
+
+const FloatingAvatar = styled(Avatar)(({ theme }) => ({
+  animation: `${floatAnimation} 3s ease-in-out infinite`,
+  border: `4px solid ${theme.palette.background.paper}`,
+  boxShadow: theme.shadows[8],
+}));
+
+const SlideContainer = styled(Box)(({ theme }) => ({
+  position: "relative",
+  height: 400,
+  width: "100%",
+  borderRadius: theme.spacing(2),
+  overflow: "hidden",
+  boxShadow: theme.shadows[10],
+}));
+
+const FeedbackCard = styled(Card)(({ theme }) => ({
+  height: "100%",
+  background: "rgba(255, 255, 255, 0.95)",
+  backdropFilter: "blur(10px)",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  textAlign: "center",
+  padding: theme.spacing(4),
+  border: `1px solid ${theme.palette.divider}`,
+  transition: "all 0.3s ease",
+  "&:hover": {
+    transform: "translateY(-5px)",
+    boxShadow: theme.shadows[16],
+  }
+}));
+
+const StyledModal = styled(Modal)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: theme.spacing(2),
+}));
+
+const ModalContent = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  maxWidth: 500,
+  width: "90vw",
+  maxHeight: "90vh",
+  overflow: "auto",
+  position: "relative",
+  background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`,
+}));
+
+const ScrollPrompt = styled(Box)(({ theme }) => ({
+  textAlign: "center",
+  padding: theme.spacing(4),
+  animation: `${pulseAnimation} 2s ease-in-out infinite`,
+}));
 
 const CustomerFeedback = () => {
   const [user, setUser] = useState(null);
@@ -11,44 +129,85 @@ const CustomerFeedback = () => {
   const [currentWorkerSlide, setCurrentWorkerSlide] = useState(0);
   const [showWorkerForm, setShowWorkerForm] = useState(false);
   const [workerRating, setWorkerRating] = useState(0);
+  const [hover, setHover] = useState(-1);
 
-  // Images for customer feedback
-  const feedbackImages = [
-    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-    "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-    "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-    "https://images.unsplash.com/photo-1590086782792-42dd2350140d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400"
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // Sample feedback data
+  const customerFeedback = [
+    {
+      name: "Sarah Johnson",
+      rating: 5,
+      comment: "Excellent service and support! The app made finding reliable workers so easy.",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      role: "Homeowner"
+    },
+    {
+      name: "Mike Chen",
+      rating: 5,
+      comment: "Outstanding platform! Found the perfect plumber within minutes.",
+      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      role: "Business Owner"
+    },
+    {
+      name: "Emma Davis",
+      rating: 4,
+      comment: "Great experience overall. Would love to see more categories added.",
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      role: "Freelancer"
+    }
   ];
 
-  // Images for workers feedback
-  const workerImages = [
-    "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-    "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-    "https://images.unsplash.com/photo-1607746882042-944635dfe10e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ix",
-    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=600",
-    "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=600"
+  const workerFeedback = [
+    {
+      name: "John Doe",
+      rating: 5,
+      comment: "This platform has helped me grow my client base significantly. Highly recommended!",
+      image: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      specialty: "Electrician"
+    },
+    {
+      name: "Maria Garcia",
+      rating: 5,
+      comment: "Professional platform with great clients. The payment system is very reliable.",
+      image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      specialty: "Plumber"
+    },
+    {
+      name: "David Smith",
+      rating: 4,
+      comment: "Good steady work. The rating system helps build trust with new clients.",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      specialty: "Carpenter"
+    }
   ];
 
-  // Auto-slide for customer feedback
+  // Auto-slide effects
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % feedbackImages.length);
-    }, 3000);
+      setCurrentSlide((prev) => (prev + 1) % customerFeedback.length);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [feedbackImages.length]);
+  }, [customerFeedback.length]);
 
-  // Auto-slide for workers feedback
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentWorkerSlide((prev) => (prev + 1) % workerImages.length);
-    }, 3000);
+      setCurrentWorkerSlide((prev) => (prev + 1) % workerFeedback.length);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [workerImages.length]);
+  }, [workerFeedback.length]);
 
   const handleSubmit = (e, isWorkerForm = false) => {
     e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    console.log(`${isWorkerForm ? 'Worker' : 'Customer'} Feedback:`, { ...data, rating: isWorkerForm ? workerRating : rating });
+    
+    // Here you would typically send to your backend
     alert(`Thank you for your ${isWorkerForm ? 'worker ' : ''}feedback!`);
+    
     if (isWorkerForm) {
       setShowWorkerForm(false);
       setWorkerRating(0);
@@ -58,171 +217,452 @@ const CustomerFeedback = () => {
     }
   };
 
+  const labels = {
+    1: 'Poor',
+    2: 'Fair',
+    3: 'Good',
+    4: 'Very Good',
+    5: 'Excellent',
+  };
+
   return (
-    <div className={styles.container}>
-      {/* Header Component */}
+    <Box sx={{ background: theme.palette.background.default, minHeight: "100vh" }}>
       <UniqueHeader user={user} setUser={setUser} />
 
-      {/* Customer Feedback Section */}
-      <div className={styles.mainSection}>
-        {/* Text Left */}
-        <div className={styles.textContent}>
-          <h2>
-            Customer <br />
-            <span>Feedback for the Application</span>
-          </h2>
-          <p>
-            ✨ We value your thoughts! Share your experience and help us serve you better.  
-            📝 Every feedback counts, your voice makes a difference.  
-            💡 Let us know what you loved and what we can improve!
-          </p>
-          <button className={styles.readMore} onClick={() => setShowForm(true)}>
-            Submit your Feedback
-          </button>
-        </div>
+      <Container maxWidth="xl">
+        {/* Customer Feedback Section */}
+        <StyledSection elevation={8}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Fade in timeout={1000}>
+                <Box sx={{ position: "relative", zIndex: 1 }}>
+                  <Typography 
+                    variant="h2" 
+                    component="h1" 
+                    gutterBottom 
+                    sx={{ 
+                      fontWeight: 700,
+                      background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                      backgroundClip: "text",
+                      WebkitBackgroundClip: "text",
+                      color: "transparent"
+                    }}
+                  >
+                    Customer Feedback
+                  </Typography>
+                  <Typography variant="h5" color="text.secondary" paragraph>
+                    Share your experience and help us serve you better
+                  </Typography>
+                  <Typography variant="body1" paragraph sx={{ mb: 3 }}>
+                    ✨ We value your thoughts! Every feedback counts in making our platform better. 
+                    Your voice makes a difference in improving services for everyone.
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      startIcon={<Person />}
+                      onClick={() => setShowForm(true)}
+                      sx={{
+                        background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                        borderRadius: 2,
+                        px: 4,
+                        py: 1.5
+                      }}
+                    >
+                      Submit Feedback
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      sx={{ borderRadius: 2, px: 4, py: 1.5 }}
+                    >
+                      View All Reviews
+                    </Button>
+                  </Box>
+                </Box>
+              </Fade>
+            </Grid>
 
-        {/* Slider Right */}
-        <div className={styles.sliderContainer}>
-          <div className={styles.slider}>
-            {feedbackImages.map((image, index) => (
-              <div
-                key={index}
-                className={`${styles.slide} ${index === currentSlide ? styles.active : ""}`}
-                style={{ backgroundImage: `url(${image})` }}
-              >
-                <div className={styles.slideContent}>
-                  <div className={styles.rating}>{"★".repeat(5)}</div>
-                  <p className={styles.feedbackText}>"Excellent service and support!"</p>
-                  <p className={styles.customerName}>- Sarah Johnson</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className={styles.sliderDots}>
-            {feedbackImages.map((_, index) => (
-              <button
-                key={index}
-                className={`${styles.dot} ${index === currentSlide ? styles.active : ""}`}
-                onClick={() => setCurrentSlide(index)}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+            <Grid item xs={12} md={6}>
+              <SlideContainer>
+                {customerFeedback.map((feedback, index) => (
+                  <Slide
+                    key={index}
+                    direction="left"
+                    in={index === currentSlide}
+                    timeout={500}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Box sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+                      <FeedbackCard>
+                        <FormatQuote sx={{ fontSize: 48, color: theme.palette.primary.main, mb: 2 }} />
+                        <Typography variant="body1" paragraph sx={{ fontStyle: "italic" }}>
+                          "{feedback.comment}"
+                        </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                          <Rating value={feedback.rating} readOnly />
+                          <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                            ({feedback.rating}.0)
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                          <FloatingAvatar
+                            src={feedback.image}
+                            sx={{ width: 60, height: 60 }}
+                          />
+                          <Box>
+                            <Typography variant="h6" fontWeight="bold">
+                              {feedback.name}
+                            </Typography>
+                            <Chip label={feedback.role} size="small" variant="outlined" />
+                          </Box>
+                        </Box>
+                      </FeedbackCard>
+                    </Box>
+                  </Slide>
+                ))}
+                
+                {/* Slide Indicators */}
+                <Box sx={{ position: "absolute", bottom: 16, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 1 }}>
+                  {customerFeedback.map((_, index) => (
+                    <Box
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: "50%",
+                        bgcolor: index === currentSlide ? "primary.main" : "grey.400",
+                        cursor: "pointer",
+                        transition: "all 0.3s ease",
+                        "&:hover": { bgcolor: "primary.light" }
+                      }}
+                    />
+                  ))}
+                </Box>
+              </SlideContainer>
+            </Grid>
+          </Grid>
+        </StyledSection>
 
-      {/* Scroll Prompt */}
-      <div className={styles.scrollPrompt}>
-        <span>👇👇 Scroll down to see our workers' feedback 👇👇</span>
-      </div>
+        {/* Scroll Prompt */}
+        <ScrollPrompt>
+          <Typography variant="h6" color="primary" gutterBottom>
+            👇 Scroll down to see workers' feedback 👇
+          </Typography>
+          <ArrowDownward sx={{ fontSize: 32, color: "primary.main" }} />
+        </ScrollPrompt>
 
-      {/* Workers Feedback Section */}
-      <div className={styles.workersSection}>
-        {/* Text Left */}
-        <div className={styles.workersTextContent}>
-          <h2>
-            Our <br />
-            <span>Workers' Effcient Feedback</span>
-          </h2>
-          <p>
-            🚀 Share your experience as a worker and let others know your journey.  
-            🛠️ Every insight matters – help us showcase your skills and dedication.  
-            🌟 Tell us what went well and what could make your work even better!
-          </p>
-          <button className={styles.readMore} onClick={() => setShowWorkerForm(true)}>
-            Submit your Feedback
-          </button>
-        </div>
+        {/* Workers Feedback Section */}
+        <StyledSection background={`linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`}>
+          <Grid container spacing={4} alignItems="center" direction={isMobile ? "column-reverse" : "row"}>
+            <Grid item xs={12} md={6}>
+              <SlideContainer>
+                {workerFeedback.map((feedback, index) => (
+                  <Slide
+                    key={index}
+                    direction="right"
+                    in={index === currentWorkerSlide}
+                    timeout={500}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Box sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+                      <FeedbackCard>
+                        <FormatQuote sx={{ fontSize: 48, color: theme.palette.secondary.main, mb: 2 }} />
+                        <Typography variant="body1" paragraph sx={{ fontStyle: "italic" }}>
+                          "{feedback.comment}"
+                        </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                          <Rating value={feedback.rating} readOnly />
+                          <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                            ({feedback.rating}.0)
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                          <FloatingAvatar
+                            src={feedback.image}
+                            sx={{ width: 60, height: 60 }}
+                          />
+                          <Box>
+                            <Typography variant="h6" fontWeight="bold">
+                              {feedback.name}
+                            </Typography>
+                            <Chip label={feedback.specialty} size="small" variant="outlined" color="secondary" />
+                          </Box>
+                        </Box>
+                      </FeedbackCard>
+                    </Box>
+                  </Slide>
+                ))}
+                
+                {/* Slide Indicators */}
+                <Box sx={{ position: "absolute", bottom: 16, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 1 }}>
+                  {workerFeedback.map((_, index) => (
+                    <Box
+                      key={index}
+                      onClick={() => setCurrentWorkerSlide(index)}
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: "50%",
+                        bgcolor: index === currentWorkerSlide ? "secondary.main" : "grey.400",
+                        cursor: "pointer",
+                        transition: "all 0.3s ease",
+                        "&:hover": { bgcolor: "secondary.light" }
+                      }}
+                    />
+                  ))}
+                </Box>
+              </SlideContainer>
+            </Grid>
 
-        {/* Slider Right */}
-        <div className={styles.workersSliderContainer}>
-          <div className={styles.slider}>
-            {workerImages.map((image, index) => (
-              <div
-                key={index}
-                className={`${styles.slide} ${index === currentWorkerSlide ? styles.active : ""}`}
-                style={{ backgroundImage: `url(${image})` }}
-              >
-                <div className={styles.slideContent}>
-                  <div className={styles.rating}>{"★".repeat(5)}</div>
-                  <p className={styles.feedbackText}>"Highly skilled and professional!"</p>
-                  <p className={styles.customerName}>- John Doe</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className={styles.sliderDots}>
-            {workerImages.map((_, index) => (
-              <button
-                key={index}
-                className={`${styles.dot} ${index === currentWorkerSlide ? styles.active : ""}`}
-                onClick={() => setCurrentWorkerSlide(index)}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+            <Grid item xs={12} md={6}>
+              <Fade in timeout={1000}>
+                <Box sx={{ position: "relative", zIndex: 1, textAlign: isMobile ? "center" : "right" }}>
+                  <Typography 
+                    variant="h2" 
+                    component="h1" 
+                    gutterBottom 
+                    sx={{ 
+                      fontWeight: 700,
+                      background: `linear-gradient(45deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
+                      backgroundClip: "text",
+                      WebkitBackgroundClip: "text",
+                      color: "transparent"
+                    }}
+                  >
+                    Workers' Feedback
+                  </Typography>
+                  <Typography variant="h5" color="text.secondary" paragraph>
+                    Share your experience as a professional
+                  </Typography>
+                  <Typography variant="body1" paragraph sx={{ mb: 3 }}>
+                    🚀 Your insights help us create better opportunities for workers. 
+                    Share your journey and help us improve the platform for professionals.
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-end" }}>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      startIcon={<Work />}
+                      onClick={() => setShowWorkerForm(true)}
+                      sx={{
+                        background: `linear-gradient(45deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
+                        borderRadius: 2,
+                        px: 4,
+                        py: 1.5
+                      }}
+                    >
+                      Share Experience
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      sx={{ borderRadius: 2, px: 4, py: 1.5, color: "white", borderColor: "white" }}
+                    >
+                      Worker Stories
+                    </Button>
+                  </Box>
+                </Box>
+              </Fade>
+            </Grid>
+          </Grid>
+        </StyledSection>
+      </Container>
 
       {/* Customer Feedback Modal */}
-      {showForm && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <button className={styles.closeBtn} onClick={() => setShowForm(false)}>✕</button>
-            <h3>Share Your Feedback</h3>
-            <form className={styles.feedbackForm} onSubmit={(e) => handleSubmit(e, false)}>
-              <input type="text" placeholder="Your Name" required />
-              <input type="email" placeholder="Your Email" required />
-              <textarea placeholder="Your Feedback about this Application" rows="4" required></textarea>
-              <textarea placeholder="What can we improve?" rows="3"></textarea>
-              <span className={styles.rateText}>Give your stars</span>
-              <div className={styles.ratingStars}>
-                {[1,2,3,4,5].map((star) => (
-                  <span
-                    key={star}
-                    className={`${styles.star} ${rating >= star ? styles.active : ""}`}
-                    onClick={() => setRating(star)}
+      <StyledModal open={showForm} onClose={() => setShowForm(false)}>
+        <Fade in={showForm}>
+          <ModalContent elevation={24}>
+            <IconButton
+              sx={{ position: "absolute", top: 8, right: 8 }}
+              onClick={() => setShowForm(false)}
+            >
+              <Close />
+            </IconButton>
+            
+            <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 3 }}>
+              Share Your Feedback
+            </Typography>
+            
+            <form onSubmit={(e) => handleSubmit(e, false)}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    name="name"
+                    label="Your Name"
+                    variant="outlined"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    name="email"
+                    type="email"
+                    label="Your Email"
+                    variant="outlined"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="feedback"
+                    label="Your Feedback"
+                    multiline
+                    rows={3}
+                    variant="outlined"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="improvements"
+                    label="What can we improve?"
+                    multiline
+                    rows={2}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography component="legend" gutterBottom>
+                    Rate your experience
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Rating
+                      name="rating"
+                      value={rating}
+                      onChange={(_, newValue) => setRating(newValue)}
+                      onChangeActive={(_, newHover) => setHover(newHover)}
+                      icon={<Star sx={{ fontSize: 32 }} />}
+                      emptyIcon={<StarBorder sx={{ fontSize: 32 }} />}
+                    />
+                    {rating !== null && (
+                      <Typography variant="body2">
+                        {labels[hover !== -1 ? hover : rating]}
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    sx={{ py: 1.5, borderRadius: 2 }}
                   >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <button type="submit" className={styles.submitBtn}>Submit</button>
+                    Submit Feedback
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
-          </div>
-        </div>
-      )}
+          </ModalContent>
+        </Fade>
+      </StyledModal>
 
-      {/* Workers Feedback Modal */}
-      {showWorkerForm && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <button className={styles.closeBtn} onClick={() => setShowWorkerForm(false)}>✕</button>
-            <h3>Share Worker Feedback</h3>
-            <form className={styles.feedbackForm} onSubmit={(e) => handleSubmit(e, true)}>
-              <input type="text" placeholder="Worker Name" required />
-              <input type="email" placeholder="Your Email" required />
-              <textarea placeholder="Feedback about the worker" rows="4" required></textarea>
-              <textarea placeholder="What can the worker improve?" rows="3"></textarea>
-              <span className={styles.rateText}>Give your stars</span>
-              <div className={styles.ratingStars}>
-                {[1,2,3,4,5].map((star) => (
-                  <span
-                    key={star}
-                    className={`${styles.star} ${workerRating >= star ? styles.active : ""}`}
-                    onClick={() => setWorkerRating(star)}
+      {/* Worker Feedback Modal */}
+      <StyledModal open={showWorkerForm} onClose={() => setShowWorkerForm(false)}>
+        <Fade in={showWorkerForm}>
+          <ModalContent elevation={24}>
+            <IconButton
+              sx={{ position: "absolute", top: 8, right: 8 }}
+              onClick={() => setShowWorkerForm(false)}
+            >
+              <Close />
+            </IconButton>
+            
+            <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 3 }}>
+              Share Worker Feedback
+            </Typography>
+            
+            <form onSubmit={(e) => handleSubmit(e, true)}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    name="workerName"
+                    label="Worker Name"
+                    variant="outlined"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    name="email"
+                    type="email"
+                    label="Your Email"
+                    variant="outlined"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="feedback"
+                    label="Feedback about the worker"
+                    multiline
+                    rows={3}
+                    variant="outlined"
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="improvements"
+                    label="What can the worker improve?"
+                    multiline
+                    rows={2}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography component="legend" gutterBottom>
+                    Rate the worker
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Rating
+                      name="workerRating"
+                      value={workerRating}
+                      onChange={(_, newValue) => setWorkerRating(newValue)}
+                      onChangeActive={(_, newHover) => setHover(newHover)}
+                      icon={<Star sx={{ fontSize: 32 }} />}
+                      emptyIcon={<StarBorder sx={{ fontSize: 32 }} />}
+                    />
+                    {workerRating !== null && (
+                      <Typography variant="body2">
+                        {labels[hover !== -1 ? hover : workerRating]}
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    sx={{ py: 1.5, borderRadius: 2 }}
                   >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <button type="submit" className={styles.submitBtn}>Submit</button>
+                    Submit Feedback
+                  </Button>
+                </Grid>
+              </Grid>
             </form>
-          </div>
-        </div>
-      )}
+          </ModalContent>
+        </Fade>
+      </StyledModal>
 
-      {/* Footer Component */}
       <Footer />
-    </div>
+    </Box>
   );
 };
 

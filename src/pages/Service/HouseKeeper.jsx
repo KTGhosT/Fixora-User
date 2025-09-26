@@ -1,8 +1,11 @@
-import React, { Component, useEffect, useRef, useState } from 'react';
+import React, { Component, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 class ErrorBoundary extends Component {
-  state = { hasError: false };
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
   static getDerivedStateFromError(error) {
     return { hasError: true };
@@ -42,20 +45,8 @@ const HouseKeeper = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll reviews every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const reviewCarousel = document.getElementById('reviewCarousel');
-      if (reviewCarousel) {
-        const nextButton = reviewCarousel.querySelector('.carousel-control-next');
-        if (nextButton) {
-          nextButton.click();
-        }
-      }
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Remove broken review carousel auto-scroll effect (no such carousel exists)
+  // (The original code tried to auto-scroll a non-existent review carousel.)
 
   // Initialize Bootstrap carousel after component mounts
   useEffect(() => {
@@ -70,24 +61,25 @@ const HouseKeeper = () => {
       };
     };
 
+    // Wait for window.bootstrap to be available before initializing
+    let cleanup = null;
     if (typeof window.bootstrap === 'undefined') {
-      loadBootstrapJS();
+      cleanup = loadBootstrapJS();
+    } else if (carouselRef.current && window.bootstrap) {
+      new window.bootstrap.Carousel(carouselRef.current, {
+        interval: false,
+        ride: false,
+      });
     }
 
-    if (carouselRef.current) {
-      const carouselElement = carouselRef.current;
-      if (carouselElement && typeof window.bootstrap !== 'undefined') {
-        new window.bootstrap.Carousel(carouselElement, {
-          interval: false,
-          ride: false,
-        });
-      }
-    }
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, []);
 
   return (
     <ErrorBoundary>
-      {/* Bootstrap CSS */
+      {/* Bootstrap CSS */}
       <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet"

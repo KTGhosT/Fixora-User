@@ -166,7 +166,7 @@ const RegisterPage = () => {
     });
 
     try {
-      const response = await axiosInstance.post('/worker/register', formDataToSend, {
+      const response = await axiosInstance.post('api/worker/register', formDataToSend, {
         headers: { 'Content-Type': 'application/json' },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);

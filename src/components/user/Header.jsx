@@ -6,6 +6,7 @@ const UniqueHeader = ({ user, setUser }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
+  const [isFloating, setIsFloating] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
@@ -35,6 +36,15 @@ const UniqueHeader = ({ user, setUser }) => {
     };
   }, [setUser]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setIsFloating(true), 1000);
+    const stopTimer = setTimeout(() => setIsFloating(false), 5000);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(stopTimer);
+    };
+  }, []);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     if (isServicesDropdownOpen) setIsServicesDropdownOpen(false);
@@ -49,18 +59,32 @@ const UniqueHeader = ({ user, setUser }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    // Clear all authentication-related data
+    localStorage.removeItem('auth_token');  // ✅ Correct key
+    localStorage.removeItem('token');       // Keep for backward compatibility
     localStorage.removeItem('user');
     localStorage.removeItem('role');
+    localStorage.removeItem('email');       // Clear remembered email
+    
+    // Clear user state
     setUser(null);
+    
+    // Navigate to login
+    navigate('/login');
+    closeMobileMenu();
+  };
+
+  // Handler for login/signup button
+  const handleLoginSignup = (e) => {
+    e.preventDefault();
     navigate('/login');
     closeMobileMenu();
   };
 
   return (
     <>
-      {/* Main Header */}
-      <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
+      {/* Floating Header with Clipped Corners */}
+      <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''} ${isFloating ? styles.animateFloat : ''}`}>
         <div className={styles.headerContent}>
           {/* Logo */}
           <div className={styles.logo} onClick={() => navigate('/')}>
@@ -133,7 +157,6 @@ const UniqueHeader = ({ user, setUser }) => {
                 </div>
               </li>
               <li><a href="#about" className={styles.navLink} onClick={closeMobileMenu}>ABOUT</a></li>
-              <li><a href="#blog" className={styles.navLink} onClick={closeMobileMenu}>BLOG</a></li>
               <li><a href="/feedback" className={styles.navLink} onClick={closeMobileMenu}>FEEDBACK CENTER</a></li>
             </ul>
 
@@ -166,19 +189,15 @@ const UniqueHeader = ({ user, setUser }) => {
                 </div>
               ) : (
                 <div className={styles.floatingAuthButton}>
-                  <a href="/login" className={styles.authButton}>
+                  <a
+                    href="/login"
+                    className={styles.authButton}
+                    onClick={handleLoginSignup}
+                  >
                     <span className={styles.authButtonText}>
-                      <span>LOGIN</span>
+                      <span>LOGIN / SIGNUP</span>
                       <svg className={styles.authButtonIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                  </a>
-                  <a href="/signup" className={styles.authButtonSecondary}>
-                    <span className={styles.authButtonText}>
-                      <span>SIGN UP</span>
-                      <svg className={styles.authButtonIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </span>
                   </a>
@@ -200,6 +219,9 @@ const UniqueHeader = ({ user, setUser }) => {
         </div>
       </header>
     </>
+
+
+
   );
 };
 

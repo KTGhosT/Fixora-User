@@ -1,0 +1,38 @@
+/* Global styles for floating header alignment */
+
+/* Remove default margins and padding that create white space */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove any default margins from html */
+html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure main app content is properly positioned */
+.App {
+  position: relative;
+  z-index: 1;
+}
+
+/* Specific styling for hero with floating header */
+.hero-with-floating-header {
+  margin-top: 0;
+  padding-top: 140px !important; /* Increased to clear the floating header */
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .hero-with-floating-header {
+    padding-top: 160px !important; /* Increased for mobile to clear header */
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}

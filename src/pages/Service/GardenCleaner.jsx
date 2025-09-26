@@ -1,8 +1,11 @@
-import React, { Component, useEffect, useRef, useState } from 'react';
+import React, { Component, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 class ErrorBoundary extends Component {
-  state = { hasError: false };
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
   static getDerivedStateFromError(error) {
     return { hasError: true };
@@ -42,21 +45,6 @@ const GardenCleaner = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll reviews every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const reviewCarousel = document.getElementById('reviewCarousel');
-      if (reviewCarousel) {
-        const nextButton = reviewCarousel.querySelector('.carousel-control-next');
-        if (nextButton) {
-          nextButton.click();
-        }
-      }
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   // Initialize Bootstrap carousel after component mounts
   useEffect(() => {
     const loadBootstrapJS = () => {
@@ -87,7 +75,7 @@ const GardenCleaner = () => {
 
   return (
     <ErrorBoundary>
-      {/* Bootstrap CSS */
+      {/* Bootstrap CSS */}
       <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet"

@@ -20,6 +20,7 @@ const Homepage = lazy(() => import("./pages/Homepage"));
 const Services = lazy(() => import("./pages/Services"));
 const UniqueHeader = lazy(() => import("./components/user/Header"));
 const Booking = lazy(() => import("./pages/Booking"));
+const BookingStatus = lazy(() => import("./pages/BookingStatus"));
 const Account = lazy(() => import("./pages/user/Account"));
 const CustomerFeedback = lazy(() => import("./pages/CustomerFeedback"));
 
@@ -30,6 +31,7 @@ const Carpenter = lazy(() => import("./pages/Service/Carpenter"));
 const GardenCleaner = lazy(() => import("./pages/Service/GardenCleaner"));
 const HouseCleaning = lazy(() => import("./pages/Service/HouseKeeper"));
 const DeviceRepair = lazy(() => import("./pages/Service/DeviceRepair"));
+const PhoneLogin = lazy(() => import("./PhoneLogin"));
 
 // Header wrapper for all public pages except login and signup
 function HeaderWrapper({ user, setUser }) {
@@ -108,6 +110,7 @@ function App() {
           <Route path="/user/account" element={<Suspense fallback={<LoadingSpinner />}><Account user={user} setUser={setUser} /></Suspense>} />
           <Route path="/feedback" element={<Suspense fallback={<LoadingSpinner />}><CustomerFeedback /></Suspense>} />
           <Route path="/booking" element={<Suspense fallback={<LoadingSpinner />}><Booking /></Suspense>} />
+          <Route path="/booking-status/:id" element={<Suspense fallback={<LoadingSpinner />}><BookingStatus /></Suspense>} />
 
           {/* Worker Routes */}
           <Route
@@ -158,8 +161,11 @@ function App() {
             <Route path="manage-services" element={<ManageServices />} />
           </Route>
 
+          <Route path="/phone-login" element={<Suspense fallback={<LoadingSpinner />}><PhoneLogin setUser={setUser} /></Suspense>} />
           {/* Catch-all */}
+
           <Route path="*" element={<Navigate to="/" />} />
+          
         </Routes>
       </div>
     </Router>

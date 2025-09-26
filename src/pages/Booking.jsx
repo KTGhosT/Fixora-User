@@ -1,10 +1,10 @@
 // src/pages/BookWorkerPage.jsx
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../services/api.jsx"; // path to your instance file
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import styles from "./Booking.module.css";
-
 import "leaflet/dist/leaflet.css";
 
 // Custom marker icons
@@ -16,9 +16,13 @@ const customIcon = new L.Icon({
 });
 
 const BookWorkerPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    serviceCategoryId: "",
+    specialInstructions: "",
     description: "",
-    scheduledDateTime: "",
+    scheduledDate: "", // Separate date field
+    scheduledTime: "", // Separate time field
     latitude: "",
     longitude: "",
     address: "",
@@ -30,14 +34,30 @@ const BookWorkerPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [serviceCategories, setServiceCategories] = useState([]);
 
   // Ref for map instance
   const mapRef = useRef(null);
 
+  // Service categories data
+  const serviceCategoriesData = [
+    { id: 1, name: "Electrician", description: "Electrical repairs and installations" },
+    { id: 2, name: "Plumber", description: "Plumbing repairs and installations" },
+    { id: 3, name: "House Cleaner", description: "House cleaning and maintenance" },
+    { id: 4, name: "Garden Cleaner", description: "Garden and lawn maintenance" },
+    { id: 5, name: "Carpenter", description: "Furniture and woodwork repairs" },
+    { id: 6, name: "Device Repair", description: "Electronic device repairs" },
+  ];
+
+  // Load service categories on component mount
+  useEffect(() => {
+    setServiceCategories(serviceCategoriesData);
+  }, []);
+
   // Reverse geocode to get address from lat/lng
   const fetchAddress = async (lat, lng) => {
     try {
-      const res = await axios.get(
+      const res = await axiosInstance.get(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
       );
       if (res.data && res.data.display_name) {
@@ -131,10 +151,14 @@ const BookWorkerPage = () => {
   // Validate form
   const validateForm = () => {
     const newErrors = {};
+    if (!formData.serviceCategoryId)
+      newErrors.serviceCategoryId = "Please select a service category.";
     if (!formData.description.trim())
       newErrors.description = "Description is required.";
-    if (!formData.scheduledDateTime)
-      newErrors.scheduledDateTime = "Scheduled date and time is required.";
+    if (!formData.scheduledDate)
+      newErrors.scheduledDate = "Scheduled date is required.";
+    if (!formData.scheduledTime)
+      newErrors.scheduledTime = "Scheduled time is required.";
     if (!formData.latitude || !formData.longitude)
       newErrors.location = "Location is required.";
     if (!formData.address) newErrors.address = "Address is required.";
@@ -143,48 +167,82 @@ const BookWorkerPage = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setIsSubmitting(true);
-    setSuccessMessage("");
+// Update your handleSubmit function in Booking.jsx
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
+  setIsSubmitting(true);
+  setSuccessMessage("");
 
-    try {
-      const token = localStorage.getItem("auth_token");
-      const data = new FormData();
-      data.append("description", formData.description);
-      data.append("scheduled_at", formData.scheduledDateTime);
-      data.append("latitude", formData.latitude);
-      data.append("longitude", formData.longitude);
-      data.append("address", formData.address);
-      if (formData.issueImage) data.append("issue_image", formData.issueImage);
+  try {
+    const data = new FormData();
+    data.append("serviceCategoryId", formData.serviceCategoryId);
+    data.append("description", formData.description);
+    data.append("specialInstructions", formData.specialInstructions);
 
-      await axios.post("/api/bookings", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    // Send both separate fields AND combined bookingDate for backend compatibility
+    data.append("scheduledDate", formData.scheduledDate);
+    data.append("scheduledTime", formData.scheduledTime);
+    
+    // Also send the combined bookingDate that the backend expects
+    const bookingDate = `${formData.scheduledDate} ${formData.scheduledTime}`;
+    data.append("bookingDate", bookingDate);
 
-      setSuccessMessage("Worker booked successfully!");
-      setFormData({
-        description: "",
-        scheduledDateTime: "",
-        latitude: formData.latitude,
-        longitude: formData.longitude,
-        address: formData.address,
-        locationError: null,
-        issueImage: null,
-      });
-      setImagePreview(null);
-    } catch (error) {
-      console.error("Booking error:", error);
-      setErrors({ general: "Something went wrong. Please try again." });
-    } finally {
-      setIsSubmitting(false);
+    data.append("latitude", formData.latitude);
+    data.append("longitude", formData.longitude);
+    data.append("address", formData.address);
+
+    if (formData.issueImage) data.append("image", formData.issueImage);
+
+    // Debug: Log what we're sending
+    console.log("Form data being sent:");
+    for (let [key, value] of data.entries()) {
+      console.log(key, value);
     }
-  };
+
+    const response = await axiosInstance.post("/api/bookings", data);
+    console.log("Success response:", response.data);
+
+    // setSuccessMessage("Worker booked successfully!");
+
+    const { booking, id: topLevelId, bookingId: topLevelBookingId } = response.data || {};
+    const bookingId = (booking && (booking.id ?? booking.bookingId)) ?? topLevelId ?? topLevelBookingId;
+    if (!bookingId) {
+      throw new Error("Booking ID missing from response");
+    }
+    navigate(`/booking-status/${bookingId}`);
+    
+    setFormData({
+      serviceCategoryId: "",
+      specialInstructions: "",
+      description: "",
+      scheduledDate: "",
+      scheduledTime: "",
+      latitude: formData.latitude,
+      longitude: formData.longitude,
+      address: formData.address,
+      locationError: null,
+      issueImage: null,
+    });
+    setImagePreview(null);
+  } catch (err) {
+    console.error("Full error:", err);
+    console.error("Error response:", err.response?.data);
+    console.error("Error status:", err.response?.status);
+    
+    if (err.response?.data?.errors) {
+      console.error("Validation errors:", JSON.stringify(err.response.data.errors, null, 2));
+      setErrors(err.response.data.errors);
+    } else {
+      setErrors({ general: err.response?.data?.message || "Something went wrong. Please try again." });
+    }
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+  
+  
+  
 
   // Handler for "Relocate Me" button
   const handleRelocateMe = () => {
@@ -208,7 +266,7 @@ const BookWorkerPage = () => {
             mapRef.current.setView([latitude, longitude], mapRef.current.getZoom());
           }
         },
-        (error) => {
+        (error) => { 
           setFormData((prev) => ({
             ...prev,
             locationError:
@@ -240,9 +298,30 @@ const BookWorkerPage = () => {
       )}
 
       <form onSubmit={handleSubmit}>
+        {/* Service Category Selection */}
+        <div className={styles["form-group"]}>
+          <label>Service Category *</label>
+          <select
+            name="serviceCategoryId"
+            value={formData.serviceCategoryId}
+            onChange={handleChange}
+            className={styles["form-control"]}
+          >
+            <option value="">Select a service category...</option>
+            {serviceCategories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name} - {category.description}
+              </option>
+            ))}
+          </select>
+          {errors.serviceCategoryId && (
+            <div className={styles["text-danger"]}>{errors.serviceCategoryId}</div>
+          )}
+        </div>
+
         {/* Description */}
         <div className={styles["form-group"]}>
-          <label>Description of Work</label>
+          <label>Description of Work *</label>
           <textarea
             name="description"
             value={formData.description}
@@ -254,6 +333,19 @@ const BookWorkerPage = () => {
           {errors.description && (
             <div className={styles["text-danger"]}>{errors.description}</div>
           )}
+        </div>
+
+        {/* Special Instructions */}
+        <div className={styles["form-group"]}>
+          <label>Special Instructions (Optional)</label>
+          <textarea
+            name="specialInstructions"
+            value={formData.specialInstructions}
+            onChange={handleChange}
+            rows="3"
+            className={styles["form-control"]}
+            placeholder="Any special requirements or instructions for the worker..."
+          />
         </div>
 
         {/* Image Upload */}
@@ -276,25 +368,44 @@ const BookWorkerPage = () => {
         </div>
 
         {/* Scheduled Date & Time */}
-        <div className={styles["form-group"]}>
-          <label>Schedule Date & Time</label>
-          <input
-            type="datetime-local"
-            name="scheduledDateTime"
-            value={formData.scheduledDateTime}
-            onChange={handleChange}
-            className={styles["form-control"]}
-          />
-          {errors.scheduledDateTime && (
-            <div className={styles["text-danger"]}>
-              {errors.scheduledDateTime}
-            </div>
-          )}
-        </div>
+        {/* Update your form JSX - replace the datetime-local input with separate fields */}
+
+{/* Scheduled Date & Time - Separate Fields */}
+<div className={styles["form-group"]}>
+  <label>Schedule Date *</label>
+  <input
+    type="date"
+    name="scheduledDate"
+    value={formData.scheduledDate}
+    onChange={handleChange}
+    className={styles["form-control"]}
+  />
+  {errors.scheduledDate && (
+    <div className={styles["text-danger"]}>
+      {errors.scheduledDate}
+    </div>
+  )}
+</div>
+
+<div className={styles["form-group"]}>
+  <label>Schedule Time *</label>
+  <input
+    type="time"
+    name="scheduledTime"
+    value={formData.scheduledTime}
+    onChange={handleChange}
+    className={styles["form-control"]}
+  />
+  {errors.scheduledTime && (
+    <div className={styles["text-danger"]}>
+      {errors.scheduledTime}
+    </div>
+  )}
+</div>
 
         {/* Address */}
         <div className={styles["form-group"]}>
-          <label>Your Address</label>
+          <label>Your Address *</label>
           <input
             type="text"
             name="address"
