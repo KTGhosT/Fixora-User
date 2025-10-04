@@ -8,6 +8,7 @@ import Happyclients from '../components/user/Happyclients';
 import Banner from '../components/user/Banner';
 import Chatbot from '../pages/Chatbot';
 
+
 const UserLayout = ({ children }) => {
   return (
     <>

@@ -14,6 +14,8 @@ const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
 const ManageServices = lazy(() => import("./pages/admin/ManageServices"));
+const ManageWorkers = lazy(() => import("./pages/admin/ManageWorkers"));
+const ManageBookings = lazy(() => import("./pages/admin/ManageBookings"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const Homepage = lazy(() => import("./pages/Homepage"));
@@ -158,13 +160,25 @@ function App() {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="manage-users" element={<ManageUsers />} />
+            <Route path="manage-workers" element={<ManageWorkers />} />
             <Route path="manage-services" element={<ManageServices />} />
+            <Route path="manage-bookings" element={<ManageBookings />} />
           </Route>
 
           <Route path="/phone-login" element={<Suspense fallback={<LoadingSpinner />}><PhoneLogin setUser={setUser} /></Suspense>} />
           {/* Catch-all */}
 
           <Route path="*" element={<Navigate to="/" />} />
+
+
+          <Route
+            path="/test-notification"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                {React.createElement(lazy(() => import("./components/test-notification")))}
+              </Suspense>
+            }
+          />
           
         </Routes>
       </div>
