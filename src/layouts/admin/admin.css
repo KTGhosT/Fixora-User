@@ -1,0 +1,297 @@
+/* AdminDashboard.css */
+.admin-dashboard {
+  display: flex;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* App Bar Styles */
+.app-bar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1) !important;
+  z-index: 1300;
+}
+
+.menu-button {
+  margin-right: 16px;
+}
+
+.brand-text {
+  flex-grow: 1;
+  font-weight: 700 !important;
+  letter-spacing: -0.5px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.avatar:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.1);
+}
+
+/* Drawer Styles */
+.drawer {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.mobile-drawer .MuiDrawer-paper {
+  width: 280px;
+  border-right: none;
+  background: linear-gradient(180deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+}
+
+.desktop-drawer .MuiDrawer-paper {
+  width: 280px;
+  border-right: none;
+  background: linear-gradient(180deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+  position: relative;
+  height: 100vh;
+}
+
+.drawer-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.drawer-header {
+  padding: 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.logo {
+  font-weight: 700 !important;
+  text-align: center;
+  color: white !important;
+  letter-spacing: -0.5px;
+}
+
+.nav-list {
+  padding: 16px 8px;
+  flex-grow: 1;
+}
+
+.nav-item {
+  border-radius: 12px !important;
+  margin: 4px 8px !important;
+  padding: 12px 16px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid transparent;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-icon {
+  color: inherit !important;
+  min-width: 40px !important;
+}
+
+.nav-item .MuiListItemText-primary {
+  font-weight: 500 !important;
+  font-size: 0.95rem;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex-grow: 1;
+  padding: 0;
+  background-color: #f5f7fa;
+}
+
+.toolbar-spacer {
+  min-height: 64px;
+}
+
+.dashboard-overview,
+.section-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  color: #2c3e50 !important;
+  font-weight: 700 !important;
+  margin-bottom: 24px !important;
+  letter-spacing: -0.5px;
+}
+
+/* Stats Cards */
+.stat-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  padding: 24px !important;
+  gap: 16px;
+}
+
+.stat-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-weight: 700 !important;
+  color: #2c3e50 !important;
+  margin-bottom: 4px !important;
+}
+
+.stat-title {
+  color: #7f8c8d !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem !important;
+}
+
+/* Content Paper */
+.content-paper {
+  padding: 32px;
+  border-radius: 16px !important;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-paper .MuiTypography-root {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-overview,
+  .section-container {
+    padding: 16px;
+  }
+  
+  .stat-content {
+    padding: 16px !important;
+  }
+  
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .desktop-drawer {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-drawer {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar */
+.drawer-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.drawer-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.drawer-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.drawer-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Animation Classes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-overview,
+.section-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Loading States */
+.stat-card.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

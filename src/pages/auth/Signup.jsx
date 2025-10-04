@@ -280,7 +280,7 @@ function Signup() {
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                
                 </button>
                 
                 {/* Password Strength Meter */}
@@ -323,7 +323,7 @@ function Signup() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
-                  {showConfirmPassword ? "🙈" : "👁️"}
+                
                 </button>
                 
                 {/* Password Match Indicator */}

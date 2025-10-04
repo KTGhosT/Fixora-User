@@ -6,6 +6,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import styles from "./Booking.module.css";
 import "leaflet/dist/leaflet.css";
+import { notificationService } from "../services/notifications";
 
 // Custom marker icons
 const customIcon = new L.Icon({
@@ -52,6 +53,20 @@ const BookWorkerPage = () => {
   // Load service categories on component mount
   useEffect(() => {
     setServiceCategories(serviceCategoriesData);
+  }, []);
+
+  // Initialize notification service
+  useEffect(() => {
+    const initializeNotifications = async () => {
+      try {
+        await notificationService.initialize();
+        console.log("Notification service initialized");
+      } catch (error) {
+        console.warn("Failed to initialize notification service:", error);
+      }
+    };
+    
+    initializeNotifications();
   }, []);
 
   // Reverse geocode to get address from lat/lng
@@ -203,13 +218,30 @@ const handleSubmit = async (e) => {
     const response = await axiosInstance.post("/api/bookings", data);
     console.log("Success response:", response.data);
 
-    // setSuccessMessage("Worker booked successfully!");
-
     const { booking, id: topLevelId, bookingId: topLevelBookingId } = response.data || {};
     const bookingId = (booking && (booking.id ?? booking.bookingId)) ?? topLevelId ?? topLevelBookingId;
     if (!bookingId) {
       throw new Error("Booking ID missing from response");
     }
+
+    // Send push notification for successful booking
+    try {
+      const bookingData = {
+        id: bookingId,
+        serviceCategoryId: formData.serviceCategoryId,
+        bookingDate: bookingDate,
+        description: formData.description,
+        address: formData.address
+      };
+      
+      await notificationService.sendBookingConfirmation(bookingData);
+      console.log("Push notification sent successfully");
+    } catch (notificationError) {
+      console.warn("Failed to send push notification:", notificationError);
+      // Don't fail the booking if notification fails
+    }
+
+    setSuccessMessage("Worker booked successfully! Check your notifications for confirmation.");
     navigate(`/booking-status/${bookingId}`);
     
     setFormData({

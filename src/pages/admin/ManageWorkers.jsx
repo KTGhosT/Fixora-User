@@ -6,78 +6,77 @@ import {
 } from 'material-react-table';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, IconButton, Tooltip } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Refresh as RefreshIcon } from '@mui/icons-material';
-import { fetchUsersApi, createUserApi, updateUserApi, deleteUserApi } from '../../services/users';
+import { fetchWorkersApi, updateWorkerApi, deleteWorkerApi, verifyWorkerApi, setWorkerAvailabilityApi } from '../../services/workers';
 
-function ManageUsers() {
-  const [users, setUsers] = useState([]);
-  const [formData, setFormData] = useState({ name: "", email: "", role: "" });
+function ManageWorkers() {
+  const [workers, setWorkers] = useState([]);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", service: "", availability: "available" });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+  const [editingWorker, setEditingWorker] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch users on load
   useEffect(() => {
-    fetchUsers();
+    fetchWorkers();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchWorkers = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await fetchUsersApi();
-      setUsers(Array.isArray(data) ? data : []);
+      const data = await fetchWorkersApi();
+      setWorkers(Array.isArray(data) ? data : []);
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || 'Failed to fetch users');
+      setError(err?.response?.data?.message || err?.message || 'Failed to fetch workers');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle form input
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Add or Update User
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
-      if (editingUser) {
-        await updateUserApi(editingUser.id, formData);
-      } else {
-        await createUserApi(formData);
+      if (editingWorker) {
+        await updateWorkerApi(editingWorker.id, formData);
       }
-      await fetchUsers();
-      setFormData({ name: "", email: "", role: "" });
+      await fetchWorkers();
+      setFormData({ name: "", email: "", phone: "", service: "", availability: "available" });
       setIsModalOpen(false);
-      setEditingUser(null);
+      setEditingWorker(null);
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || 'Failed to save user');
+      setError(err?.response?.data?.message || err?.message || 'Failed to save worker');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Edit User
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setFormData({ name: user.name, email: user.email, role: user.role || "" });
+  const handleEdit = (worker) => {
+    setEditingWorker(worker);
+    setFormData({
+      name: worker.name || "",
+      email: worker.email || "",
+      phone: worker.phone || "",
+      service: worker.service || "",
+      availability: worker.availability || "available",
+    });
     setIsModalOpen(true);
   };
 
-  // Delete User
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    if (!window.confirm("Are you sure you want to delete this worker?")) return;
     setIsLoading(true);
     setError(null);
     try {
-      await deleteUserApi(id);
-      setUsers(users.filter((user) => user.id !== id));
+      await deleteWorkerApi(id);
+      setWorkers(workers.filter((w) => w.id !== id));
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || 'Failed to delete user');
+      setError(err?.response?.data?.message || err?.message || 'Failed to delete worker');
     } finally {
       setIsLoading(false);
     }
@@ -87,12 +86,14 @@ function ManageUsers() {
     { accessorKey: 'id', header: '#', size: 60 },
     { accessorKey: 'name', header: 'Name' },
     { accessorKey: 'email', header: 'Email' },
-    { accessorKey: 'role', header: 'Role', Cell: ({ cell }) => cell.getValue() || 'User' },
+    { accessorKey: 'phone', header: 'Phone' },
+    { accessorKey: 'service', header: 'Service' },
+    { accessorKey: 'availability', header: 'Availability' },
   ], []);
 
   const table = useMaterialReactTable({
     columns,
-    data: users,
+    data: workers,
     state: { isLoading },
     enableRowActions: true,
     positionActionsColumn: 'last',
@@ -101,6 +102,11 @@ function ManageUsers() {
         <Tooltip title="Edit">
           <IconButton size="small" onClick={() => handleEdit(row.original)}>
             <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Verify">
+          <IconButton size="small" color="primary" onClick={async () => { setIsLoading(true); try { await verifyWorkerApi(row.original.id); await fetchWorkers(); } catch (err) { setError(err?.response?.data?.message || err?.message || 'Failed to verify worker'); } finally { setIsLoading(false); }}}>
+            <span className="material-icons" style={{ fontSize: 18 }}>verified</span>
           </IconButton>
         </Tooltip>
         <Tooltip title="Delete">
@@ -112,10 +118,7 @@ function ManageUsers() {
     ),
     renderTopToolbarCustomActions: () => (
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={() => { setFormData({ name: "", email: "", role: "" }); setEditingUser(null); setError(null); setIsModalOpen(true); }}>
-          Add User
-        </Button>
-        <Button variant="outlined" size="small" startIcon={<RefreshIcon />} onClick={fetchUsers} disabled={isLoading}>
+        <Button variant="outlined" size="small" startIcon={<RefreshIcon />} onClick={fetchWorkers} disabled={isLoading}>
           Refresh
         </Button>
       </Box>
@@ -128,7 +131,7 @@ function ManageUsers() {
 
   return (
     <div className={styles.manageUsers}>
-      <h2 className="mb-3">Manage Users</h2>
+      <h2 className="mb-3">Manage Workers</h2>
 
       {error && (
         <div className="alert alert-danger mb-3" role="alert">
@@ -140,22 +143,23 @@ function ManageUsers() {
       <MaterialReactTable table={table} />
 
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>{editingUser ? 'Edit User' : 'Add New User'}</DialogTitle>
+        <DialogTitle>{editingWorker ? 'Edit Worker' : 'Add New Worker'}</DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <TextField label="Name" name="name" value={formData.name} onChange={handleChange} required fullWidth />
               <TextField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required fullWidth />
-              <TextField select label="Role" name="role" value={formData.role} onChange={handleChange} required fullWidth>
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="user">User</MenuItem>
-                <MenuItem value="worker">Worker</MenuItem>
+              <TextField label="Phone" name="phone" value={formData.phone} onChange={handleChange} required fullWidth />
+              <TextField label="Service" name="service" value={formData.service} onChange={handleChange} required fullWidth />
+              <TextField select label="Availability" name="availability" value={formData.availability} onChange={handleChange} required fullWidth>
+                <MenuItem value="available">Available</MenuItem>
+                <MenuItem value="unavailable">Unavailable</MenuItem>
               </TextField>
             </Box>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setIsModalOpen(false)} disabled={isLoading}>Cancel</Button>
-            <Button type="submit" variant="contained" disabled={isLoading}>{isLoading ? 'Saving...' : editingUser ? 'Update' : 'Add'}</Button>
+            <Button type="submit" variant="contained" disabled={isLoading}>{isLoading ? 'Saving...' : editingWorker ? 'Update' : 'Add'}</Button>
           </DialogActions>
         </form>
       </Dialog>
@@ -163,4 +167,6 @@ function ManageUsers() {
   );
 }
 
-export default ManageUsers;
+export default ManageWorkers;
+
+

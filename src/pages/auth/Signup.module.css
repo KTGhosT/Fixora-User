@@ -215,7 +215,8 @@
 
 .inputField {
   width: 100%;
-  padding: 15px 18px;
+  /* add extra right padding so text doesn't sit under the toggle button */
+  padding: 15px 48px 15px 18px;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   font-size: 1rem;
@@ -285,6 +286,8 @@
   cursor: pointer;
   padding: 4px;
   transition: color 0.3s ease;
+  /* ensure the button sits above the input for clickability */
+  z-index: 3;
 }
 
 .passwordToggle:hover {

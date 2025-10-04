@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Services.module.css";
 import { Hammer, Building2, Ruler } from "lucide-react";
 
+
 const ServicesSection = () => {
   const services = [
     {
@@ -37,6 +38,7 @@ const ServicesSection = () => {
         <p className={styles.subtitle}>What We Do</p>
         <h2 className={styles.title}>Our Fixora Services</h2>
       </div>
+      
 
       <div className={styles.container}>
         {/* Left Side - Image */}
