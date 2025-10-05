@@ -55,7 +55,7 @@ function HeaderWrapper({ user, setUser }) {
   const publicHeaderPaths = [
     "/", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
     "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
-    , "/feedback", "/booking"
+    "/feedback", "/booking"
   ];
   // If the path starts with /worker or /admin, don't show header
   const isWorkerOrAdmin = location.pathname.startsWith("/worker") || location.pathname.startsWith("/admin");
@@ -147,9 +147,6 @@ function App() {
             element={
               // Support dashboard with worker id param
               <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
-              <ProtectedRoute user={user} roles={["worker", "admin"]}>
-                <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
-              </ProtectedRoute>
             }
           />
           <Route
@@ -247,6 +244,9 @@ function App() {
           
           {/* Catch-all route - must be last */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
+
+          
         </Routes>
       </div>
     </Router>
