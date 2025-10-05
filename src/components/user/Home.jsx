@@ -2,27 +2,22 @@ import React, { useState, useEffect } from "react";
 import { 
   Box, 
   Typography, 
-  Button, 
   Container, 
-  Grid, 
-  IconButton,
+  Grid,
   useTheme,
   useMediaQuery
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ArrowForward, NavigateBefore, NavigateNext } from "@mui/icons-material";
+import { 
+  Star, 
+  Security, 
+  SupportAgent, 
+  Schedule 
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import "./HomeHero.css";
 
 // Styled Components
-const HeroContainer = styled(Box)(({ theme }) => ({
-  minHeight: "100vh",
-  position: "relative",
-  overflow: "hidden",
-  display: "flex",
-  alignItems: "center",
-  background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-}));
-
 const ContentWrapper = styled(Container)(({ theme }) => ({
   position: "relative",
   zIndex: 10,
@@ -30,38 +25,7 @@ const ContentWrapper = styled(Container)(({ theme }) => ({
   paddingBottom: theme.spacing(8),
 }));
 
-const GradientButton = styled(Button)(({ theme }) => ({
-  background: "linear-gradient(45deg, #FF6B35 0%, #FF8E53 50%, #FF6B35 100%)",
-  backgroundSize: "200% 200%",
-  border: 0,
-  borderRadius: "50px",
-  color: "white",
-  fontWeight: "bold",
-  padding: "12px 32px",
-  textTransform: "none",
-  fontSize: "16px",
-  position: "relative",
-  overflow: "hidden",
-  transition: "all 0.4s ease",
-  "&:hover": {
-    transform: "translateY(-2px)",
-    boxShadow: "0 10px 25px rgba(255, 107, 53, 0.4)",
-  },
-}));
-
-const CarouselButton = styled(IconButton)(({ theme }) => ({
-  background: "rgba(255, 255, 255, 0.1)",
-  backdropFilter: "blur(10px)",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  color: "white",
-  "&:hover": {
-    background: "rgba(255, 107, 53, 0.8)",
-    transform: "scale(1.1)",
-  },
-  transition: "all 0.3s ease",
-}));
-
-const StatCard = styled(Box)(({ theme }) => ({
+const FeatureCard = styled(Box)(({ theme }) => ({
   background: "rgba(255, 255, 255, 0.05)",
   backdropFilter: "blur(10px)",
   border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -72,30 +36,36 @@ const StatCard = styled(Box)(({ theme }) => ({
   "&:hover": {
     transform: "translateY(-5px)",
     borderColor: "rgba(255, 107, 53, 0.5)",
+    background: "rgba(255, 255, 255, 0.08)",
   },
 }));
 
 const ModernHero = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
 
-  const slides = [
+  const features = [
     {
-      image: "/api/placeholder/1200/800",
-      title: "Professional Home Services",
-      subtitle: "Expert care for your home"
+      icon: <Star />,
+      title: "Premium Quality",
+      description: "5-star rated services"
     },
     {
-      image: "/api/placeholder/1200/800",
-      title: "Skilled Technicians",
-      subtitle: "Certified professionals at your service"
+      icon: <Security />,
+      title: "Verified Experts",
+      description: "Background checked"
     },
     {
-      image: "/api/placeholder/1200/800",
-      title: "24/7 Availability",
-      subtitle: "Whenever you need us"
+      icon: <SupportAgent />,
+      title: "24/7 Support",
+      description: "Always available"
+    },
+    {
+      icon: <Schedule />,
+      title: "Flexible Scheduling",
+      description: "At your convenience"
     }
   ];
 
@@ -103,203 +73,193 @@ const ModernHero = () => {
     setIsVisible(true);
   }, []);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-  };
-
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
-
   return (
-    
-    <HeroContainer className="modern-hero">
-      {/* Background Carousel */}
-      <div className="carousel-container">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`carousel-slide ${index === currentSlide ? "active" : ""}`}
-            style={{ backgroundImage: `url(${slide.image})` }}
-          >
-            <div className="slide-overlay"></div>
-          </div>
-        ))}
-      </div>
-
-      {/* Floating Elements */}
-      <div className="floating-elements">
-        <div className="floating-circle circle-1"></div>
-        <div className="floating-circle circle-2"></div>
-        <div className="floating-circle circle-3"></div>
-        <div className="floating-shape shape-1"></div>
-        <div className="floating-shape shape-2"></div>
-      </div>
+    <Box className="hero-background">
+      {/* Background Glow Effect */}
+      <div className="hero-glow-effect"></div>
+      
+      {/* Floating Geometric Shapes */}
+      <div className="floating-geometry geometry-1"></div>
+      <div className="floating-geometry geometry-2"></div>
+      <div className="floating-geometry geometry-3"></div>
 
       <ContentWrapper maxWidth="lg">
         <Grid container spacing={6} alignItems="center">
-          {/* Left Content */}
-          <Grid item xs={12} lg={6}>
-            <div className={`hero-content ${isVisible ? "visible" : ""}`}>
-              <div className="content-inner">
-                <Typography
-                  variant="h6"
-                  component="div"
-                  className="hero-badge"
-                  sx={{ color: "#FF8E53", mb: 2 }}
-                >
-                  Premium Service Provider
-                </Typography>
+          {/* Main Content */}
+          <Grid item xs={12}>
+            <div className={`hero-content-wrapper ${isVisible ? "visible" : ""}`}>
+              
+              {/* Badge */}
+              
 
+              {/* Main Title */}
+              <div className={`fade-in-up ${isVisible ? "visible stagger-delay-1" : ""}`}>
                 <Typography
                   variant="h1"
                   component="h1"
                   className="hero-title"
                   sx={{
-                    color: "white",
                     fontWeight: "bold",
                     fontSize: { xs: "2.5rem", md: "3.5rem", lg: "4rem" },
                     lineHeight: 1.1,
                     mb: 3,
                   }}
                 >
-                  Transforming{" "}
-                  <span className="gradient-text">Homes</span> with
-                  Expert Care
+                  Elevate Your Home
+                  <br />
+                  with <span style={{color: '#FF6B35'}}>Expert Care</span>
                 </Typography>
+              </div>
 
+              {/* Subtitle */}
+              <div className={`fade-in-up ${isVisible ? "visible stagger-delay-2" : ""}`}>
                 <Typography
                   variant="h6"
                   component="p"
                   className="hero-subtitle"
                   sx={{
-                    color: "rgba(255, 255, 255, 0.8)",
-                    mb: 4,
                     fontSize: { xs: "1.1rem", md: "1.25rem" },
-                    lineHeight: 1.6,
+                    maxWidth: "600px",
                   }}
                 >
-                  Discover premium home services with certified professionals. 
-                  Quality workmanship guaranteed for all your home needs.
+                 
                 </Typography>
+              </div>
+              {/* Buttons */}
+<div className={`fade-in-up ${isVisible ? "visible stagger-delay-3" : ""}`}>
+  <div className="hero-buttons">
+    <button 
+      className="btn-primary"
+      onClick={() => navigate('/worker/register')}
+    >
+      Become a Worker
+      <span className="btn-icon">→</span>
+    </button>
+    <button 
+      className="btn-secondary"
+      onClick={() => navigate('/services')}
+    >
+      Search for Worker
+      <span className="btn-icon">🔍</span>
+    </button>
+  </div>
+</div>
 
-                {/* Stats */}
-                <Box className="stats-container" sx={{ mb: 4 }}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={6}>
-                      <StatCard>
+              {/* Features Grid */}
+              <div className={`fade-in-up ${isVisible ? "visible stagger-delay-3" : ""}`}>
+                <Grid container spacing={3} sx={{ mb: 6 }}>
+                  {features.map((feature, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={index}>
+                      <FeatureCard>
+                        <div className="feature-icon">
+                          {feature.icon}
+                        </div>
                         <Typography
-                          variant="h3"
+                          variant="h6"
                           component="div"
-                          className="stat-number gradient-text"
-                          sx={{ fontWeight: "bold" }}
+                          sx={{ 
+                            color: "white", 
+                            fontWeight: "bold",
+                            mb: 1
+                          }}
                         >
-                          500+
+                          {feature.title}
                         </Typography>
                         <Typography
                           variant="body2"
-                          sx={{ color: "rgba(255, 255, 255, 0.8)" }}
+                          sx={{ color: "rgba(255, 255, 255, 0.7)" }}
                         >
-                          Services Completed
+                          {feature.description}
                         </Typography>
-                      </StatCard>
+                      </FeatureCard>
                     </Grid>
-                    <Grid item xs={6}>
-                      <StatCard>
-                        <Typography
-                          variant="h3"
-                          component="div"
-                          className="stat-number gradient-text"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          200+
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "rgba(255, 255, 255, 0.8)" }}
-                        >
-                          Happy Customers
-                        </Typography>
-                      </StatCard>
+                  ))}
+                </Grid>
+              </div>
+
+              {/* Stats Section */}
+              <div className={`fade-in-up ${isVisible ? "visible stagger-delay-4" : ""}`}>
+                <Box className="cta-section">
+                  <Grid container spacing={4} alignItems="center">
+                    <Grid item xs={12} md={8}>
+                      <Typography
+                        variant="h5"
+                        component="div"
+                        sx={{ 
+                          color: "white", 
+                          fontWeight: "bold",
+                          mb: 1
+                        }}
+                      >
+                        Trusted by Homeowners Nationwide
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                      >
+                        Join thousands of satisfied customers who trust us with their homes
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Grid container spacing={2} textAlign="center">
+                        <Grid item xs={4}>
+                          <Typography
+                            variant="h4"
+                            component="div"
+                            sx={{ 
+                              color: "#FF6B35", 
+                              fontWeight: "bold" 
+                            }}
+                          >
+                            500+
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                          >
+                            Projects
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography
+                            variant="h4"
+                            component="div"
+                            sx={{ 
+                              color: "#FF6B35", 
+                              fontWeight: "bold" 
+                            }}
+                          >
+                            200+
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                          >
+                            Clients
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography
+                            variant="h4"
+                            component="div"
+                            sx={{ 
+                              color: "#FF6B35", 
+                              fontWeight: "bold" 
+                            }}
+                          >
+                            99%
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                          >
+                            Satisfaction
+                          </Typography>
+                        </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Box>
-
-                {/* CTA Buttons */}
-                <Box className="cta-buttons" sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <GradientButton
-                    variant="contained"
-                    size="large"
-                    endIcon={<ArrowForward />}
-                    className="cta-button-primary"
-                  >
-                    BECOME A WORKER
-                  </GradientButton>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    className="cta-button-secondary"
-                    sx={{
-                      color: "white",
-                      borderColor: "rgba(255, 255, 255, 0.3)",
-                      borderRadius: "50px",
-                      textTransform: "none",
-                      fontWeight: "bold",
-                      padding: "12px 32px",
-                      "&:hover": {
-                        borderColor: "#FF6B35",
-                        background: "rgba(255, 107, 53, 0.1)",
-                      },
-                    }}
-                  >
-                    FIND A WORKER
-                  </Button>
-                </Box>
-              </div>
-            </div>
-          </Grid>
-
-          {/* Right Content - Carousel Controls */}
-          <Grid item xs={12} lg={6}>
-            <div className="carousel-controls-section">
-              <div className="carousel-navigation">
-                <CarouselButton onClick={prevSlide} className="nav-button">
-                  <NavigateBefore />
-                </CarouselButton>
-                
-                <div className="slide-indicators">
-                  {slides.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`indicator ${index === currentSlide ? "active" : ""}`}
-                      onClick={() => goToSlide(index)}
-                    />
-                  ))}
-                </div>
-                
-                <CarouselButton onClick={nextSlide} className="nav-button">
-                  <NavigateNext />
-                </CarouselButton>
-              </div>
-
-              {/* Current Slide Preview */}
-              <div className="current-slide-info">
-                <Typography
-                  variant="h5"
-                  sx={{ color: "white", fontWeight: "bold", mb: 1 }}
-                >
-                  {slides[currentSlide].title}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ color: "rgba(255, 255, 255, 0.7)" }}
-                >
-                  {slides[currentSlide].subtitle}
-                </Typography>
               </div>
             </div>
           </Grid>
@@ -313,7 +273,7 @@ const ModernHero = () => {
           Scroll to Explore
         </Typography>
       </div>
-    </HeroContainer>
+    </Box>
   );
 };
 

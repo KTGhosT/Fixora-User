@@ -18,6 +18,7 @@ const ManageWorkers = lazy(() => import("./pages/admin/ManageWorkers"));
 const ManageBookings = lazy(() => import("./pages/admin/ManageBookings"));
 const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
+const PasswordReset = lazy(() => import("./pages/auth/PasswordReset"));
 const Homepage = lazy(() => import("./pages/Homepage"));
 const Services = lazy(() => import("./pages/Services"));
 const UniqueHeader = lazy(() => import("./components/user/Header"));
@@ -34,6 +35,11 @@ const GardenCleaner = lazy(() => import("./pages/Service/GardenCleaner"));
 const HouseCleaning = lazy(() => import("./pages/Service/HouseKeeper"));
 const DeviceRepair = lazy(() => import("./pages/Service/DeviceRepair"));
 const PhoneLogin = lazy(() => import("./PhoneLogin"));
+const ForgotPasswordTest = lazy(() => import("./components/ForgotPasswordTest"));
+const BackendConnectionTest = lazy(() => import("./components/BackendConnectionTest"));
+const PasswordResetDebug = lazy(() => import("./components/PasswordResetDebug"));
+const ManageServiceCategories = lazy(() => import("./pages/admin/ManageServiceCategories"));
+const ManageWorkerLocation = lazy(() => import("./pages/admin/ManageWorkerLocation"));
 
 // Header wrapper for all public pages except login and signup
 function HeaderWrapper({ user, setUser }) {
@@ -42,14 +48,18 @@ function HeaderWrapper({ user, setUser }) {
   const publicHeaderPaths = [
     "/", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
     "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
-    "/user/account", "/feedback", "/booking"
+    , "/feedback", "/booking"
   ];
   // If the path starts with /worker or /admin, don't show header
   const isWorkerOrAdmin = location.pathname.startsWith("/worker") || location.pathname.startsWith("/admin");
   const isLoginOrSignup = location.pathname === "/login" || location.pathname === "/signup";
+  const isPasswordReset = location.pathname === "/password-reset" || 
+                         location.pathname === "/reset-password" || 
+                         location.pathname === "/forgot-password";
   const showHeader =
     !isWorkerOrAdmin &&
     !isLoginOrSignup &&
+    !isPasswordReset &&
     (
       publicHeaderPaths.includes(location.pathname) ||
       // Also show header for any /services/* route
@@ -102,6 +112,9 @@ function App() {
           <Route path="/" element={<Homepage user={user} setUser={setUser} />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/password-reset" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
+          <Route path="/reset-password" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
+          <Route path="/forgot-password" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
           <Route path="/services" element={<Suspense fallback={<LoadingSpinner />}><Services /></Suspense>} />
           <Route path="/services/plumber" element={<Suspense fallback={<LoadingSpinner />}><Plumber /></Suspense>} />
           <Route path="/services/electrician" element={<Suspense fallback={<LoadingSpinner />}><Electrician /></Suspense>} />
@@ -118,7 +131,7 @@ function App() {
           <Route
             path="/worker/dashboard"
             element={
-              <ProtectedRoute user={user} roles={["worker"]}>
+              <ProtectedRoute user={user} roles={["worker", "admin"]}>
                 <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
               </ProtectedRoute>
             }
@@ -126,7 +139,7 @@ function App() {
           <Route
             path="/worker/register"
             element={
-              <ProtectedRoute user={user} roles={["admin"]}>
+              <ProtectedRoute user={user}>
                 <Suspense fallback={<LoadingSpinner />}><RegisterPage /></Suspense>
               </ProtectedRoute>
             }
@@ -163,12 +176,11 @@ function App() {
             <Route path="manage-workers" element={<ManageWorkers />} />
             <Route path="manage-services" element={<ManageServices />} />
             <Route path="manage-bookings" element={<ManageBookings />} />
+            <Route path="manage-service-categories" element={<ManageServiceCategories />} />
+            <Route path="manage-worker-location" element={<ManageWorkerLocation />} />
           </Route>
 
           <Route path="/phone-login" element={<Suspense fallback={<LoadingSpinner />}><PhoneLogin setUser={setUser} /></Suspense>} />
-          {/* Catch-all */}
-
-          <Route path="*" element={<Navigate to="/" />} />
 
 
           <Route
@@ -179,7 +191,33 @@ function App() {
               </Suspense>
             }
           />
+          <Route
+            path="/test-forgot-password"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <ForgotPasswordTest />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/test-backend"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <BackendConnectionTest />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/debug-password-reset"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <PasswordResetDebug />
+              </Suspense>
+            }
+          />
           
+          {/* Catch-all route - must be last */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>

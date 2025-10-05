@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../services/api";
 import styles from "./Login.module.css";
+import ForgotPassword from "./New ForgotPassword";
 
 function Login({ setUser }) {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function Login({ setUser }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   useEffect(() => {
     const savedCredential = localStorage.getItem(useEmail ? "email" : "phone");
@@ -126,6 +128,11 @@ function Login({ setUser }) {
 
   return (
     <div className={styles.loginContainer}>
+      {/* Forgot Password Popup */}
+      {showForgotPassword && (
+        <ForgotPassword onClose={() => setShowForgotPassword(false)} />
+      )}
+
       {/* Back to Home Button */}
       <div className={styles.backToHome}>
         <button 
@@ -138,12 +145,39 @@ function Login({ setUser }) {
       </div>
 
       <div className={styles.card}>
-        {/* Form Section */}
+        {/* Left Side - Image Section */}
+        <div className={styles.imageSection}>
+          <div className={styles.imageOverlay}></div>
+          <div className={styles.imageContent}>
+            <div className={styles.logo}>✦ Fixora</div>
+            <h1>Welcome Back!</h1>
+            <p>
+              Join thousands of professionals who trust Fixora for their service needs. 
+              Your journey to better home services starts here.
+            </p>
+            <div className={styles.features}>
+              <div className={styles.feature}>
+                <span className={styles.featureIcon}>🔧</span>
+                <span>Skilled Professionals</span>
+              </div>
+              <div className={styles.feature}>
+                <span className={styles.featureIcon}>⚡</span>
+                <span>Quick Response</span>
+              </div>
+              <div className={styles.feature}>
+                <span className={styles.featureIcon}>🛡️</span>
+                <span>Verified Workers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - Form Section */}
         <div className={styles.formSection}>
           <div className={styles.formContainer}>
             <div className={styles.formHeader}>
-              <h2>Welcome Back</h2>
-              <p>Sign in to your account to continue</p>
+              <h2>Sign In to Fixora</h2>
+              <p>Enter your credentials to access your account</p>
             </div>
 
             {error && (
@@ -165,6 +199,7 @@ function Login({ setUser }) {
                 className={`${styles.toggleBtn} ${useEmail ? styles.active : ""}`}
                 onClick={() => handleToggle(true)}
               >
+                <span className={styles.toggleIcon}>📧</span>
                 Email
               </button>
               <button
@@ -172,11 +207,12 @@ function Login({ setUser }) {
                 className={`${styles.toggleBtn} ${!useEmail ? styles.active : ""}`}
                 onClick={() => handleToggle(false)}
               >
+                <span className={styles.toggleIcon}>📱</span>
                 Phone
               </button>
             </div>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={styles.form}>
               {/* Email/Phone Input */}
               <div className={styles.inputGroup}>
                 <input
@@ -193,6 +229,9 @@ function Login({ setUser }) {
                 <label htmlFor={useEmail ? "email" : "phone"} className={styles.inputLabel}>
                   {useEmail ? "Email Address" : "Phone Number"}
                 </label>
+                <span className={styles.inputIcon}>
+                  {useEmail ? "📧" : "📱"}
+                </span>
               </div>
 
               {/* Password Input */}
@@ -210,6 +249,7 @@ function Login({ setUser }) {
                 <label htmlFor="password" className={styles.inputLabel}>
                   Password
                 </label>
+                <span className={styles.inputIcon}>🔒</span>
                 <button
                   type="button"
                   className={styles.passwordToggle}
@@ -223,65 +263,61 @@ function Login({ setUser }) {
               {/* Remember Me & Forgot Password */}
               <div className={styles.rememberForgot}>
                 <label className={styles.rememberMe} onClick={() => setRememberMe(!rememberMe)}>
-                  <div className={`${styles.checkbox} ${rememberMe ? styles.checked : ""}`} />
+                  <div className={`${styles.checkbox} ${rememberMe ? styles.checked : ""}`}>
+                    {rememberMe && <span>✓</span>}
+                  </div>
                   <span>Remember me</span>
                 </label>
-                <a href="#forgot" className={styles.forgotLink}>
+                <button 
+                  type="button"
+                  className={styles.forgotLink}
+                  onClick={() => setShowForgotPassword(true)}
+                >
                   Forgot password?
-                </a>
+                </button>
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                className={styles.submitBtn}
+                className={`${styles.submitBtn} ${isSubmitting ? styles.loading : ""}`}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <div className={styles.spinner} />
+                  <>
+                    <div className={styles.spinner} />
+                    Signing In...
+                  </>
                 ) : (
                   "Sign In"
                 )}
               </button>
             </form>
 
+            <div className={styles.divider}>
+              <span>or</span>
+            </div>
+
+            <div className={styles.socialLogin}>
+              <button type="button" className={styles.socialBtn}>
+                <span className={styles.socialIcon}>🔵</span>
+                Continue with Facebook
+              </button>
+              <button type="button" className={styles.socialBtn}>
+                <span className={styles.socialIcon}>🔴</span>
+                Continue with Google
+              </button>
+            </div>
+
             <div className={styles.signupPrompt}>
               Don't have an account? 
-              <a 
-                href="/signup" 
+              <button 
                 className={styles.signupLink}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/signup");
-                }}
+                onClick={() => navigate("/signup")}
               >
-                Sign up
-              </a>
+                Sign up now
+              </button>
             </div>
-          </div>
-        </div>
-
-        {/* Welcome Section */}
-        <div className={styles.welcomeSection}>
-          <div className={styles.welcomeContent}>
-            <div className={styles.logo}>✦</div>
-            <h1>Hello, Friend!</h1>
-            <p>
-              Enter your personal details and start your journey with us. 
-              Discover amazing features and connect with our community.
-            </p>
-            <button 
-              className={styles.toggleBtn}
-              onClick={() => navigate("/signup")}
-              style={{
-                background: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                marginTop: '20px'
-              }}
-            >
-              Create Account
-            </button>
           </div>
         </div>
       </div>

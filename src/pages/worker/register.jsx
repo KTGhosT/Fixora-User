@@ -167,7 +167,7 @@ const RegisterPage = () => {
 
     try {
       const response = await axiosInstance.post('api/worker/register', formDataToSend, {
-        headers: { 'Content-Type': 'application/json' },
+        // Do NOT set Content-Type header here
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setProgress(percentCompleted);

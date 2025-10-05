@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/api";
+import BookingManagement from "../../components/user/BookingManagement";
 import styles from "./account.module.css";
 
-const Sidebar = () => (
+const Sidebar = ({ activeTab, setActiveTab }) => (
   <aside className={styles.sidebar}>
     <div className={styles.logoContainer}>
       <img
@@ -15,23 +16,22 @@ const Sidebar = () => (
     <nav>
       <ul className={styles.menuList}>
         {[
-          "Overview",
-          "Messages",
-          "Transactions",
-          "Calendar",
-          "Map",
-          "Settings",
+          { key: "profile", label: "Profile" },
+          { key: "bookings", label: "My Bookings" },
+          { key: "messages", label: "Messages" },
+          { key: "transactions", label: "Transactions" },
+          { key: "settings", label: "Settings" },
         ].map((item) => (
-          <li key={item} className={styles.menuItem}>
-            <a
-              href="#"
+          <li key={item.key} className={styles.menuItem}>
+            <button
+              onClick={() => setActiveTab(item.key)}
               className={`${styles.menuLink} ${
-                item === "Settings" ? styles.active : ""
+                activeTab === item.key ? styles.active : ""
               }`}
-              aria-current={item === "Settings" ? "page" : undefined}
+              aria-current={activeTab === item.key ? "page" : undefined}
             >
-              {item}
-            </a>
+              {item.label}
+            </button>
           </li>
         ))}
       </ul>
@@ -227,6 +227,7 @@ const Account = ({ user: propUser, setUser: setPropUser }) => {
   const [user, setUser] = useState(propUser);
   const [isLoading, setIsLoading] = useState(!propUser);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("profile");
 
   // Update local user state when prop changes
   useEffect(() => {
@@ -303,6 +304,48 @@ const Account = ({ user: propUser, setUser: setPropUser }) => {
     );
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "profile":
+        return (
+          <>
+            <ProfileForm user={user} setUser={setUser} setPropUser={setPropUser} />
+            <ProfileCard user={user} />
+          </>
+        );
+      case "bookings":
+        return <BookingManagement user={user} />;
+      case "messages":
+        return (
+          <div className={styles.placeholderContent}>
+            <h2>Messages</h2>
+            <p>Your messages will appear here.</p>
+          </div>
+        );
+      case "transactions":
+        return (
+          <div className={styles.placeholderContent}>
+            <h2>Transactions</h2>
+            <p>Your transaction history will appear here.</p>
+          </div>
+        );
+      case "settings":
+        return (
+          <div className={styles.placeholderContent}>
+            <h2>Settings</h2>
+            <p>Account settings will appear here.</p>
+          </div>
+        );
+      default:
+        return (
+          <>
+            <ProfileForm user={user} setUser={setUser} setPropUser={setPropUser} />
+            <ProfileCard user={user} />
+          </>
+        );
+    }
+  };
+
   return (
     <main className={styles.container}>
       <button
@@ -313,10 +356,9 @@ const Account = ({ user: propUser, setUser: setPropUser }) => {
       >
         ← Back to Home
       </button>
-      <Sidebar />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <section className={styles.content}>
-        <ProfileForm user={user} setUser={setUser} setPropUser={setPropUser} />
-        <ProfileCard user={user} />
+        {renderContent()}
       </section>
     </main>
   );

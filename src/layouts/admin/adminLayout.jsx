@@ -36,9 +36,13 @@ import {
   Home as HomeIcon,
   TrendingUp,
   Group,
-  Assignment
+  Assignment,
+  Category as CategoryIcon,
+  Map as MapIcon // <-- Import icon for Manage Worker Location
 } from '@mui/icons-material';
 import './admin.css';
+
+
 
 // Mock data
 const dashboardStats = [
@@ -60,7 +64,9 @@ const AdminDashboard = () => {
     { text: 'Manage Workers', icon: <BuildIcon />, id: 'workers', path: '/admin/manage-workers' },
     { text: 'Manage Services', icon: <WorkIcon />, id: 'services', path: '/admin/manage-services' },
     { text: 'Manage Bookings', icon: <BookingIcon />, id: 'bookings', path: '/admin/manage-bookings' },
-    { text: 'Manage Locations', icon: <LocationIcon />, id: 'locations', path: '/admin/manage-locations' }
+    { text: 'Manage Locations', icon: <LocationIcon />, id: 'locations', path: '/admin/manage-locations' },
+    { text: 'Manage Service Categories', icon: <CategoryIcon />, id: 'service-categories', path: '/admin/manage-service-categories' },
+    { text: 'Manage Worker Location', icon: <MapIcon />, id: 'worker-location', path: '/admin/manage-worker-location' } // <-- Added
   ]), []);
 
   const activeSection = useMemo(() => {
@@ -71,6 +77,8 @@ const AdminDashboard = () => {
     if (subPath === 'manage-workers') return 'workers';
     if (subPath === 'manage-bookings') return 'bookings';
     if (subPath === 'manage-locations') return 'locations';
+    if (subPath === 'manage-service-categories') return 'service-categories';
+    if (subPath === 'manage-worker-location') return 'worker-location';
     return 'dashboard';
   }, [location.pathname]);
 
@@ -256,16 +264,7 @@ const ManageWorkers = () => (
   </div>
 );
 
-const ManageServices = () => (
-  <div className="section-container">
-    <Typography variant="h4" gutterBottom className="section-title">
-      Manage Services
-    </Typography>
-    <Paper className="content-paper">
-      <Typography>Services management interface coming soon...</Typography>
-    </Paper>
-  </div>
-);
+// Note: ManageServiceCategories is not defined here, assumed to be handled by routing to src/pages/admin/ManageServiceCategories.jsx
 
 const ManageBookings = () => (
   <div className="section-container">
@@ -285,6 +284,18 @@ const ManageLocations = () => (
     </Typography>
     <Paper className="content-paper">
       <Typography>Locations management interface coming soon...</Typography>
+    </Paper>
+  </div>
+);
+
+// NEW: Manage Worker Location placeholder
+const ManageWorkerLocation = () => (
+  <div className="section-container">
+    <Typography variant="h4" gutterBottom className="section-title">
+      Manage Worker Location
+    </Typography>
+    <Paper className="content-paper">
+      <Typography>Worker location management interface coming soon...</Typography>
     </Paper>
   </div>
 );
