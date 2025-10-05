@@ -303,33 +303,33 @@ const Settings = () => {
           </Link>
           <Link to="/worker/works" className={styles.navItem}>
             <i className="icon-orders"></i>
-            <span>works</span>
+            <span>Works</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/tasks" className={styles.navItem}>
             <i className="icon-tasks"></i>
             <span>Tasks</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/sales" className={styles.navItem}>
             <i className="icon-sales"></i>
             <span>Sales</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/payments" className={styles.navItem}>
             <i className="icon-payments"></i>
             <span>Payments</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/inventory" className={styles.navItem}>
             <i className="icon-inventory"></i>
             <span>Inventory</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/clients" className={styles.navItem}>
             <i className="icon-clients"></i>
             <span>Clients</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/reports" className={styles.navItem}>
             <i className="icon-reports"></i>
             <span>Reports</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/calls" className={styles.navItem}>
             <i className="icon-calls"></i>
             <span>Calls</span>
           </Link>

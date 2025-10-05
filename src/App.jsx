@@ -10,6 +10,13 @@ const Dashboard = lazy(() => import("./pages/worker/dashboard"));
 const RegisterPage = lazy(() => import("./pages/worker/register"));
 const Settings = lazy(() => import("./pages/worker/Settings"));
 const WorkerWorks = lazy(() => import("./pages/worker/works"));
+const WorkerTasks = lazy(() => import("./pages/worker/Tasks"));
+const WorkerSales = lazy(() => import("./pages/worker/Sales"));
+const WorkerPayments = lazy(() => import("./pages/worker/Payments"));
+const WorkerInventory = lazy(() => import("./pages/worker/Inventory"));
+const WorkerClients = lazy(() => import("./pages/worker/Clients"));
+const WorkerReports = lazy(() => import("./pages/worker/Reports"));
+const WorkerCalls = lazy(() => import("./pages/worker/Calls"));
 const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
@@ -131,6 +138,15 @@ function App() {
           <Route
             path="/worker/dashboard"
             element={
+              // Allow direct access to worker dashboard without login
+              <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
+            }
+          />
+          <Route
+            path="/worker/dashboard/:id"
+            element={
+              // Support dashboard with worker id param
+              <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
               <ProtectedRoute user={user} roles={["worker", "admin"]}>
                 <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
               </ProtectedRoute>
@@ -147,19 +163,32 @@ function App() {
           <Route
             path="/worker/settings"
             element={
-              <ProtectedRoute user={user} roles={["worker"]}>
-                <Suspense fallback={<LoadingSpinner />}><Settings /></Suspense>
-              </ProtectedRoute>
+              // Allow settings without login for now
+              <Suspense fallback={<LoadingSpinner />}><Settings /></Suspense>
             }
           />
           <Route
             path="/worker/works"
             element={
-              <ProtectedRoute user={user} roles={["worker"]}>
-                <Suspense fallback={<LoadingSpinner />}><WorkerWorks /></Suspense>
-              </ProtectedRoute>
+              // Allow works without login for now
+              <Suspense fallback={<LoadingSpinner />}><WorkerWorks /></Suspense>
             }
           />
+          <Route
+            path="/worker/works/:id"
+            element={
+              <Suspense fallback={<LoadingSpinner />}><WorkerWorks /></Suspense>
+            }
+          />
+
+          {/* Additional worker sections from sidebar */}
+          <Route path="/worker/tasks" element={<Suspense fallback={<LoadingSpinner />}><WorkerTasks /></Suspense>} />
+          <Route path="/worker/sales" element={<Suspense fallback={<LoadingSpinner />}><WorkerSales /></Suspense>} />
+          <Route path="/worker/payments" element={<Suspense fallback={<LoadingSpinner />}><WorkerPayments /></Suspense>} />
+          <Route path="/worker/inventory" element={<Suspense fallback={<LoadingSpinner />}><WorkerInventory /></Suspense>} />
+          <Route path="/worker/clients" element={<Suspense fallback={<LoadingSpinner />}><WorkerClients /></Suspense>} />
+          <Route path="/worker/reports" element={<Suspense fallback={<LoadingSpinner />}><WorkerReports /></Suspense>} />
+          <Route path="/worker/calls" element={<Suspense fallback={<LoadingSpinner />}><WorkerCalls /></Suspense>} />
           <Route path="/worker" element={<Navigate to="/worker/dashboard" />} />
 
           {/* Admin Routes */}
