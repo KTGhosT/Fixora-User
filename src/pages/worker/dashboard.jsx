@@ -20,6 +20,19 @@ const Dashboard = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [range, setRange] = useState('month');
+
+  const formatLKR = (value) =>
+    `LKR ${Number(value || 0).toLocaleString('en-LK', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+
+  const statsByRange = {
+    day: { orders: 11, sales: 1245.75, tasks: 8, performance: 92 },
+    week: { orders: 58, sales: 7425.3, tasks: 39, performance: 90 },
+    month: { orders: 223, sales: 28450.9, tasks: 164, performance: 93 },
+  };
 
   // Fetch worker data on component mount (with mock fallback when no id)
   useEffect(() => {
@@ -205,9 +218,24 @@ const Dashboard = () => {
         <div className={styles.header}>
           <h1>Worker Dashboard</h1>
           <div className={styles.dateFilter}>
-            <button className={styles.filterBtn}>Today</button>
-            <button className={styles.filterBtn}>This Week</button>
-            <button className={`${styles.filterBtn} ${styles.active}`}>This Month</button>
+            <button
+              className={`${styles.filterBtn} ${range === 'day' ? styles.active : ''}`}
+              onClick={() => setRange('day')}
+            >
+              Today
+            </button>
+            <button
+              className={`${styles.filterBtn} ${range === 'week' ? styles.active : ''}`}
+              onClick={() => setRange('week')}
+            >
+              This Week
+            </button>
+            <button
+              className={`${styles.filterBtn} ${range === 'month' ? styles.active : ''}`}
+              onClick={() => setRange('month')}
+            >
+              This Month
+            </button>
           </div>
           {workerData && (
             <Button variant="primary" onClick={toggleEditMode} className="mt-3">
@@ -334,20 +362,20 @@ const Dashboard = () => {
             <div className={styles.statsGrid}>
               <div className={styles.statCard}>
                 <div className={styles.statHeader}>
-                  <h3>Orders Today</h3>
+                  <h3>Orders {range === 'day' ? 'Today' : range === 'week' ? 'This Week' : 'This Month'}</h3>
                   <i className={`icon-orders ${styles.statIcon}`}></i>
                 </div>
-                <div className={styles.statValue}>11</div>
-                <div className={`${styles.statTrend} ${styles.positive}`}>+3 from yesterday</div>
+                <div className={styles.statValue}>{statsByRange[range].orders}</div>
+                <div className={`${styles.statTrend} ${styles.positive}`}>+3 from previous period</div>
               </div>
               
               <div className={styles.statCard}>
                 <div className={styles.statHeader}>
-                  <h3>Sales Today</h3>
+                  <h3>Sales {range === 'day' ? 'Today' : range === 'week' ? 'This Week' : 'This Month'}</h3>
                   <i className={`icon-sales ${styles.statIcon}`}></i>
                 </div>
-                <div className={styles.statValue}>€1,245.75</div>
-                <div className={`${styles.statTrend} ${styles.negative}`}>-€245.25 from yesterday</div>
+                <div className={styles.statValue}>{formatLKR(statsByRange[range].sales)}</div>
+                <div className={`${styles.statTrend} ${styles.negative}`}>-LKR 245.25 from previous</div>
               </div>
               
               <div className={styles.statCard}>
@@ -355,8 +383,8 @@ const Dashboard = () => {
                   <h3>Tasks Completed</h3>
                   <i className={`icon-tasks ${styles.statIcon}`}></i>
                 </div>
-                <div className={styles.statValue}>8</div>
-                <div className={`${styles.statTrend} ${styles.positive}`}>+2 from yesterday</div>
+                <div className={styles.statValue}>{statsByRange[range].tasks}</div>
+                <div className={`${styles.statTrend} ${styles.positive}`}>+2 from previous period</div>
               </div>
               
               <div className={styles.statCard}>
@@ -364,8 +392,8 @@ const Dashboard = () => {
                   <h3>Performance</h3>
                   <i className={`icon-performance ${styles.statIcon}`}></i>
                 </div>
-                <div className={styles.statValue}>92%</div>
-                <div className={`${styles.statTrend} ${styles.positive}`}>+5% from last week</div>
+                <div className={styles.statValue}>{statsByRange[range].performance}%</div>
+                <div className={`${styles.statTrend} ${styles.positive}`}>+5% from last period</div>
               </div>
             </div>
 
@@ -383,6 +411,18 @@ const Dashboard = () => {
                     <span>Pending</span>
                   </div>
                 </div>
+                <h4 style={{ marginTop: 24 }}>Sales (last 7 days)</h4>
+                {(() => {
+                  const sales7 = [1200, 800, 1500, 900, 2000, 1750, 1900];
+                  const max = Math.max(...sales7);
+                  return (
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 80, marginTop: 8 }}>
+                      {sales7.map((v, i) => (
+                        <div key={i} style={{ width: 24, background: '#3b82f6', height: `${(v / max) * 100}%`, borderRadius: 4 }} title={`Day ${i + 1}: ${formatLKR(v)}`}></div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className={styles.taskList}>
@@ -411,6 +451,41 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {/* Quick Actions */}
+            <div style={{ marginTop: 24 }}>
+              <h3>Quick Actions</h3>
+              <div className={styles.statsGrid}>
+                <Link to="/worker/tasks" className={styles.statCard} style={{ textDecoration: 'none' }}>
+                  <div className={styles.statHeader}>
+                    <h3>Create Task</h3>
+                    <i className={`icon-tasks ${styles.statIcon}`}></i>
+                  </div>
+                  <div className={styles.statTrend}>Jump to task manager</div>
+                </Link>
+                <Link to="/worker/sales" className={styles.statCard} style={{ textDecoration: 'none' }}>
+                  <div className={styles.statHeader}>
+                    <h3>New Sale</h3>
+                    <i className={`icon-sales ${styles.statIcon}`}></i>
+                  </div>
+                  <div className={styles.statTrend}>View and add orders</div>
+                </Link>
+                <Link to="/worker/payments" className={styles.statCard} style={{ textDecoration: 'none' }}>
+                  <div className={styles.statHeader}>
+                    <h3>Record Payment</h3>
+                    <i className={`icon-payments ${styles.statIcon}`}></i>
+                  </div>
+                  <div className={styles.statTrend}>Manage payment entries</div>
+                </Link>
+                <Link to="/worker/inventory" className={styles.statCard} style={{ textDecoration: 'none' }}>
+                  <div className={styles.statHeader}>
+                    <h3>Add Inventory</h3>
+                    <i className={`icon-inventory ${styles.statIcon}`}></i>
+                  </div>
+                  <div className={styles.statTrend}>Update stock levels</div>
+                </Link>
+              </div>
+            </div>
+
             {/* Recent Activity */}
             <div className={styles.activitySection}>
               <h3>Recent Activity</h3>
@@ -420,7 +495,7 @@ const Dashboard = () => {
                     <i className="icon-check"></i>
                   </div>
                   <div className={styles.activityContent}>
-                    <div className={styles.activityText}>Completed order #ORD-1245</div>
+                    <div className={styles.activityText}>Completed order #ORD-1245 — {formatLKR(1450)}</div>
                     <div className={styles.activityTime}>2 hours ago</div>
                   </div>
                 </div>
@@ -438,7 +513,7 @@ const Dashboard = () => {
                     <i className="icon-clock"></i>
                   </div>
                   <div className={styles.activityContent}>
-                    <div className={styles.activityText}>Scheduled meeting with team</div>
+                    <div className={styles.activityText}>Recorded payment — {formatLKR(2500)}</div>
                     <div className={styles.activityTime}>Yesterday</div>
                   </div>
                 </div>
