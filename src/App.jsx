@@ -42,7 +42,7 @@ function HeaderWrapper({ user, setUser }) {
   const publicHeaderPaths = [
     "/", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
     "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
-    "/user/account", "/feedback", "/booking"
+    "/feedback", "/booking"
   ];
   // If the path starts with /worker or /admin, don't show header
   const isWorkerOrAdmin = location.pathname.startsWith("/worker") || location.pathname.startsWith("/admin");
