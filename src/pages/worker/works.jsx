@@ -1,12 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './dashboard.module.css';
+import { gsap } from 'gsap';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 const WorkerWorks = () => {
   const [activeTab, setActiveTab] = useState('ongoing');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
+  const listRef = useRef(null);
+  const timeRef = useRef(null);
+  const agendaRef = useRef(null);
+  const [newEventTitle, setNewEventTitle] = useState('');
+  const [newEventTime, setNewEventTime] = useState('');
+  const [sidebarWidth, setSidebarWidth] = useState(260);
+
+  // Responsive sidebar width adjustments for laptop/PC
+  useEffect(() => {
+    const updateSidebar = () => {
+      const w = window.innerWidth;
+      const width = w <= 1024 ? 180 : w <= 1200 ? 200 : w <= 1366 ? 220 : 260;
+      setSidebarWidth(width);
+    };
+    updateSidebar();
+    window.addEventListener('resize', updateSidebar);
+    return () => window.removeEventListener('resize', updateSidebar);
+  }, []);
   
   // Update time every second
   useEffect(() => {
@@ -15,6 +36,21 @@ const WorkerWorks = () => {
     }, 1000);
     
     return () => clearInterval(timer);
+  }, []);
+
+  // Animate list items when tab changes
+  useEffect(() => {
+    const cards = listRef.current?.querySelectorAll('.card');
+    if (cards && cards.length) {
+      gsap.fromTo(cards, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power2.out' });
+    }
+  }, [activeTab]);
+
+  // Subtle pulse animation for real-time clock
+  useEffect(() => {
+    if (timeRef.current) {
+      gsap.to(timeRef.current, { scale: 1.02, duration: 1.2, yoyo: true, repeat: -1, ease: 'power1.inOut' });
+    }
   }, []);
   
   // Mock data for works
@@ -105,15 +141,15 @@ const WorkerWorks = () => {
     ]
   };
 
-  // Mock calendar events
-  const calendarEvents = [
-    { date: "2023-06-15", title: "Network Installation", time: "09:00 AM" },
-    { date: "2023-06-15", title: "Server Maintenance", time: "02:00 PM" },
-    { date: "2023-06-16", title: "WiFi Setup", time: "10:00 AM" },
-    { date: "2023-06-17", title: "Security Audit", time: "09:00 AM" },
-    { date: "2023-06-20", title: "Data Migration", time: "08:00 AM" },
-    { date: "2023-06-22", title: "Hardware Upgrade", time: "11:00 AM" }
-  ];
+  // Calendar events (stateful for adding new entries)
+  const [calendarEvents, setCalendarEvents] = useState([
+    { date: "2023-06-15", title: "Network Installation", time: "09:00 AM", status: "ongoing" },
+    { date: "2023-06-15", title: "Server Maintenance", time: "02:00 PM", status: "pending" },
+    { date: "2023-06-16", title: "WiFi Setup", time: "10:00 AM", status: "upcoming" },
+    { date: "2023-06-17", title: "Security Audit", time: "09:00 AM", status: "ongoing" },
+    { date: "2023-06-20", title: "Data Migration", time: "08:00 AM", status: "pending" },
+    { date: "2023-06-22", title: "Hardware Upgrade", time: "11:00 AM", status: "upcoming" }
+  ]);
 
   // Format date for display
   const formatDate = (date) => {
@@ -123,6 +159,60 @@ const WorkerWorks = () => {
   // Format time for display
   const formatTime = (date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Shorten text for compact agenda display
+  const shortText = (text, max = 22) => {
+    if (!text) return '';
+    return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+  };
+
+  // Map event status to color class
+  const eventClass = (status) => {
+    switch (status) {
+      case 'ongoing':
+        return 'rc-event--ongoing';
+      case 'pending':
+        return 'rc-event--pending';
+      case 'upcoming':
+        return 'rc-event--upcoming';
+      default:
+        return '';
+    }
+  };
+
+  // Inline style mapping for colored chips and agenda items
+  const chipColors = {
+    ongoing: { bg: '#eaf2ff', border: '#cfe0ff', text: '#1f5bd8' },
+    pending: { bg: '#fff6e9', border: '#ffe3bd', text: '#b85d00' },
+    upcoming: { bg: '#e9f9ee', border: '#cdeed8', text: '#1f8a4d' },
+  };
+
+  const getEventChipStyle = (status) => {
+    const c = chipColors[status] || chipColors.ongoing;
+    return {
+      background: c.bg,
+      border: `1px solid ${c.border}`,
+      color: c.text,
+    };
+  };
+
+  const getAgendaItemStyle = (status) => {
+    const c = chipColors[status] || chipColors.ongoing;
+    return {
+      borderLeft: `3px solid ${c.text}`,
+    };
+  };
+
+  const getDotStyle = (status) => {
+    const c = chipColors[status] || chipColors.ongoing;
+    return {
+      width: 8,
+      height: 8,
+      borderRadius: '50%',
+      background: c.text,
+      display: 'inline-block',
+    };
   };
 
   // Work item component
@@ -189,96 +279,55 @@ const WorkerWorks = () => {
     </div>
   );
 
-  // Mobile-style Calendar Component
-  const MobileCalendar = () => {
-    const today = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    
-    // Get first day of month and number of days
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    
-    // Month names
-    const monthNames = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-    
-    // Navigate months
-    const prevMonth = () => {
-      setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
-    };
-    
-    const nextMonth = () => {
-      setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
-    };
-    
-    // Generate calendar days
-    const calendarDays = [];
-    
-    // Add empty cells for days before the first day
-    for (let i = 0; i < firstDay; i++) {
-      calendarDays.push(
-        <div key={`empty-${i}`} className="calendar-day empty"></div>
-      );
-    }
-    
-    // Add days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const isToday = dateStr === formatDate(today);
-      const isSelected = dateStr === formatDate(currentDate);
-      const dayEvents = calendarEvents.filter(event => event.date === dateStr);
-      
-      calendarDays.push(
-        <div 
-          key={day} 
-          className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
-          onClick={() => setCurrentDate(new Date(currentYear, currentMonth, day))}
-        >
-          <div className="day-header">
-            <span className="day-number">{day}</span>
-            {isToday && <span className="today-indicator">Today</span>}
-          </div>
-          <div className="day-events">
-            {dayEvents.slice(0, 2).map((event, index) => (
-              <div key={index} className="event-item" title={event.title}>
-                <span className="event-time">{event.time}</span>
-                <span className="event-title">{event.title}</span>
-              </div>
-            ))}
-            {dayEvents.length > 2 && (
-              <div className="event-item more-events">
-                +{dayEvents.length - 2} more
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
+  // React Calendar integration
+  const getDayEvents = (date) => {
+    const dateStr = formatDate(date);
+    return calendarEvents.filter(ev => ev.date === dateStr);
+  };
 
+  const renderTileContent = ({ date, view }) => {
+    if (view !== 'month') return null;
+    const dayEvents = getDayEvents(date).slice(0, 2);
+    if (!dayEvents.length) return null;
     return (
-      <div className="mobile-calendar">
-        <div className="calendar-header d-flex justify-content-between align-items-center mb-3">
-          <button className="btn btn-sm btn-outline-secondary" onClick={prevMonth}>
-            <i className="bi bi-chevron-left"></i>
-          </button>
-          <h5 className="mb-0">{monthNames[currentMonth]} {currentYear}</h5>
-          <button className="btn btn-sm btn-outline-secondary" onClick={nextMonth}>
-            <i className="bi bi-chevron-right"></i>
-          </button>
-        </div>
-        <div className="calendar-grid">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
-            <div key={index} className="calendar-day-header text-center text-muted small">
-              {day}
-            </div>
-          ))}
-          {calendarDays}
-        </div>
+      <div className="rc-day-events">
+        {dayEvents.map((ev, idx) => (
+          <div
+            key={idx}
+            className={`rc-event ${eventClass(ev.status)}`}
+            title={`${ev.time} · ${ev.title}`}
+            style={getEventChipStyle(ev.status)}
+          >
+            <span className="rc-time">{ev.time}</span>
+            <span className="rc-title">{shortText(ev.title, 18)}</span>
+          </div>
+        ))}
       </div>
     );
+  };
+
+  const handleActiveMonthChange = ({ activeStartDate }) => {
+    setCurrentDate(activeStartDate);
+    gsap.fromTo('.react-calendar__tile', { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.25, stagger: 0.01, ease: 'power2.out' });
+  };
+
+  const selectedDayEvents = getDayEvents(currentDate);
+
+  const handleAddEvent = (e) => {
+    e.preventDefault();
+    if (!newEventTitle.trim() || !newEventTime.trim()) return;
+    const newEv = { date: formatDate(currentDate), title: newEventTitle.trim(), time: newEventTime.trim() };
+    setCalendarEvents(prev => [...prev, newEv]);
+    setNewEventTitle('');
+    setNewEventTime('');
+    // Animate the newly added agenda item
+    setTimeout(() => {
+      const items = agendaRef.current?.querySelectorAll('.rc-agenda-item');
+      if (items && items.length) {
+        const last = items[items.length - 1];
+        gsap.fromTo(last, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+      }
+    }, 0);
   };
 
   // Real-time clock component
@@ -302,7 +351,7 @@ const WorkerWorks = () => {
           <div className="current-date mb-2">
             <h5 className="mb-0">{formattedDate}</h5>
           </div>
-          <div className="current-time">
+          <div className="current-time" ref={timeRef}>
             <h2 className="mb-0 text-primary">{formattedTime}</h2>
           </div>
         </div>
@@ -313,44 +362,44 @@ const WorkerWorks = () => {
   return (
     <div className={styles.dashboardContainer}>
       {/* Left Navigation Sidebar */}
-      <div className={styles.sidebar}>
+      <div className={styles.sidebar} style={{ width: sidebarWidth }}>
         <div className={styles.logo}>
           <h2>WorkerDash</h2>
         </div>
         <nav className={styles.navMenu}>
-          <Link to="/" className={styles.navItem}>
+          <Link to="/worker/dashboard" className={styles.navItem}>
             <i className="icon-dashboard"></i>
             <span>Dashboard</span>
           </Link>
-          <Link to="#" className={`${styles.navItem} ${styles.active}`}>
+          <Link to="/worker/works" className={`${styles.navItem} ${styles.active}`}>
             <i className="icon-orders"></i>
             <span>Works</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/tasks" className={styles.navItem}>
             <i className="icon-tasks"></i>
             <span>Tasks</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/sales" className={styles.navItem}>
             <i className="icon-sales"></i>
             <span>Sales</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/payments" className={styles.navItem}>
             <i className="icon-payments"></i>
             <span>Payments</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/inventory" className={styles.navItem}>
             <i className="icon-inventory"></i>
             <span>Inventory</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/clients" className={styles.navItem}>
             <i className="icon-clients"></i>
             <span>Clients</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/reports" className={styles.navItem}>
             <i className="icon-reports"></i>
             <span>Reports</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/calls" className={styles.navItem}>
             <i className="icon-calls"></i>
             <span>Calls</span>
           </Link>
@@ -371,10 +420,10 @@ const WorkerWorks = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className={styles.mainContent}>
+      <div className={styles.mainContent} style={{ marginLeft: sidebarWidth }}>
         <div className="container-fluid py-4">
           <div className="row">
-            <div className="col-lg-9">
+            <div className="col-lg-8">
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h1>My Works</h1>
                 <div className="btn-group" role="group">
@@ -400,7 +449,7 @@ const WorkerWorks = () => {
               </div>
 
               {/* Works List */}
-              <div className="works-list">
+              <div className="works-list" ref={listRef}>
                 {works[activeTab].length > 0 ? (
                   works[activeTab].map(work => (
                     <WorkItem key={work.id} work={work} />
@@ -415,13 +464,55 @@ const WorkerWorks = () => {
             </div>
 
             {/* Right Calendar Panel */}
-            <div className="col-lg-3">
+            <div className="col-lg-4">
               <div className="card border-0 shadow-sm">
                 <div className="card-header bg-primary text-white">
                   <h3 className="mb-0">Schedule</h3>
                 </div>
                 <div className="card-body">
-                  <MobileCalendar />
+                  <Calendar
+                    value={currentDate}
+                    onChange={setCurrentDate}
+                    onActiveStartDateChange={handleActiveMonthChange}
+                    tileContent={renderTileContent}
+                  />
+                  {/* Selected day agenda */}
+                  <div className="rc-agenda mt-3" ref={agendaRef}>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <h6 className="mb-0">Agenda for {formatDate(currentDate)}</h6>
+                    </div>
+                    {selectedDayEvents.length ? (
+                      selectedDayEvents.map((ev, idx) => (
+                        <div
+                          key={`${ev.title}-${idx}`}
+                          className={`rc-agenda-item ${eventClass(ev.status)}`}
+                          title={`${ev.time} · ${ev.title}`}
+                          style={getAgendaItemStyle(ev.status)}
+                        >
+                          <span className={`rc-dot ${eventClass(ev.status)}`} style={getDotStyle(ev.status)}></span>
+                          <span className="rc-agenda-time">{ev.time}</span>
+                          <span className="rc-agenda-title">{shortText(ev.title, 28)}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rc-agenda-empty">
+                        No events for this day
+                      </div>
+                    )}
+                    <form className="rc-add-form mt-2" onSubmit={handleAddEvent}>
+                      <div className="row g-2">
+                        <div className="col-5">
+                          <input type="text" className="form-control form-control-sm" placeholder="Event title" value={newEventTitle} onChange={(e) => setNewEventTitle(e.target.value)} />
+                        </div>
+                        <div className="col-4">
+                          <input type="text" className="form-control form-control-sm" placeholder="Time (e.g. 09:00 AM)" value={newEventTime} onChange={(e) => setNewEventTime(e.target.value)} />
+                        </div>
+                        <div className="col-3 d-grid">
+                          <button type="submit" className="btn btn-primary btn-sm">Add</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
                   <RealTimeClock />
                 </div>
               </div>

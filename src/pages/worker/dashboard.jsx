@@ -21,21 +21,44 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch worker data on component mount
+  // Fetch worker data on component mount (with mock fallback when no id)
   useEffect(() => {
     const fetchWorkerData = async () => {
       try {
-        const response = await axiosInstance.get(`/worker/${id}`);
-        setWorkerData(response.data.worker);
-        setFormData({
-          name: response.data.worker.name,
-          email: response.data.worker.email,
-          phone_number: response.data.worker.phone_number,
-          address: response.data.worker.address,
-          experience_level: response.data.worker.experience_level,
-          availability: response.data.worker.availability,
-          short_info: response.data.worker.short_info || '',
-        });
+        if (id) {
+          const response = await axiosInstance.get(`/worker/${id}`);
+          setWorkerData(response.data.worker);
+          setFormData({
+            name: response.data.worker.name,
+            email: response.data.worker.email,
+            phone_number: response.data.worker.phone_number,
+            address: response.data.worker.address,
+            experience_level: response.data.worker.experience_level,
+            availability: response.data.worker.availability,
+            short_info: response.data.worker.short_info || '',
+          });
+        } else {
+          const mock = {
+            id: 0,
+            name: 'John Doe',
+            email: 'john@example.com',
+            phone_number: '+1234567890',
+            address: 'New York, USA',
+            experience_level: 'Intermediate',
+            availability: 'Available',
+            short_info: 'Dedicated worker with 3 years experience',
+          };
+          setWorkerData(mock);
+          setFormData({
+            name: mock.name,
+            email: mock.email,
+            phone_number: mock.phone_number,
+            address: mock.address,
+            experience_level: mock.experience_level,
+            availability: mock.availability,
+            short_info: mock.short_info,
+          });
+        }
       } catch (error) {
         console.error('Error fetching worker data:', error);
         setErrors({ submit: 'Failed to load worker data. Please try again.' });
@@ -78,8 +101,14 @@ const Dashboard = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axiosInstance.put(`/worker/${id}`, formData);
-      setWorkerData(response.data.worker);
+      if (id) {
+        const response = await axiosInstance.put(`/worker/${id}`, formData);
+        setWorkerData(response.data.worker);
+      } else {
+        // simulate local update when no id
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        setWorkerData({ ...workerData, ...formData });
+      }
       setEditMode(false);
       setErrors({});
       alert('Worker details updated successfully!');
@@ -119,39 +148,39 @@ const Dashboard = () => {
           <h2>WorkerDash</h2>
         </div>
         <nav className={styles.navMenu}>
-          <Link to={`/worker/dashboard/${id}`} className={`${styles.navItem} ${styles.active}`}>
+          <Link to={`/worker/dashboard`} className={`${styles.navItem} ${styles.active}`}>
             <i className="icon-dashboard"></i>
             <span>Dashboard</span>
           </Link>
-          <Link to={`/worker/works/${id}`} className={styles.navItem}>
+          <Link to={`/worker/works`} className={styles.navItem}>
             <i className="icon-orders"></i>
             <span>Works</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/tasks" className={styles.navItem}>
             <i className="icon-tasks"></i>
             <span>Tasks</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/sales" className={styles.navItem}>
             <i className="icon-sales"></i>
             <span>Sales</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/payments" className={styles.navItem}>
             <i className="icon-payments"></i>
             <span>Payments</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/inventory" className={styles.navItem}>
             <i className="icon-inventory"></i>
             <span>Inventory</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/clients" className={styles.navItem}>
             <i className="icon-clients"></i>
             <span>Clients</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/reports" className={styles.navItem}>
             <i className="icon-reports"></i>
             <span>Reports</span>
           </Link>
-          <Link to="#" className={styles.navItem}>
+          <Link to="/worker/calls" className={styles.navItem}>
             <i className="icon-calls"></i>
             <span>Calls</span>
           </Link>
