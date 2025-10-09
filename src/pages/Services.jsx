@@ -223,12 +223,12 @@ export default function KavishanUI() {
         </div>
         <div className="wow-right">
           {[
-            { img: "/mymodel/Textures/photo-1535090467336-9501f96eef89-820x400.jpg", text: "Gardner" },
-            { img: "/mymodel/Textures/professional-repair-engineer-repairing-broken-tv-professional-repair-engineer-repairing-broken-tv-118916498.webp", text: "Tv repair Tech" },
-            { img: "/mymodel/Textures/istockphoto-1417833172-612x612.jpg", text: "Home cleaning" },
-            { img: "/mymodel/Textures/Plumber-Sink-201709-003.jpg", text: "Plumber" },
-            { img: "/mymodel/Textures/How-much-does-Garden-Cleaning-Cost-in-Sydney.png", text: "Gardner" },
-            { img: "/mymodel/Textures/asian-young-man-and-woman-cleaning-service-worker-2023-11-27-05-00-57-utc-jpg.webp", text: "Home cleaning" },
+            { img: "https://images.unsplash.com/photo-1608613304899-ea8098577e38?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", text: "Carpenter" },
+            { img: "https://images.unsplash.com/photo-1596493041286-8a840939b8ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTEwfHx0diUyMHJlcGFpcmluZ3xlbnwwfHwwfHx8Mg%3D%3D", text: "Device Repair" },
+            { img: "https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", text: "Electrician" },
+            { img: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", text: "Garden Cleaner" },
+            { img: "https://images.unsplash.com/photo-1568688271711-1aeee5ce0363?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aG91c2UlMjBrZWVwZXJ8ZW58MHx8MHx8fDI%3D", text: "House Keeper" },
+            { img: "https://images.unsplash.com/photo-1749532125405-70950966b0e5?q=80&w=1000", text: "Plumber" },
           ].map((item, idx) => (
             <div className="wow-box auto-animate" key={idx} style={{ "--i": idx }}>
               <img src={item.img} alt={item.text} />
@@ -248,10 +248,10 @@ export default function KavishanUI() {
           {[
             // Yes, this is correct if your public directory contains a "videos" folder with these files.
             // The video paths are relative to the public directory in Create React App or Vite.
-            { title: "PLUMBER", video: "/videos/Plumber_Video_Generation.mp4", desc: "🔧From drips to disasters – we handle it all. Call your trusted plumber today!", pos: "top-left" },
-            { title: "GARDNER", video: "/videos/Garden_Video_Generation.mp4", desc: "🌱 From lawns to landscapes – we make your outdoors bloom beautifully.", pos: "top-right" },
-            { title: "Home Cleaners", video: "/videos/Video_Generation_of_Cleaning_Activity.mp4", desc: "✨ “From dust to dazzling – professional home cleaning you can trust.", pos: "bottom-left" },
-            { title: "Electricians", video: "/videos/WhatsApp Video 2025-09-03 at 1.28.22 PM.mp4", desc: "⚡ “Power up your home – expert electrical service you can trust!”", pos: "bottom-right" },
+            { title: "PLUMBER", video: "/videos/Plumber_Video_Generation.mp4", desc: "🔧 From drips to disasters – we handle it all. Call your trusted plumber today!", pos: "top-left" },
+            { title: "GARDEN CLEANER", video: "/videos/Garden_Video_Generation.mp4", desc: "🌱 From lawns to landscapes – we make your outdoors bloom beautifully.", pos: "top-right" },
+            { title: "HOUSE KEEPER", video: "/videos/Video_Generation_of_Cleaning_Activity.mp4", desc: "✨ From dust to dazzling – professional home cleaning you can trust.", pos: "bottom-left" },
+            { title: "ELECTRICIAN", video: "/videos/WhatsApp Video 2025-09-03 at 1.28.22 PM.mp4", desc: "⚡ Power up your home – expert electrical service you can trust!", pos: "bottom-right" },
           ].map((item, idx) => (
             <div className={`service-box ${item.pos}`} key={idx} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
               <h3>{item.title}</h3>

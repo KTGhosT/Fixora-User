@@ -145,8 +145,6 @@ function App() {
           <Route
             path="/worker/dashboard/:id"
             element={
-              // Support dashboard with worker id param
-              <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
               <ProtectedRoute user={user} roles={["worker", "admin"]}>
                 <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
               </ProtectedRoute>

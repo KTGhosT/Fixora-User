@@ -1,48 +1,61 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Services.css';
 
-// Data structure for the services
+// Services data with updated service names, icons, and navigation paths
 const servicesData = [
   {
-    title: 'Web Branding',
-    icon: '🎨',
-    description: 'Create memorable brand identities with custom logos, color schemes, and visual elements that represent your business perfectly.',
-    features: ['Logo Design', 'Brand Guidelines', 'Visual Identity']
+    title: 'Carpenter',
+    icon: '🔨',
+    description: 'Professional carpentry services for furniture assembly, installations, and custom woodwork projects.',
+    features: ['Furniture Assembly', 'Custom Installations', 'Wood Repairs'],
+    path: '/services/carpenter'
   },
   {
-    title: 'Web Development',
-    icon: '💻',
-    description: 'Build responsive, fast, and scalable websites using modern technologies and best practices for optimal user experience.',
-    features: ['Frontend Development', 'Backend Development', 'Responsive Design']
+    title: 'Device Repair',
+    icon: '🔧',
+    description: 'Expert repair services for phones, laptops, tablets, and other electronic devices with quick turnaround.',
+    features: ['Phone Repair', 'Laptop Service', 'Hardware Fixes'],
+    path: '/services/devicerepair'
   },
   {
-    title: 'Photography',
-    icon: '📸',
-    description: 'Professional photography services for products, portraits, and events with expert editing and creative composition.',
-    features: ['Product Photography', 'Portrait Sessions', 'Event Coverage']
-  },
-  {
-    title: 'User Experience',
-    icon: '✨',
-    description: 'Design intuitive and engaging user interfaces that prioritize usability and create seamless digital experiences.',
-    features: ['UI/UX Design', 'User Research', 'Prototyping']
-  },
-  {
-    title: 'Clean Code',
+    title: 'Electrician',
     icon: '⚡',
-    description: 'Write maintainable, efficient, and well-documented code following industry standards and best practices.',
-    features: ['Code Review', 'Optimization', 'Documentation']
+    description: 'Licensed electrical services for wiring, installations, repairs, and electrical safety inspections.',
+    features: ['Wiring Installation', 'Electrical Repairs', 'Safety Inspections'],
+    path: '/services/electrician'
   },
   {
-    title: 'Fast Support',
-    icon: '🚀',
-    description: '24/7 technical support and maintenance services to keep your systems running smoothly and efficiently.',
-    features: ['24/7 Support', 'Quick Response', 'Problem Solving']
+    title: 'Garden Cleaner',
+    icon: '🌱',
+    description: 'Complete lawn and garden maintenance services including landscaping, pruning, and seasonal cleanup.',
+    features: ['Lawn Maintenance', 'Garden Pruning', 'Seasonal Cleanup'],
+    path: '/services/gardencleaner'
+  },
+  {
+    title: 'House Keeper',
+    icon: '🏠',
+    description: 'Professional house cleaning and organization services for residential and commercial properties.',
+    features: ['Deep Cleaning', 'Regular Maintenance', 'Organization'],
+    path: '/services/housecleaning'
+  },
+  {
+    title: 'Plumber',
+    icon: '🔧',
+    description: 'Reliable plumbing services for pipe repairs, fixture installations, and emergency plumbing issues.',
+    features: ['Pipe Repairs', 'Fixture Installation', 'Emergency Service'],
+    path: '/services/plumber'
   },
 ];
 
 // Reusable Service Card component
-const ServiceCard = ({ title, icon, description, features }) => {
+const ServiceCard = ({ title, icon, description, features, path }) => {
+  const navigate = useNavigate();
+
+  const handleLearnMore = () => {
+    navigate(path);
+  };
+
   return (
     <div className="service-card">
       <div className="card-glow"></div>
@@ -61,7 +74,7 @@ const ServiceCard = ({ title, icon, description, features }) => {
       
       <div className="service-hover-content">
         <div className="hover-line"></div>
-        <button className="service-cta">
+        <button className="service-cta" onClick={handleLearnMore}>
           Learn More
           <span className="cta-arrow">→</span>
         </button>
@@ -95,6 +108,7 @@ const ServicesSection = () => {
               icon={service.icon}
               description={service.description}
               features={service.features}
+              path={service.path}
             />
           ))}
         </div>
