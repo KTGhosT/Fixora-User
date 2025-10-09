@@ -8,7 +8,7 @@
 .signupContainer {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
   padding: 20px;
   position: relative;
   overflow: hidden;
@@ -41,7 +41,7 @@
     0 20px 40px rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(44, 62, 80, 0.95);
   backdrop-filter: blur(20px);
   animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -196,15 +196,12 @@
 .formHeader h2 {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
   margin-bottom: 8px;
 }
 
 .formHeader p {
-  color: #6b7280;
+  color: #ecf0f1;
   font-size: 1rem;
 }
 

@@ -358,49 +358,43 @@
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
   
-  .feedbackForm input:focus,
-  .feedbackForm textarea:focus {
-    border-color: #2747f9;
-    box-shadow: 0 0 8px rgba(39, 71, 249, 0.2);
+  .feedbackTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    text-align: center;
   }
   
-  .ratingStars {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin: 10px 0 5px;
+  .feedbackSubtitle {
+    font-size: 1.1rem;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 2rem;
   }
   
-  .star {
-    font-size: 28px;
-    color: #ddd;
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.2s ease;
+  .feedbackCardTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
   }
   
-  .star:hover,
-  .star.active {
-    color: #ffb54c;
-    transform: scale(1.2);
-  }
-  
-  .submitBtn {
-    background: #2747f9;
+  .submitButton {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #2563eb;
     border: none;
-    padding: 14px;
-    border-radius: 12px;
-    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0px 6px 18px rgba(39, 71, 249, 0.3);
   }
   
-  .submitBtn:hover {
-    background: #1a38d0;
+  .submitButton:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
     transform: translateY(-2px);
-    box-shadow: 0px 8px 22px rgba(39, 71, 249, 0.4);
   }
   
   .rateText {

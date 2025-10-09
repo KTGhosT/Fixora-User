@@ -50,7 +50,7 @@ const UniqueHeader = ({ user, setUser }) => {
             {/* Logo Section */}
             <div className={styles.logoSection} onClick={() => navigate('/')}>
               <div>
-                <div className={styles.logoText}>Fixora</div>
+                <div className={styles.logoText}>FIXORA</div>
                 <div className={styles.tagline}>WorkForce Experts</div>
               </div>
             </div>

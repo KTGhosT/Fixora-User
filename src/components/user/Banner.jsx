@@ -7,7 +7,7 @@ function FixoraBanner() {
       <div className={styles.content}>
         <p className={styles.subText}>WELCOME TO MY FIXORA APP</p>
         <h1 className={styles.title}>
-          We Are <span className={styles.highlight}>Fixora</span><br />Workforce Experts
+          We Are <span className={styles.highlight}>Fixora</span><br /><strong>Workforce Experts</strong>
         </h1>
       </div>
       <button className={styles.button}>GET STARTED</button>
