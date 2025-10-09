@@ -22,6 +22,16 @@ const Dashboard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [range, setRange] = useState('month');
 
+  // Tasks and time tracking state
+  const [tasks, setTasks] = useState([
+    { id: 101, title: 'Complete client installation', details: 'Project Alpha - 3 hours', priority: 'high' },
+    { id: 102, title: 'Follow up on quote', details: 'Client Beta - 1 hour', priority: 'medium' },
+    { id: 103, title: 'Update inventory records', details: 'Warehouse - 2 hours', priority: 'low' },
+  ]);
+  const [timeTracking, setTimeTracking] = useState({}); // { [taskId]: { startTime, endTime, running, saved, totalSeconds } }
+  const [tick, setTick] = useState(0); // re-render timer every second
+  const [feedback, setFeedback] = useState({}); // { [taskId]: string }
+
   const formatLKR = (value) =>
     `LKR ${Number(value || 0).toLocaleString('en-LK', {
       minimumFractionDigits: 2,
@@ -32,6 +42,81 @@ const Dashboard = () => {
     day: { orders: 11, sales: 1245.75, tasks: 8, performance: 92 },
     week: { orders: 58, sales: 7425.3, tasks: 39, performance: 90 },
     month: { orders: 223, sales: 28450.9, tasks: 164, performance: 93 },
+  };
+
+  // Timer tick
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Load/save time tracking from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('workerTaskTimeTracking');
+      if (saved) setTimeTracking(JSON.parse(saved));
+    } catch (_) {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('workerTaskTimeTracking', JSON.stringify(timeTracking));
+    } catch (_) {}
+  }, [timeTracking]);
+
+  const formatDuration = (seconds) => {
+    const s = Math.max(0, Math.floor(seconds || 0));
+    const hrs = Math.floor(s / 3600).toString().padStart(2, '0');
+    const mins = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+    const secs = (s % 60).toString().padStart(2, '0');
+    return `${hrs}:${mins}:${secs}`;
+  };
+
+  const handleStart = (taskId) => {
+    setTimeTracking((prev) => {
+      const next = {
+        ...prev,
+        [taskId]: { startTime: Date.now(), endTime: null, running: true, saved: false, totalSeconds: 0 },
+      };
+      return next;
+    });
+    const startedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setFeedback((f) => ({ ...f, [taskId]: `Started at ${startedAt}` }));
+  };
+
+  const handleEnd = async (taskId) => {
+    setTimeTracking((prev) => {
+      const t = prev[taskId];
+      if (!t?.startTime) return prev;
+      const end = Date.now();
+      const totalSeconds = Math.floor((end - t.startTime) / 1000);
+      const next = {
+        ...prev,
+        [taskId]: { ...t, endTime: end, running: false, totalSeconds },
+      };
+      return next;
+    });
+
+    // Persist via API if worker id is present, else simulate
+    try {
+      const t = timeTracking[taskId];
+      const startIso = new Date(t?.startTime || Date.now()).toISOString();
+      const endIso = new Date(Date.now()).toISOString();
+      const payload = { start_time: startIso, end_time: endIso, total_seconds: Math.floor(((Date.now()) - (t?.startTime || Date.now())) / 1000) };
+      if (id) {
+        await axiosInstance.post(`/worker/${id}/tasks/${taskId}/time`, payload);
+      } else {
+        await new Promise((res) => setTimeout(res, 300));
+      }
+      setTimeTracking((prev) => ({
+        ...prev,
+        [taskId]: { ...prev[taskId], saved: true },
+      }));
+      setFeedback((f) => ({ ...f, [taskId]: `Saved total ${formatDuration(payload.total_seconds)}` }));
+    } catch (error) {
+      console.error('Failed to save time tracking:', error);
+      setFeedback((f) => ({ ...f, [taskId]: 'Failed to save. Please retry.' }));
+    }
   };
 
   // Fetch worker data on component mount (with mock fallback when no id)
@@ -427,27 +512,45 @@ const Dashboard = () => {
 
               <div className={styles.taskList}>
                 <h3>Upcoming Tasks</h3>
-                <div className={styles.taskItem}>
-                  <div className={styles.taskInfo}>
-                    <div className={styles.taskTitle}>Complete client installation</div>
-                    <div className={styles.taskDetails}>Project Alpha - 3 hours</div>
-                  </div>
-                  <div className={`${styles.taskPriority} ${styles.high}`}>High</div>
-                </div>
-                <div className={styles.taskItem}>
-                  <div className={styles.taskInfo}>
-                    <div className={styles.taskTitle}>Follow up on quote</div>
-                    <div className={styles.taskDetails}>Client Beta - 1 hour</div>
-                  </div>
-                  <div className={`${styles.taskPriority} ${styles.medium}`}>Medium</div>
-                </div>
-                <div className={styles.taskItem}>
-                  <div className={styles.taskInfo}>
-                    <div className={styles.taskTitle}>Update inventory records</div>
-                    <div className={styles.taskDetails}>Warehouse - 2 hours</div>
-                  </div>
-                  <div className={`${styles.taskPriority} ${styles.low}`}>Low</div>
-                </div>
+                {tasks.map((task) => {
+                  const t = timeTracking[task.id] || {};
+                  const running = !!t.running;
+                  const elapsedSeconds = running ? Math.floor((Date.now() - (t.startTime || Date.now())) / 1000) : t.totalSeconds || 0;
+                  const priorityClass = task.priority === 'high' ? styles.high : task.priority === 'medium' ? styles.medium : styles.low;
+                  return (
+                    <div className={styles.taskItem} key={task.id}>
+                      <div className={styles.taskInfo}>
+                        <div className={styles.taskTitle}>{task.title}</div>
+                        <div className={styles.taskDetails}>{task.details}</div>
+                        <div style={{ marginTop: 8, fontWeight: 500 }}>
+                          {running ? (
+                            <span>Elapsed: {formatDuration(elapsedSeconds)}</span>
+                          ) : t.totalSeconds ? (
+                            <span>Worked: {formatDuration(t.totalSeconds)}</span>
+                          ) : (
+                            <span>Not started</span>
+                          )}
+                        </div>
+                        {feedback[task.id] && (
+                          <div style={{ marginTop: 6 }}>
+                            <Alert variant={t.saved ? 'success' : 'info'} className="p-2 m-0">
+                              {feedback[task.id]}
+                            </Alert>
+                          </div>
+                        )}
+                      </div>
+                      <div className={`${styles.taskPriority} ${priorityClass}`}>{task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</div>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }}>
+                        <Button variant="success" onClick={() => handleStart(task.id)} disabled={running}>
+                          {running ? 'Running' : 'Start'}
+                        </Button>
+                        <Button variant="danger" onClick={() => handleEnd(task.id)} disabled={!running && !t.startTime}>
+                          {t.endTime && !running ? 'Ended' : 'End'}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

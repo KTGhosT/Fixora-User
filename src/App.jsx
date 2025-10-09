@@ -138,15 +138,12 @@ function App() {
           <Route
             path="/worker/dashboard"
             element={
-              // Allow direct access to worker dashboard without login
               <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
             }
           />
           <Route
             path="/worker/dashboard/:id"
             element={
-              // Support dashboard with worker id param
-              <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
               <ProtectedRoute user={user} roles={["worker", "admin"]}>
                 <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
               </ProtectedRoute>
