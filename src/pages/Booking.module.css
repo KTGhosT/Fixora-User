@@ -6,7 +6,7 @@
   z-index: 0;
   background: 
     linear-gradient(135deg, rgba(249,250,251,0.85) 0%, rgba(229,231,235,0.85) 100%),
-    url("/src/assets/Home/HomePage.jpg") center/cover no-repeat;
+    url("/src/assets/Home/Homepage (2).jpg") center/cover no-repeat;
   /* Replace the above URL with your preferred background image */
   pointer-events: none;
 }
