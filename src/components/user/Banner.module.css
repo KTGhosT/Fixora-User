@@ -4,7 +4,7 @@
   /* Add a background image with a dark gradient overlay */
   background: 
     linear-gradient(120deg, rgba(35, 39, 47, 0.92) 60%, rgba(52, 58, 64, 0.96) 100%),
-    url('/src/assets/user/bg.jpg') center/cover no-repeat;
+    url('../../assets/user/bg.jpg') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -96,4 +96,24 @@
     height: 48px;
     padding: 0 18px;
   }
+}
+/* --- Simple button overrides for homepage banner --- */
+.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #fff !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+.button:hover,
+.button:focus,
+.button:active {
+  background-color: #fff !important;
+  color: #333 !important;
+  border-color: #ddd !important;
 }

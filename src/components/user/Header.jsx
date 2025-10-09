@@ -1,175 +1,82 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const UniqueHeader = ({ user, setUser }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
-  const [isFloating, setIsFloating] = useState(false);
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
 
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsServicesDropdownOpen(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
-    document.addEventListener('mousedown', handleClickOutside);
-
-    // Check localStorage for user
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [setUser]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsFloating(true), 1000);
-    const stopTimer = setTimeout(() => setIsFloating(false), 5000);
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(stopTimer);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLoginSignup = (e) => {
+    e.preventDefault();
+    navigate('/login');
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    navigate('/');
+  };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-    if (isServicesDropdownOpen) setIsServicesDropdownOpen(false);
-  };
-
-  const toggleServicesDropdown = () => {
-    setIsServicesDropdownOpen(!isServicesDropdownOpen);
   };
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const logout = () => {
-    // Clear all authentication-related data
-    localStorage.removeItem('auth_token');  // ✅ Correct key
-    localStorage.removeItem('token');       // Keep for backward compatibility
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
-    localStorage.removeItem('email');       // Clear remembered email
-    
-    // Clear user state
-    setUser(null);
-    
-    // Navigate to login
-    navigate('/login');
-    closeMobileMenu();
-  };
-
-  // Handler for login/signup button
-  const handleLoginSignup = (e) => {
-    e.preventDefault();
-    navigate('/login');
-    closeMobileMenu();
+  const handleCallNow = () => {
+    window.location.href = 'tel:+1234567890';
   };
 
   return (
     <>
-      {/* Floating Header with Clipped Corners */}
-      <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''} ${isFloating ? styles.animateFloat : ''}`}>
-        <div className={styles.headerContent}>
-          {/* Logo */}
-          <div className={styles.logo} onClick={() => navigate('/')}>
-            <span className={styles.logoText}>FIXORA</span>
-            <span className={styles.logoSubtext}>WorkForce Experts</span>
-          </div>
+      {/* Combined Floating Navbar */}
+      <header className={`${styles.combinedNavbar} ${isScrolled ? styles.scrolled : ''}`}>
+        <div className={styles.navbarContainer}>
+          {/* Top Section */}
+          <div className={styles.topSection}>
+            {/* Logo Section */}
+            <div className={styles.logoSection} onClick={() => navigate('/')}>
+              <div>
+                <div className={styles.logoText}>FIXORA</div>
+                <div className={styles.tagline}>WorkForce Experts</div>
+              </div>
+            </div>
 
-          {/* Navigation */}
-          <nav className={`${styles.nav} ${isMobileMenuOpen ? styles.navOpen : ''}`}>
-            <ul className={styles.navList}>
-              <li className={styles.dropdownContainer} ref={dropdownRef}>
-                <button
-                  className={`${styles.navLink} ${styles.dropdownToggle}`}
-                  onClick={toggleServicesDropdown}
-                  aria-expanded={isServicesDropdownOpen}
-                  aria-haspopup="true"
-                >
-                  SERVICES
-                  <span className={`${styles.dropdownArrow} ${isServicesDropdownOpen ? styles.arrowOpen : ''}`}>
-                    <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                </button>
-                <div className={`${styles.dropdownMenu} ${isServicesDropdownOpen ? styles.dropdownOpen : ''}`}>
-                  <div className={styles.dropdownContent}>
-                    <a href="/services/carpenter" className={styles.dropdownLink} onClick={closeMobileMenu}>
-                      <span className={styles.serviceIcon}>🔨</span>
-                      <div>
-                        <div className={styles.serviceName}>Carpenter</div>
-                        <div className={styles.serviceDesc}>Furniture & installations</div>
-                      </div>
-                    </a>
-                    <a href="/services/devicerepair" className={styles.dropdownLink} onClick={closeMobileMenu}>
-                      <span className={styles.serviceIcon}>🔧</span>
-                      <div>
-                        <div className={styles.serviceName}>Device Repair</div>
-                        <div className={styles.serviceDesc}>Phones, laptops & more</div>
-                      </div>
-                    </a>
-                    <a href="/services/electrician" className={styles.dropdownLink} onClick={closeMobileMenu}>
-                      <span className={styles.serviceIcon}>⚡</span>
-                      <div>
-                        <div className={styles.serviceName}>Electrician</div>
-                        <div className={styles.serviceDesc}>Wiring & electrical issues</div>
-                      </div>
-                    </a>
-                    <a href="/services/gardencleaner" className={styles.dropdownLink} onClick={closeMobileMenu}>
-                      <span className={styles.serviceIcon}>🌱</span>
-                      <div>
-                        <div className={styles.serviceName}>Garden Cleaner</div>
-                        <div className={styles.serviceDesc}>Lawn & garden maintenance</div>
-                      </div>
-                    </a>
-                    <a href="/services/housecleaning" className={styles.dropdownLink} onClick={closeMobileMenu}>
-                      <span className={styles.serviceIcon}>🏠</span>
-                      <div>
-                        <div className={styles.serviceName}>House Keeper</div>
-                        <div className={styles.serviceDesc}>Cleaning & organization</div>
-                      </div>
-                    </a>
-                    <a href="/services/plumber" className={styles.dropdownLink} onClick={closeMobileMenu}>
-                      <span className={styles.serviceIcon}>🚰</span>
-                      <div>
-                        <div className={styles.serviceName}>Plumber</div>
-                        <div className={styles.serviceDesc}>Pipes & fixtures repair</div>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </li>
-              <li><a href="#about" className={styles.navLink} onClick={closeMobileMenu}>ABOUT</a></li>
-              <li><a href="/feedback" className={styles.navLink} onClick={closeMobileMenu}>FEEDBACK CENTER</a></li>
-            </ul>
+            {/* Center Navigation */}
+            <nav className={styles.centerNav}>
+              <a href="#about" className={styles.navLink}>About</a>
+              <a href="/feedback" className={styles.navLink}>Feedback Center</a>
+            </nav>
 
-            {/* User Actions */}
-            <div className={styles.headerActions}>
+            {/* Right Section */}
+            <div className={styles.rightSection}>
+              {/* Call Now Button */}
+              <button className={styles.callNowButton} onClick={handleCallNow}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7293C21.7209 20.9845 21.5573 21.2136 21.3521 21.4019C21.1468 21.5901 20.9046 21.7335 20.6407 21.8227C20.3769 21.9119 20.0974 21.9451 19.82 21.92C16.7428 21.5856 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.18999 12.85C3.49997 10.2412 2.44824 7.27099 2.11999 4.18C2.095 3.90347 2.12787 3.62476 2.21649 3.36162C2.30512 3.09849 2.44756 2.85669 2.63476 2.65162C2.82196 2.44655 3.0498 2.28271 3.30379 2.17052C3.55777 2.05833 3.83233 2.00026 4.10999 2H7.10999C7.59344 1.99522 8.06477 2.16708 8.43820 2.48353C8.81162 2.79999 9.06322 3.23945 9.14999 3.72C9.31072 4.68007 9.58719 5.61273 9.96999 6.5C10.1056 6.88792 10.1329 7.30478 10.0494 7.70618C9.96588 8.10759 9.77404 8.47549 9.48999 8.76L8.12999 10.12C9.42741 12.6551 11.3449 14.5727 13.88 15.87L15.24 14.51C15.5245 14.226 15.8924 14.0341 16.2938 13.9506C16.6952 13.8671 17.1121 13.8944 17.5 14.03C18.3873 14.4128 19.3199 14.6893 20.28 14.85C20.7658 14.9368 21.2094 15.1934 21.5265 15.5737C21.8437 15.954 22.0122 16.4326 21.9999 16.92H22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Call Now
+              </button>
+
+              {/* Auth Buttons or User Section */}
               {user ? (
-                <div className={styles.profileMenu}>
+                <div className={styles.userSection}>
                   <button
                     className={styles.profileButton}
-                    onClick={() => {
-                      navigate('/user/account');
-                      closeMobileMenu();
-                    }}
+                    onClick={() => navigate('/profile')}
                     aria-label="Go to account page"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -188,40 +95,94 @@ const UniqueHeader = ({ user, setUser }) => {
                   </button>
                 </div>
               ) : (
-                <div className={styles.floatingAuthButton}>
-                  <a
-                    href="/login"
-                    className={styles.authButton}
-                    onClick={handleLoginSignup}
-                  >
-                    <span className={styles.authButtonText}>
-                      <span>LOGIN / SIGNUP</span>
-                      <svg className={styles.authButtonIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                  </a>
+                <div className={styles.authButtons}>
+                  <button className={styles.signInButton} onClick={handleLoginSignup}>
+                    Sign in
+                  </button>
+                  <button className={styles.signUpButton} onClick={handleLoginSignup}>
+                    Sign up
+                  </button>
+                </div>
+              )}
+
+              {/* Mobile Menu Toggle */}
+              <button
+                className={styles.mobileMenuToggle}
+                onClick={toggleMobileMenu}
+                aria-label="Toggle menu"
+              >
+                <div className={`${styles.hamburgerLine} ${isMobileMenuOpen ? styles.hamburgerActive : ''}`}></div>
+                <div className={`${styles.hamburgerLine} ${isMobileMenuOpen ? styles.hamburgerActive : ''}`}></div>
+                <div className={`${styles.hamburgerLine} ${isMobileMenuOpen ? styles.hamburgerActive : ''}`}></div>
+              </button>
+            </div>
+          </div>
+
+          {/* Services Section */}
+          <div className={styles.servicesSection}>
+            <div className={styles.servicesContent}>
+              <a href="/services/plumber" className={styles.serviceLink}>Plumber</a>
+              <a href="/services/carpenter" className={styles.serviceLink}>Carpenter</a>
+              <a href="/services/electrician" className={styles.serviceLink}>Electrician</a>
+              <a href="/services/devicerepair" className={styles.serviceLink}>Device Repair</a>
+              <a href="/services/housecleaning" className={styles.serviceLink}>House Keeper</a>
+              <a href="/services/gardencleaner" className={styles.serviceLink}>Garden Cleaner</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className={styles.mobileMenuOverlay} onClick={closeMobileMenu}>
+          <div className={styles.mobileMenuContent} onClick={(e) => e.stopPropagation()}>
+            {/* Navigation Links */}
+            <div className={styles.mobileNavLinks}>
+              <a href="#about" className={styles.mobileNavLink} onClick={closeMobileMenu}>About</a>
+              <a href="/feedback" className={styles.mobileNavLink} onClick={closeMobileMenu}>Feedback Center</a>
+            </div>
+
+            {/* Services */}
+            <div className={styles.mobileServices}>
+              <h3 className={styles.mobileServicesTitle}>Services</h3>
+              <a href="/services/plumber" className={styles.mobileServiceLink} onClick={closeMobileMenu}>Plumber</a>
+              <a href="/services/carpenter" className={styles.mobileServiceLink} onClick={closeMobileMenu}>Carpenter</a>
+              <a href="/services/electrician" className={styles.mobileServiceLink} onClick={closeMobileMenu}>Electrician</a>
+              <a href="/services/devicerepair" className={styles.mobileServiceLink} onClick={closeMobileMenu}>Device Repair</a>
+              <a href="/services/housecleaning" className={styles.mobileServiceLink} onClick={closeMobileMenu}>House Keeper</a>
+              <a href="/services/gardencleaner" className={styles.mobileServiceLink} onClick={closeMobileMenu}>Garden Cleaner</a>
+            </div>
+
+            {/* Actions */}
+            <div className={styles.mobileActions}>
+              <button className={styles.mobileCallButton} onClick={handleCallNow}>
+                Call Now
+              </button>
+
+              {user ? (
+                <div className={styles.mobileAuthButtons}>
+                  <button className={styles.mobileSignInButton} onClick={() => navigate('/profile')}>
+                    Profile ({user.name})
+                  </button>
+                  <button className={styles.mobileSignUpButton} onClick={logout}>
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.mobileAuthButtons}>
+                  <button className={styles.mobileSignInButton} onClick={handleLoginSignup}>
+                    Sign in
+                  </button>
+                  <button className={styles.mobileSignUpButton} onClick={handleLoginSignup}>
+                    Sign up
+                  </button>
                 </div>
               )}
             </div>
-          </nav>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className={`${styles.menuToggle} ${isMobileMenuOpen ? styles.active : ''}`}
-            onClick={toggleMobileMenu}
-            aria-label="Toggle menu"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+          </div>
         </div>
-      </header>
+      )}
     </>
-
-
-
   );
 };
 

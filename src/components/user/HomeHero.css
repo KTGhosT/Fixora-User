@@ -14,7 +14,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/src/assets/Home/HomePage.jpg');
+  background-image: url('/src/assets/Home/Homepage (2).jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -27,6 +27,14 @@
   z-index: 10;
   padding-top: 4rem;
   padding-bottom: 4rem;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 8rem);
 }
 
 .hero-glow-effect {
@@ -90,14 +98,61 @@
   }
 }
 
+/* Hero Badge */
 .hero-badge {
   display: inline-block;
   background: rgba(255, 107, 53, 0.1);
   border: 1px solid rgba(255, 107, 53, 0.3);
-  border-radius: 50px;
-  padding: 8px 20px;
+  color: #FF6B35;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
   margin-bottom: 2rem;
   backdrop-filter: blur(10px);
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Feature Pills */
+.feature-pills {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem auto;
+  flex-wrap: wrap;
+  max-width: 600px;
+  text-align: center;
+}
+
+.feature-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.feature-pill:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.pill-icon {
+  font-size: 1rem;
+  color: #FF6B35;
 }
 
 .hero-title {
@@ -106,20 +161,32 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 800 !important;
-  margin-bottom: 1.5rem !important;
+  margin-bottom: 2rem !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block;
 }
 
 .hero-subtitle {
   color: rgba(255, 255, 255, 0.8) !important;
   line-height: 1.6 !important;
   margin-bottom: 3rem !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 600px;
+  padding: 0 1rem;
+  display: block;
 }
 
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 3rem;
+  gap: 1.5rem;
+  margin: 3rem auto 2rem auto;
+  max-width: 800px;
 }
 
 .feature-item {
@@ -127,7 +194,7 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   text-align: center;
   transition: all 0.3s ease;
 }
@@ -160,6 +227,10 @@
   transform: translateX(-50%);
   text-align: center;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .scroll-line {
@@ -199,11 +270,43 @@
 /* Responsive */
 @media (max-width: 768px) {
   .hero-background {
-    min-height: 90vh;
+    min-height: 100vh;
+  }
+  
+  .hero-content-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    min-height: calc(100vh - 4rem);
+  }
+  
+  .hero-title {
+    margin-bottom: 1.5rem !important;
+    font-size: 2.5rem !important;
+  }
+  
+  .hero-subtitle {
+    margin-bottom: 2rem !important;
+    padding: 0 1.5rem;
+  }
+  
+  .feature-pills {
+    margin: 1.5rem auto;
+    gap: 0.8rem;
+  }
+  
+  .feature-pill {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
   }
   
   .feature-grid {
     grid-template-columns: 1fr;
+    margin: 2rem auto 1.5rem auto;
+    gap: 1.2rem;
+  }
+  
+  .hero-buttons {
+    margin: 2rem auto 1.5rem auto;
   }
   
   .geometry-1,
@@ -219,8 +322,13 @@
 .hero-buttons {
   display: flex;
   gap: 1.5rem;
-  margin: 2rem 0;
+  margin: 3rem auto 2rem auto;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
 }
 
 /* Primary Button - Become a Worker */
@@ -248,6 +356,10 @@
     0 8px 32px rgba(102, 126, 234, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   letter-spacing: 0.5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary:hover {
@@ -323,6 +435,10 @@
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   letter-spacing: 0.5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-secondary::before {
@@ -453,15 +569,19 @@
     flex-direction: column;
     gap: 1.2rem;
     align-items: center;
+    margin: 2rem auto;
+    max-width: 100%;
+    padding: 0 1rem;
   }
   
   .btn-primary,
   .btn-secondary {
     width: 100%;
-    max-width: 300px;
+    max-width: 320px;
     justify-content: center;
-    padding: 14px 32px;
+    padding: 16px 32px;
     font-size: 15px;
+    min-height: 52px;
   }
 }
 

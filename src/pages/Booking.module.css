@@ -5,31 +5,15 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  /* Added a new background image for the page */
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)),
-    url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2100&q=80');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-}
-
-/* Alternative background images (uncomment to use) */
-/*
-body {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), 
-                    url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
-}
-
-body {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), 
-                    url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
-}
-
-body {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), 
-                    url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+  width: 100vw;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: 
+    linear-gradient(135deg, rgba(249,250,251,0.85) 0%, rgba(229,231,235,0.85) 100%),
+    url("/src/assets/Home/Homepage (2).jpg") center/cover no-repeat;
+  /* Replace the above URL with your preferred background image */
+  pointer-events: none;
 }
 */
 

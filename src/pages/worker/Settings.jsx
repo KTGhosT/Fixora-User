@@ -305,14 +305,7 @@ const Settings = () => {
             <i className="icon-orders"></i>
             <span>Works</span>
           </Link>
-          <Link to="/worker/tasks" className={styles.navItem}>
-            <i className="icon-tasks"></i>
-            <span>Tasks</span>
-          </Link>
-          <Link to="/worker/sales" className={styles.navItem}>
-            <i className="icon-sales"></i>
-            <span>Sales</span>
-          </Link>
+          {/* Tasks and Sales removed after consolidation into Works */}
           <Link to="/worker/payments" className={styles.navItem}>
             <i className="icon-payments"></i>
             <span>Payments</span>
