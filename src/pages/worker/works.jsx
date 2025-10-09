@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './dashboard.module.css';
 import { gsap } from 'gsap';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import axiosInstance from '../../services/api';
 
 const WorkerWorks = () => {
+  const { id } = useParams();
   const [activeTab, setActiveTab] = useState('ongoing');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -16,6 +18,20 @@ const WorkerWorks = () => {
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventTime, setNewEventTime] = useState('');
   const [sidebarWidth, setSidebarWidth] = useState(260);
+  const [timeTracking, setTimeTracking] = useState({});
+  const [tick, setTick] = useState(0);
+  const [feedback, setFeedback] = useState({});
+  // Merged Tasks state
+  const [tasks, setTasks] = useState([
+    { id: 1, title: 'Inspect client site', assignee: 'Sam', priority: 'High', status: 'In Progress', due: '2025-10-12', tags: ['Onsite', 'Safety'], notes: 'Check electrical panel and note any hazards.' },
+    { id: 2, title: 'Prepare materials list', assignee: 'Nadia', priority: 'Medium', status: 'Pending', due: '2025-10-13', tags: ['Procurement'], notes: 'Confirm quantities for plumbing fixtures.' },
+    { id: 3, title: 'Follow-up call with client', assignee: 'Liam', priority: 'Low', status: 'Completed', due: '2025-10-11', tags: ['Communication'], notes: 'Client approved the material list.' },
+  ]);
+  const [expandedTaskId, setExpandedTaskId] = useState(null);
+  const toggleTaskExpand = (id) => setExpandedTaskId(prev => (prev === id ? null : id));
+  const toggleTaskStatus = (id) => setTasks(prev => prev.map(t => t.id === id ? ({ ...t, status: t.status === 'Completed' ? 'In Progress' : 'Completed' }) : t));
+  const badgeForTaskStatus = (status) => (status === 'Completed' ? 'bg-success' : (status === 'In Progress' ? 'bg-info' : 'bg-warning'));
+  const badgeForTaskPriority = (priority) => (priority === 'High' ? 'bg-danger' : (priority === 'Medium' ? 'bg-primary' : 'bg-secondary'));
 
   // Responsive sidebar width adjustments for laptop/PC
   useEffect(() => {
@@ -28,6 +44,68 @@ const WorkerWorks = () => {
     window.addEventListener('resize', updateSidebar);
     return () => window.removeEventListener('resize', updateSidebar);
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('workerWorksTimeTracking');
+      if (saved) setTimeTracking(JSON.parse(saved));
+    } catch (_) {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('workerWorksTimeTracking', JSON.stringify(timeTracking));
+    } catch (_) {}
+  }, [timeTracking]);
+
+  const formatDuration = (seconds) => {
+    const s = Math.max(0, Math.floor(seconds || 0));
+    const hrs = Math.floor(s / 3600).toString().padStart(2, '0');
+    const mins = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+    const secs = (s % 60).toString().padStart(2, '0');
+    return `${hrs}:${mins}:${secs}`;
+  };
+
+  const handleStart = (workId) => {
+    setTimeTracking((prev) => ({
+      ...prev,
+      [workId]: { startTime: Date.now(), endTime: null, running: true, saved: false, totalSeconds: 0 },
+    }));
+    const startedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setFeedback((f) => ({ ...f, [workId]: `Started at ${startedAt}` }));
+  };
+
+  const handleEnd = async (workId) => {
+    setTimeTracking((prev) => {
+      const t = prev[workId];
+      if (!t?.startTime) return prev;
+      const end = Date.now();
+      const totalSeconds = Math.floor((end - t.startTime) / 1000);
+      return { ...prev, [workId]: { ...t, endTime: end, running: false, totalSeconds } };
+    });
+
+    try {
+      const t = timeTracking[workId];
+      const startIso = new Date(t?.startTime || Date.now()).toISOString();
+      const endIso = new Date(Date.now()).toISOString();
+      const payload = { start_time: startIso, end_time: endIso, total_seconds: Math.floor(((Date.now()) - (t?.startTime || Date.now())) / 1000) };
+      if (id) {
+        await axiosInstance.post(`/worker/${id}/works/${workId}/time`, payload);
+      } else {
+        await new Promise((res) => setTimeout(res, 300));
+      }
+      setTimeTracking((prev) => ({ ...prev, [workId]: { ...prev[workId], saved: true } }));
+      setFeedback((f) => ({ ...f, [workId]: `Saved total ${formatDuration(payload.total_seconds)}` }));
+    } catch (error) {
+      console.error('Failed to save time tracking:', error);
+      setFeedback((f) => ({ ...f, [workId]: 'Failed to save. Please retry.' }));
+    }
+  };
   
   // Update time every second
   useEffect(() => {
@@ -216,68 +294,99 @@ const WorkerWorks = () => {
   };
 
   // Work item component
-  const WorkItem = ({ work }) => (
-    <div className="card mb-3 shadow-sm border-0">
-      <div className="card-body">
-        <div className="d-flex justify-content-between align-items-start">
-          <div>
-            <h5 className="card-title mb-1">{work.title}</h5>
-            <p className="card-text text-muted mb-2">{work.client}</p>
+  const WorkItem = ({ work }) => {
+    const t = timeTracking[work.id] || {};
+    const running = !!t.running;
+    const elapsedSeconds = running ? Math.floor((Date.now() - (t.startTime || Date.now())) / 1000) : t.totalSeconds || 0;
+    const MAX_BAR_SECONDS = 8 * 60 * 60; // 8 hours as reference
+    const timeSeconds = running ? elapsedSeconds : (t.totalSeconds || 0);
+    const timePercent = Math.min((timeSeconds / MAX_BAR_SECONDS) * 100, 100);
+    return (
+      <div className="card mb-3 shadow-sm border-0">
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 className="card-title mb-1">{work.title}</h5>
+              <p className="card-text text-muted mb-2">{work.client}</p>
+            </div>
+            <span className={`badge ${
+              work.priority === 'High' ? 'bg-danger' : 
+              work.priority === 'Medium' ? 'bg-warning' : 'bg-info'
+            }`}>
+              {work.priority}
+            </span>
           </div>
-          <span className={`badge ${
-            work.priority === 'High' ? 'bg-danger' : 
-            work.priority === 'Medium' ? 'bg-warning' : 'bg-info'
-          }`}>
-            {work.priority}
-          </span>
-        </div>
-        
-        <div className="mb-2">
-          <small className="text-muted">
-            <i className="bi bi-geo-alt me-1"></i> {work.location}
-          </small>
-        </div>
-        
-        <div className="d-flex align-items-center mb-3">
-          <div className="me-3">
+
+          <div className="mb-2">
             <small className="text-muted">
-              <i className="bi bi-calendar-event me-1"></i> {work.date}
+              <i className="bi bi-geo-alt me-1"></i> {work.location}
             </small>
           </div>
-          <div>
-            <small className="text-muted">
-              <i className="bi bi-clock me-1"></i> {work.startTime} - {work.endTime}
-            </small>
+
+          <div className="d-flex align-items-center mb-3">
+            <div className="me-3">
+              <small className="text-muted">
+                <i className="bi bi-calendar-event me-1"></i> {work.date}
+              </small>
+            </div>
+            <div>
+              <small className="text-muted">
+                <i className="bi bi-clock me-1"></i> {work.startTime} - {work.endTime}
+              </small>
+            </div>
           </div>
-        </div>
-        
-        <div className="mb-3">
-          <div className="d-flex justify-content-between mb-1">
-            <small className="text-muted">Progress</small>
-            <small className="text-muted">{work.progress}%</small>
+
+          <div className="mb-2">
+            <small className="text-muted fw-semibold">{running ? 'Elapsed' : t.totalSeconds ? 'Worked' : 'Not started'}</small>
+            <div className="mt-1">
+              <span className="badge bg-secondary">{running ? formatDuration(elapsedSeconds) : t.totalSeconds ? formatDuration(t.totalSeconds) : '00:00:00'}</span>
+            </div>
+            {feedback[work.id] && (
+              <div className="mt-2">
+                <div className={`alert ${t.saved ? 'alert-success' : 'alert-info'} p-2 mb-0`}>{feedback[work.id]}</div>
+              </div>
+            )}
           </div>
-          <div className="progress" style={{height: '8px'}}>
-            <div 
-              className="progress-bar" 
-              role="progressbar" 
-              style={{ width: `${work.progress}%` }}
-            ></div>
+
+          <div className="mb-3">
+            <div className="d-flex justify-content-between mb-1">
+              <small className="text-muted">Working Time</small>
+              <small className="text-muted">{formatDuration(timeSeconds)}</small>
+            </div>
+            <div className="progress" style={{ height: '8px' }}>
+              <div
+                className="progress-bar bg-secondary"
+                role="progressbar"
+                style={{ width: `${timePercent}%` }}
+                aria-valuenow={timePercent}
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
           </div>
-        </div>
-        
-        <div className="d-flex justify-content-between">
-          <span className={`badge ${
-            work.status === 'In Progress' ? 'bg-primary' :
-            work.status === 'Pending Review' ? 'bg-warning' :
-            work.status === 'Assigned' ? 'bg-info' : 'bg-success'
-          }`}>
-            {work.status}
-          </span>
-          <button className="btn btn-sm btn-outline-primary">View Details</button>
+
+          <div className="d-flex justify-content-between align-items-center">
+            <span className={`badge ${
+              work.status === 'In Progress' ? 'bg-primary' :
+              work.status === 'Pending Review' ? 'bg-warning' :
+              work.status === 'Assigned' ? 'bg-info' : 'bg-success'
+            }`}>
+              {work.status}
+            </span>
+            <div className="d-flex gap-2">
+              <button className="btn btn-sm btn-success" onClick={() => handleStart(work.id)} disabled={running}>
+                {running ? 'Running' : 'Start'}
+              </button>
+              <button className="btn btn-sm btn-danger" onClick={() => handleEnd(work.id)} disabled={!running && !t.startTime}>
+                {t.endTime && !running ? 'Ended' : 'End'}
+              </button>
+              <button className="btn btn-sm btn-outline-primary">View Details</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // React Calendar integration
   const getDayEvents = (date) => {
@@ -359,6 +468,66 @@ const WorkerWorks = () => {
     );
   };
 
+  // Tasks table component merged from Tasks.jsx
+  const TasksTable = () => (
+    <div className="card mt-4">
+      <div className="card-header">Tasks</div>
+      <div className="card-body p-0">
+        <table className="table table-hover align-middle mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>Task</th>
+              <th>Assignee</th>
+              <th>Priority</th>
+              <th>Due</th>
+              <th>Status</th>
+              <th className="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.map(task => (
+              <React.Fragment key={task.id}>
+                <tr onClick={() => toggleTaskExpand(task.id)} style={{ cursor: 'pointer' }}>
+                  <td>
+                    <div className="fw-semibold">{task.title}</div>
+                    <small className="text-muted">ID: {task.id}</small>
+                  </td>
+                  <td>{task.assignee}</td>
+                  <td><span className={`badge ${badgeForTaskPriority(task.priority)}`}>{task.priority}</span></td>
+                  <td><span className="text-muted">{task.due}</span></td>
+                  <td><span className={`badge ${badgeForTaskStatus(task.status)}`}>{task.status}</span></td>
+                  <td className="text-end">
+                    <button
+                      className={`btn btn-sm ${task.status === 'Completed' ? 'btn-success' : 'btn-outline-success'} me-2`}
+                      onClick={(e) => { e.stopPropagation(); toggleTaskStatus(task.id); }}
+                    >
+                      {task.status === 'Completed' ? 'Completed' : 'Mark Complete'}
+                    </button>
+                    <button className="btn btn-sm btn-outline-primary" onClick={(e) => { e.stopPropagation(); toggleTaskExpand(task.id); }}>
+                      {expandedTaskId === task.id ? 'Hide Details' : 'View Details'}
+                    </button>
+                  </td>
+                </tr>
+                {expandedTaskId === task.id && (
+                  <tr>
+                    <td colSpan="6" className="bg-light">
+                      <div className="p-3">
+                        <div className="mb-2"><strong>Notes:</strong> {task.notes}</div>
+                        <div>
+                          <strong>Tags:</strong> {task.tags?.map(tag => (<span key={tag} className="badge bg-light text-dark me-1">{tag}</span>))}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.dashboardContainer}>
       {/* Left Navigation Sidebar */}
@@ -375,14 +544,7 @@ const WorkerWorks = () => {
             <i className="icon-orders"></i>
             <span>Works</span>
           </Link>
-          <Link to="/worker/tasks" className={styles.navItem}>
-            <i className="icon-tasks"></i>
-            <span>Tasks</span>
-          </Link>
-          <Link to="/worker/sales" className={styles.navItem}>
-            <i className="icon-sales"></i>
-            <span>Sales</span>
-          </Link>
+          {/* Tasks and Sales links removed after merging into Works */}
           <Link to="/worker/payments" className={styles.navItem}>
             <i className="icon-payments"></i>
             <span>Payments</span>
@@ -447,7 +609,7 @@ const WorkerWorks = () => {
                   </button>
                 </div>
               </div>
-
+              
               {/* Works List */}
               <div className="works-list" ref={listRef}>
                 {works[activeTab].length > 0 ? (
@@ -461,6 +623,9 @@ const WorkerWorks = () => {
                   </div>
                 )}
               </div>
+
+              {/* Merged Tasks Table */}
+              <TasksTable />
             </div>
 
             {/* Right Calendar Panel */}

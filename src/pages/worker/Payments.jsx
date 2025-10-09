@@ -29,8 +29,7 @@ const Payments = () => {
         <nav className={styles.navMenu}>
           <Link to="/worker/dashboard" className={styles.navItem}><i className="icon-dashboard"></i><span>Dashboard</span></Link>
           <Link to="/worker/works" className={styles.navItem}><i className="icon-orders"></i><span>Works</span></Link>
-          <Link to="/worker/tasks" className={styles.navItem}><i className="icon-tasks"></i><span>Tasks</span></Link>
-          <Link to="/worker/sales" className={styles.navItem}><i className="icon-sales"></i><span>Sales</span></Link>
+          {/* Tasks and Sales removed after consolidation into Works */}
           <Link to="/worker/payments" className={`${styles.navItem} ${styles.active}`}><i className="icon-payments"></i><span>Payments</span></Link>
           <Link to="/worker/inventory" className={styles.navItem}><i className="icon-inventory"></i><span>Inventory</span></Link>
           <Link to="/worker/clients" className={styles.navItem}><i className="icon-clients"></i><span>Clients</span></Link>

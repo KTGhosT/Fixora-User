@@ -132,21 +132,19 @@
 .filterBtn {
   padding: 8px 16px;
   border: 1px solid #d1d5db;
-  background: white;
+  background: #fff;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.2s ease;
 }
 
-.filterBtn:hover {
-  background: #f3f4f6;
-}
+/* Remove hover effects for basic button styling */
+/* .filterBtn:hover { background: #f3f4f6; } */
 
 .filterBtn.active {
-  background: #3498db;
-  color: white;
-  border-color: #3498db;
+  background: #fff;
+  color: #0d6efd;
+  border-color: #0d6efd;
 }
 
 /* Stats Grid */
@@ -597,9 +595,8 @@
   will-change: transform;
 }
 
-.navItem:hover {
-  transform: translateX(2px);
-}
+/* Remove hover transform for nav items to keep UI basic */
+/* .navItem:hover { transform: translateX(2px); } */
 
 .mobile-calendar .event-item {
   box-shadow: 0 1px 2px rgba(0,0,0,0.06);
@@ -695,4 +692,59 @@
 
 :global(.rc-add-form input) {
   font-size: 13px;
+}
+
+/* Basic button normalization for worker pages */
+:global(.btn) {
+  background-color: #f6f7f9;
+  border: 1px solid #d1d5db;
+  color: #1f2937;
+  border-radius: 6px;
+  box-shadow: none;
+  transition: none;
+}
+
+:global(.btn:hover),
+:global(.btn:focus),
+:global(.btn:active) {
+  background-color: #f6f7f9;
+  color: #1f2937;
+  border-color: #d1d5db;
+  box-shadow: none;
+}
+
+/* Neutralize outline variants to keep buttons basic */
+:global(.btn-outline-primary),
+:global(.btn-outline-secondary),
+:global(.btn-outline-success),
+:global(.btn-outline-warning),
+:global(.btn-outline-danger),
+:global(.btn-outline-info),
+:global(.btn-outline-dark) {
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+
+:global(.btn-outline-primary:hover),
+:global(.btn-outline-secondary:hover),
+:global(.btn-outline-success:hover),
+:global(.btn-outline-warning:hover),
+:global(.btn-outline-danger:hover),
+:global(.btn-outline-info:hover),
+:global(.btn-outline-dark:hover) {
+  background-color: #f6f7f9;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+
+/* Keep link-style buttons basic too */
+:global(.btn-link) {
+  color: #1f2937;
+  text-decoration: none;
+}
+
+:global(.btn-link:hover),
+:global(.btn-link:focus) {
+  color: #1f2937;
+  text-decoration: none;
 }

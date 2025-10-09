@@ -10,8 +10,7 @@ const Dashboard = lazy(() => import("./pages/worker/dashboard"));
 const RegisterPage = lazy(() => import("./pages/worker/register"));
 const Settings = lazy(() => import("./pages/worker/Settings"));
 const WorkerWorks = lazy(() => import("./pages/worker/works"));
-const WorkerTasks = lazy(() => import("./pages/worker/Tasks"));
-const WorkerSales = lazy(() => import("./pages/worker/Sales"));
+// Removed Tasks and Sales pages after merging into Works
 const WorkerPayments = lazy(() => import("./pages/worker/Payments"));
 const WorkerInventory = lazy(() => import("./pages/worker/Inventory"));
 const WorkerClients = lazy(() => import("./pages/worker/Clients"));
@@ -138,7 +137,6 @@ function App() {
           <Route
             path="/worker/dashboard"
             element={
-              // Allow direct access to worker dashboard without login
               <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
             }
           />
@@ -179,9 +177,7 @@ function App() {
             }
           />
 
-          {/* Additional worker sections from sidebar */}
-          <Route path="/worker/tasks" element={<Suspense fallback={<LoadingSpinner />}><WorkerTasks /></Suspense>} />
-          <Route path="/worker/sales" element={<Suspense fallback={<LoadingSpinner />}><WorkerSales /></Suspense>} />
+          {/* Additional worker sections from sidebar (Tasks and Sales removed) */}
           <Route path="/worker/payments" element={<Suspense fallback={<LoadingSpinner />}><WorkerPayments /></Suspense>} />
           <Route path="/worker/inventory" element={<Suspense fallback={<LoadingSpinner />}><WorkerInventory /></Suspense>} />
           <Route path="/worker/clients" element={<Suspense fallback={<LoadingSpinner />}><WorkerClients /></Suspense>} />
