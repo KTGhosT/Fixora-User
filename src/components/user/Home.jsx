@@ -137,7 +137,7 @@ const ModernHero = () => {
     </button>
     <button 
       className="btn-secondary"
-      onClick={() => navigate('/services')}
+      onClick={() => navigate('/services/carpenter')}
     >
       Search for Worker
       <span className="btn-icon">🔍</span>

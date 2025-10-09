@@ -48,6 +48,9 @@ const PasswordResetDebug = lazy(() => import("./components/PasswordResetDebug"))
 const ManageServiceCategories = lazy(() => import("./pages/admin/ManageServiceCategories"));
 const ManageWorkerLocation = lazy(() => import("./pages/admin/ManageWorkerLocation"));
 
+
+const AgotaSample = lazy(() => import("./agotasample"));
+
 // Header wrapper for all public pages except login and signup
 function HeaderWrapper({ user, setUser }) {
   const location = useLocation();
@@ -246,6 +249,8 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
 
 
+
+          <Route path="/agora" element={<AgotaSample />} />
           
         </Routes>
       </div>
