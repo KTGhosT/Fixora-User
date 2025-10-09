@@ -47,7 +47,7 @@ const pulseAnimation = keyframes`
 
 const StyledSection = styled(Paper)(({ theme, background }) => ({
   minHeight: "80vh",
-  background: background || `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+  background: background || `linear-gradient(135deg, #2c3e50 0%, #34495e 100%)`,
   borderRadius: theme.spacing(3),
   margin: theme.spacing(4, 0),
   padding: theme.spacing(6),
@@ -60,7 +60,7 @@ const StyledSection = styled(Paper)(({ theme, background }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(255, 255, 255, 0.1)",
+    background: "rgba(0, 0, 0, 0.3)",
     backdropFilter: "blur(10px)",
   }
 }));
@@ -226,7 +226,7 @@ const CustomerFeedback = () => {
   };
 
   return (
-    <Box sx={{ background: theme.palette.background.default, minHeight: "100vh" }}>
+    <Box sx={{ background: "linear-gradient(135deg, #1a252f 0%, #2c3e50 100%)", minHeight: "100vh" }}>
       <UniqueHeader user={user} setUser={setUser} />
 
       <Container maxWidth="xl">

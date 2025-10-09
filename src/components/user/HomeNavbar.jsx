@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  FaHammer, 
+  FaWrench, 
+  FaBolt, 
+  FaSeedling, 
+  FaHome, 
+  FaTools 
+} from 'react-icons/fa';
 import './HomeNavbar.css';
 
 const HomeNavbar = () => {
@@ -26,12 +34,12 @@ const HomeNavbar = () => {
   };
 
   const services = [
-    { name: 'Carpenter', icon: '🔨', path: '/services/carpenter' },
-    { name: 'Device Repair', icon: '🔧', path: '/services/devicerepair' },
-    { name: 'Electrician', icon: '⚡', path: '/services/electrician' },
-    { name: 'Garden Cleaner', icon: '🌱', path: '/services/gardencleaner' },
-    { name: 'House Keeper', icon: '🏠', path: '/services/housecleaning' },
-    { name: 'Plumber', icon: '🚰', path: '/services/plumber' }
+    { name: 'Carpenter', icon: <FaHammer />, path: '/services/carpenter' },
+    { name: 'Device Repair', icon: <FaWrench />, path: '/services/devicerepair' },
+    { name: 'Electrician', icon: <FaBolt />, path: '/services/electrician' },
+    { name: 'Garden Cleaner', icon: <FaSeedling />, path: '/services/gardencleaner' },
+    { name: 'House Keeper', icon: <FaHome />, path: '/services/housecleaning' },
+    { name: 'Plumber', icon: <FaTools />, path: '/services/plumber' }
   ];
 
   return (
@@ -65,8 +73,8 @@ const HomeNavbar = () => {
                       className="dropdown-item"
                       onClick={() => setIsServicesDropdownOpen(false)}
                     >
-                      <span className="service-icon">{service.icon}</span>
                       {service.name}
+                      <span className="service-icon">{service.icon}</span>
                     </a>
                   ))}
                 </div>
@@ -116,8 +124,8 @@ const HomeNavbar = () => {
                   className="mobile-service-item"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <span className="service-icon">{service.icon}</span>
                   {service.name}
+                  <span className="service-icon">{service.icon}</span>
                 </a>
               ))}
             </div>
