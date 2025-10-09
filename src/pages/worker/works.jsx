@@ -21,6 +21,17 @@ const WorkerWorks = () => {
   const [timeTracking, setTimeTracking] = useState({});
   const [tick, setTick] = useState(0);
   const [feedback, setFeedback] = useState({});
+  // Merged Tasks state
+  const [tasks, setTasks] = useState([
+    { id: 1, title: 'Inspect client site', assignee: 'Sam', priority: 'High', status: 'In Progress', due: '2025-10-12', tags: ['Onsite', 'Safety'], notes: 'Check electrical panel and note any hazards.' },
+    { id: 2, title: 'Prepare materials list', assignee: 'Nadia', priority: 'Medium', status: 'Pending', due: '2025-10-13', tags: ['Procurement'], notes: 'Confirm quantities for plumbing fixtures.' },
+    { id: 3, title: 'Follow-up call with client', assignee: 'Liam', priority: 'Low', status: 'Completed', due: '2025-10-11', tags: ['Communication'], notes: 'Client approved the material list.' },
+  ]);
+  const [expandedTaskId, setExpandedTaskId] = useState(null);
+  const toggleTaskExpand = (id) => setExpandedTaskId(prev => (prev === id ? null : id));
+  const toggleTaskStatus = (id) => setTasks(prev => prev.map(t => t.id === id ? ({ ...t, status: t.status === 'Completed' ? 'In Progress' : 'Completed' }) : t));
+  const badgeForTaskStatus = (status) => (status === 'Completed' ? 'bg-success' : (status === 'In Progress' ? 'bg-info' : 'bg-warning'));
+  const badgeForTaskPriority = (priority) => (priority === 'High' ? 'bg-danger' : (priority === 'Medium' ? 'bg-primary' : 'bg-secondary'));
 
   // Responsive sidebar width adjustments for laptop/PC
   useEffect(() => {
@@ -287,6 +298,9 @@ const WorkerWorks = () => {
     const t = timeTracking[work.id] || {};
     const running = !!t.running;
     const elapsedSeconds = running ? Math.floor((Date.now() - (t.startTime || Date.now())) / 1000) : t.totalSeconds || 0;
+    const MAX_BAR_SECONDS = 8 * 60 * 60; // 8 hours as reference
+    const timeSeconds = running ? elapsedSeconds : (t.totalSeconds || 0);
+    const timePercent = Math.min((timeSeconds / MAX_BAR_SECONDS) * 100, 100);
     return (
       <div className="card mb-3 shadow-sm border-0">
         <div className="card-body">
@@ -336,14 +350,17 @@ const WorkerWorks = () => {
 
           <div className="mb-3">
             <div className="d-flex justify-content-between mb-1">
-              <small className="text-muted">Progress</small>
-              <small className="text-muted">{work.progress}%</small>
+              <small className="text-muted">Working Time</small>
+              <small className="text-muted">{formatDuration(timeSeconds)}</small>
             </div>
-            <div className="progress" style={{height: '8px'}}>
-              <div 
-                className="progress-bar" 
-                role="progressbar" 
-                style={{ width: `${work.progress}%` }}
+            <div className="progress" style={{ height: '8px' }}>
+              <div
+                className="progress-bar bg-secondary"
+                role="progressbar"
+                style={{ width: `${timePercent}%` }}
+                aria-valuenow={timePercent}
+                aria-valuemin="0"
+                aria-valuemax="100"
               ></div>
             </div>
           </div>
@@ -451,6 +468,66 @@ const WorkerWorks = () => {
     );
   };
 
+  // Tasks table component merged from Tasks.jsx
+  const TasksTable = () => (
+    <div className="card mt-4">
+      <div className="card-header">Tasks</div>
+      <div className="card-body p-0">
+        <table className="table table-hover align-middle mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>Task</th>
+              <th>Assignee</th>
+              <th>Priority</th>
+              <th>Due</th>
+              <th>Status</th>
+              <th className="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.map(task => (
+              <React.Fragment key={task.id}>
+                <tr onClick={() => toggleTaskExpand(task.id)} style={{ cursor: 'pointer' }}>
+                  <td>
+                    <div className="fw-semibold">{task.title}</div>
+                    <small className="text-muted">ID: {task.id}</small>
+                  </td>
+                  <td>{task.assignee}</td>
+                  <td><span className={`badge ${badgeForTaskPriority(task.priority)}`}>{task.priority}</span></td>
+                  <td><span className="text-muted">{task.due}</span></td>
+                  <td><span className={`badge ${badgeForTaskStatus(task.status)}`}>{task.status}</span></td>
+                  <td className="text-end">
+                    <button
+                      className={`btn btn-sm ${task.status === 'Completed' ? 'btn-success' : 'btn-outline-success'} me-2`}
+                      onClick={(e) => { e.stopPropagation(); toggleTaskStatus(task.id); }}
+                    >
+                      {task.status === 'Completed' ? 'Completed' : 'Mark Complete'}
+                    </button>
+                    <button className="btn btn-sm btn-outline-primary" onClick={(e) => { e.stopPropagation(); toggleTaskExpand(task.id); }}>
+                      {expandedTaskId === task.id ? 'Hide Details' : 'View Details'}
+                    </button>
+                  </td>
+                </tr>
+                {expandedTaskId === task.id && (
+                  <tr>
+                    <td colSpan="6" className="bg-light">
+                      <div className="p-3">
+                        <div className="mb-2"><strong>Notes:</strong> {task.notes}</div>
+                        <div>
+                          <strong>Tags:</strong> {task.tags?.map(tag => (<span key={tag} className="badge bg-light text-dark me-1">{tag}</span>))}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.dashboardContainer}>
       {/* Left Navigation Sidebar */}
@@ -467,14 +544,7 @@ const WorkerWorks = () => {
             <i className="icon-orders"></i>
             <span>Works</span>
           </Link>
-          <Link to="/worker/tasks" className={styles.navItem}>
-            <i className="icon-tasks"></i>
-            <span>Tasks</span>
-          </Link>
-          <Link to="/worker/sales" className={styles.navItem}>
-            <i className="icon-sales"></i>
-            <span>Sales</span>
-          </Link>
+          {/* Tasks and Sales links removed after merging into Works */}
           <Link to="/worker/payments" className={styles.navItem}>
             <i className="icon-payments"></i>
             <span>Payments</span>
@@ -539,7 +609,7 @@ const WorkerWorks = () => {
                   </button>
                 </div>
               </div>
-
+              
               {/* Works List */}
               <div className="works-list" ref={listRef}>
                 {works[activeTab].length > 0 ? (
@@ -553,6 +623,9 @@ const WorkerWorks = () => {
                   </div>
                 )}
               </div>
+
+              {/* Merged Tasks Table */}
+              <TasksTable />
             </div>
 
             {/* Right Calendar Panel */}
