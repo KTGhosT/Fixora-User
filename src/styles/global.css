@@ -36,3 +36,60 @@ html {
 html {
   scroll-behavior: smooth;
 }
+
+/* --- Simple Buttons (app-wide) --- */
+/* Make buttons minimal: no hover effects, no transitions/shadows */
+.btn,
+.btn-primary,
+.btn-outline-primary,
+.btn-secondary,
+.btn-outline-secondary {
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+/* Base button */
+.btn {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active {
+  background-color: #fff;
+  color: #333;
+  border-color: #ddd;
+}
+
+/* Filled (used for active state like Ongoing/Pending/Upcoming) */
+.btn-primary {
+  background-color: #e9ecef;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #e9ecef;
+  color: #333;
+  border-color: #ddd;
+}
+
+/* Outline (used for inactive state) */
+.btn-outline-primary {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: #fff;
+  color: #333;
+  border-color: #ddd;
+}

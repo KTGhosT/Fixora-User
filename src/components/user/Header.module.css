@@ -84,7 +84,7 @@
 }
 
 .navLink {
-  color: #cccccc;
+  color: #111111;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -96,7 +96,7 @@
 
 .navLink:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(187, 25, 25, 0.1);
   transform: translateY(-1px);
 }
 
@@ -144,7 +144,7 @@
 
 .signInButton {
   background: transparent;
-  color: #cccccc;
+  color: #161515;
   border: none;
   padding: 8px 12px;
   border-radius: 6px;
@@ -155,7 +155,7 @@
 }
 
 .signInButton:hover {
-  color: #ffffff;
+  color: #0e0e0e;
   background: rgba(255, 255, 255, 0.05);
 }
 
