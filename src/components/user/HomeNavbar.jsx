@@ -80,7 +80,7 @@ const HomeNavbar = () => {
                 </div>
               )}
             </div>
-            <a href="#about" className="nav-link">About</a>
+            <a href="/about" className="nav-link">About</a>
             <a href="/feedback" className="nav-link">Feedback</a>
           </div>
 
@@ -130,7 +130,7 @@ const HomeNavbar = () => {
               ))}
             </div>
             <div className="mobile-links">
-              <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
+              <a href="/about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
               <a href="/feedback" onClick={() => setIsMobileMenuOpen(false)}>Feedback</a>
             </div>
             <div className="mobile-actions">

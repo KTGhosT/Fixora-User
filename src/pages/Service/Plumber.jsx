@@ -1,60 +1,56 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// ErrorBoundary removed to fix the error (class fields are not supported in some setups without extra Babel plugins)
-
 const Plumber = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
 
-  // Auto-scroll hero every 4 seconds
+  // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (carouselRef.current) {
-        const nextButton = carouselRef.current.querySelector('.carousel-control-next');
-        if (nextButton) {
-          nextButton.click();
-        }
+    let carouselInstance = null;
+    let autoScrollInterval = null;
+
+    const initializeCarousel = () => {
+      if (carouselRef.current && window.bootstrap) {
+        // Initialize Bootstrap carousel
+        carouselInstance = new window.bootstrap.Carousel(carouselRef.current, {
+          interval: false, // Disable Bootstrap's auto interval
+          ride: false,
+          wrap: true
+        });
+
+        // Set up custom auto-scroll
+        autoScrollInterval = setInterval(() => {
+          if (carouselInstance) {
+            carouselInstance.next();
+          }
+        }, 4000);
       }
-    }, 4000);
+    };
 
-    return () => clearInterval(interval);
-  }, []);
-
-  // Initialize Bootstrap carousel after component mounts
-  useEffect(() => {
-    let script;
-    const loadBootstrapJS = () => {
-      script = document.createElement('script');
+    // Load Bootstrap if not available
+    if (typeof window.bootstrap === 'undefined') {
+      const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
       script.async = true;
+      script.onload = initializeCarousel;
       document.body.appendChild(script);
-
-      script.onload = () => {
-        if (carouselRef.current && window.bootstrap) {
-          new window.bootstrap.Carousel(carouselRef.current, {
-            interval: false,
-            ride: false,
-          });
-        }
-      };
-    };
-
-    if (typeof window.bootstrap === 'undefined') {
-      loadBootstrapJS();
-    } else if (carouselRef.current && window.bootstrap) {
-      new window.bootstrap.Carousel(carouselRef.current, {
-        interval: false,
-        ride: false,
-      });
+    } else {
+      initializeCarousel();
     }
 
+    // Cleanup function
     return () => {
-      if (script && document.body.contains(script)) {
-        document.body.removeChild(script);
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+      }
+      if (carouselInstance) {
+        carouselInstance.dispose();
       }
     };
   }, []);
+
+
 
   return (
     <>
@@ -71,35 +67,36 @@ const Plumber = () => {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
+          .carousel {
+            width: 100%;
+            height: 100%;
+          }
+
+          .carousel-inner {
+            width: 100%;
+            height: 100%;
+          }
+
           .carousel-item {
+            position: relative;
+            width: 100%;
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-size: cover;
-            background-position: center;
-            transition: opacity 0.8s ease-in-out;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
           }
 
           .carousel-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 0;
-            opacity: 0;
-            transform: scale(0.5);
-            transition: opacity 0.4s ease-in-out, transform 0.6s ease-in-out;
+            object-position: center;
+            display: block;
           }
 
-          .carousel-item.active img {
-            opacity: 1;
-            transform: scale(1);
+          .carousel-item.active {
+            display: block;
           }
 
           /* Blur Box Overlay */
@@ -108,16 +105,18 @@ const Plumber = () => {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            max-width: 90%;
+            width: 100%;
             max-width: 800px;
-            padding: 2rem;
-            background: rgba(69, 67, 67, 0.4);
-            backdrop-filter: blur(0.5px);
-            border-radius: 12px;
+            padding: 3rem 2rem;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             text-align: center;
-            z-index: 2;
-            box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
           }
 
           /* Animated Text */
@@ -130,6 +129,7 @@ const Plumber = () => {
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 1rem;
+            line-height: 1.2;
           }
 
           @keyframes typing {
@@ -145,39 +145,134 @@ const Plumber = () => {
           .lead-text {
             font-size: 1.5rem;
             margin-bottom: 2rem;
-            opacity: 0.9;
+            opacity: 0.95;
+            line-height: 1.4;
           }
 
           .btn-book-now {
-            background-color: #ef4444;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             border: none;
             color: white;
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
             transition: all 0.3s ease;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
           }
 
           .btn-book-now:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 12px 35px rgba(239, 68, 68, 0.5);
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
           }
 
-          /* Controls */
+          /* Responsive */
+          @media (max-width: 768px) {
+            .blur-box {
+              padding: 2rem 1.5rem;
+              max-width: 95%;
+            }
+            .animated-text {
+              font-size: 2.2rem;
+            }
+            .lead-text {
+              font-size: 1.2rem;
+            }
+            .btn-book-now {
+              padding: 0.8rem 1.5rem;
+              font-size: 1rem;
+            }
+          }
+
+          @media (max-width: 576px) {
+            .blur-box {
+              padding: 1.5rem 1rem;
+            }
+            .animated-text {
+              font-size: 1.8rem;
+            }
+            .lead-text {
+              font-size: 1.1rem;
+            }
+            .btn-book-now {
+              padding: 0.7rem 1.2rem;
+              font-size: 0.9rem;
+            }
+          }
+
+          /* Carousel Controls */
+          .carousel-control-prev,
+          .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+          }
+
+          .carousel-control-prev {
+            left: 30px;
+          }
+
+          .carousel-control-next {
+            right: 30px;
+          }
+
+          .carousel-control-prev:hover,
+          .carousel-control-next:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-50%) scale(1.1);
+          }
+
           .carousel-control-prev-icon,
           .carousel-control-next-icon {
-            width: 40px;
-            height: 40px;
+            width: 20px;
+            height: 20px;
             background-size: 100% 100%;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
           }
 
-          .carousel-control-prev-icon:hover,
-          .carousel-control-next-icon:hover {
-            opacity: 1;
+          /* Carousel Indicators */
+          .carousel-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+          }
+
+          .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+          }
+
+          .carousel-indicators button.active {
+            background: white;
+            border-color: white;
+            transform: scale(1.2);
+          }
+
+          .carousel-indicators button:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.7);
           }
 
           /* Responsive */
@@ -198,39 +293,46 @@ const Plumber = () => {
           .service-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: white;
+            height: 100%;
           }
 
           .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
           }
 
           .service-img {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: cover;
             transition: transform 0.5s ease;
           }
 
           .service-card:hover .service-img {
-            transform: scale(1.05);
+            transform: scale(1.1);
           }
 
           .service-title {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: #0d6efd;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
           }
 
           .service-desc {
             color: #6c757d;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 1rem;
+            line-height: 1.6;
             text-align: center;
+            margin-bottom: 0;
+          }
+
+          .service-card .p-4 {
+            padding: 1.5rem !important;
           }
 
           /* Review Carousel - Horizontal Scroll Layout */
@@ -251,50 +353,45 @@ const Plumber = () => {
           }
 
           .review-scroller::-webkit-scrollbar-thumb {
-            background-color: #0d6efd;
+            background: #032455ff;
             border-radius: 4px;
+          }
+
+          .review-scroller::-webkit-scrollbar-thumb:hover {
+            background: #0056b3;
           }
 
           .review-row {
             display: flex;
             gap: 20px;
-            padding: 10px 0;
+            padding: 0 20px;
             min-width: max-content;
           }
 
           .review-card {
-            min-width: 300px;
             flex: 0 0 auto;
+            min-width: 300px;
+            max-width: 350px;
           }
 
           .review-card .card {
             height: 100%;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-radius: 12px;
           }
 
           .review-card .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
           }
 
-          /* Star Rating */
           .stars {
+            color: #ffc107;
             font-size: 1.2rem;
-            color: #d97706;
-            margin-top: 0.5rem;
             letter-spacing: 2px;
           }
 
-          /* Fade-in Animation */
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-
-          /* Responsive */
+          /* Responsive adjustments */
           @media (max-width: 768px) {
             .review-card {
               min-width: 250px;
@@ -304,6 +401,10 @@ const Plumber = () => {
             }
             .review-scroller {
               padding: 10px 0;
+            }
+            .review-row {
+              gap: 15px;
+              padding: 0 15px;
             }
           }
 
@@ -318,25 +419,17 @@ const Plumber = () => {
         `}
       </style>
 
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         {/* Full-Screen Hero Carousel */}
         <section className="hero-slider">
           <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
             <div className="carousel-inner">
               {[
-                { src: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c', alt: 'Plumbing Tools' },
-                { src: 'https://images.unsplash.com/photo-1676210134188-4c05dd172f89?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Bathroom Plumbing' },
-                { src: 'https://images.unsplash.com/photo-1622128109828-306c6fb4b119?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTV8fHBsdW1iaW5nfGVufDB8fDB8fHwy', alt: 'Pipe Installation' },
+                { src: '/src/assets/user/plumber2.jpg', alt: 'Plumbing Tools' },
+                { src: '/src/assets/user/plumber1.jpg', alt: 'Bathroom Plumbing' },
+                { src: '/src/assets/user/plumber3.jpg', alt: 'Pipe Installation' },
               ].map((img, i) => (
                 <div key={i} className={`carousel-item${i === 0 ? ' active' : ''}`}>
                   <img src={img.src} alt={img.alt} />
-                  <div className="blur-box">
-                    <h1 className="animated-text">Expert Plumbing Services</h1>
-                    <p className="lead-text">Fast, Reliable & Affordable Solutions</p>
-                    <button className="btn-book-now" onClick={() => navigate('/booking')}>
-                      Book Now
-                    </button>
-                  </div>
                 </div>
               ))}
             </div>
@@ -373,26 +466,26 @@ const Plumber = () => {
           <div className="container">
             <div className="row justify-content-center">
               <div className="col-lg-8 text-center">
-                <h2 className="mb-4 display-6">About Our Services</h2>
+                <h2 className="mb-4 display-6">About Our Sri Lankan Plumbing Experts</h2>
                 <p className="lead">
-                  With 20+ years of experience, our certified plumbers provide professional solutions for leaks, installations, and emergencies.
+                  With over 15 years of experience serving homes and businesses across Sri Lanka, our certified local plumbers understand the unique plumbing challenges of tropical climate and provide reliable solutions for water supply, drainage, and emergency repairs.
                 </p>
                 <div className="row mt-5 text-center">
                   <div className="col-md-4">
                     <div className="p-4">
-                      <h3 className="display-4 fw-bold text-primary">20+</h3>
-                      <p className="text-muted">Years Experience</p>
+                      <h3 className="display-4 fw-bold text-primary">15+</h3>
+                      <p className="text-muted">Years in Sri Lanka</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="p-4">
-                      <h3 className="display-4 fw-bold text-primary">500+</h3>
-                      <p className="text-muted">Projects Completed</p>
+                      <h3 className="display-4 fw-bold text-primary">800+</h3>
+                      <p className="text-muted">Local Projects</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="p-4">
-                      <h3 className="display-4 fw-bold text-primary">98%</h3>
+                      <h3 className="display-4 fw-bold text-primary">95%</h3>
                       <p className="text-muted">Customer Satisfaction</p>
                     </div>
                   </div>
@@ -407,30 +500,30 @@ const Plumber = () => {
           <div className="container">
             <div className="row justify-content-center mb-5">
               <div className="col-lg-8 text-center">
-                <h2 className="mb-5">Our Services</h2>
-                <p className="lead">We offer comprehensive plumbing solutions for residential and commercial properties.</p>
+                <h2 className="mb-5">Our Specialized Sri Lankan Plumbing Services</h2>
+                <p className="lead">We provide comprehensive plumbing solutions tailored for Sri Lankan homes and businesses, addressing tropical climate challenges and local infrastructure needs.</p>
               </div>
             </div>
             <div className="row justify-content-center g-4">
               {[
                 {
-                  title: 'Installation',
-                  desc: 'Professional pipe and fixture installations with guaranteed quality workmanship.',
+                  title: 'Water Tank Installation',
+                  desc: 'Professional installation and maintenance of overhead and underground water tanks for reliable water storage.',
                   img: 'https://images.unsplash.com/photo-1749532125405-70950966b0e5?q=80&w=1000',
                 },
                 {
-                  title: 'Repairs',
-                  desc: 'Reliable leak and clog repairs with same-day service available.',
+                  title: 'Monsoon Drainage Solutions',
+                  desc: 'Specialized drainage systems and repairs to handle heavy monsoon rains and prevent flooding.',
                   img: 'https://images.unsplash.com/photo-1553265381-674034b34554?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 },
                 {
-                  title: 'Maintenance',
-                  desc: 'Keep systems running smoothly with our preventative maintenance plans.',
+                  title: 'Bore Well Services',
+                  desc: 'Complete bore well drilling, pump installation, and maintenance for reliable groundwater access.',
                   img: 'https://plus.unsplash.com/premium_photo-1663133566549-47a5e7fabe4b?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 },
                 {
-                  title: 'Emergency Services',
-                  desc: '24/7 urgent plumbing support with rapid response times.',
+                  title: '24/7 Emergency Response',
+                  desc: 'Round-the-clock emergency plumbing services across Colombo, Kandy, Galle, and surrounding areas.',
                   img: 'https://images.unsplash.com/photo-1606613945100-08e66012e49e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTEwfHxlbWVyZ2VuY3l8ZW58MHx8MHx8fDI%3D',
                 },
               ].map((s, i) => (
@@ -464,39 +557,39 @@ const Plumber = () => {
                   <div className="review-row">
                     {[
                       {
-                        name: 'John D.',
+                        name: 'Pradeep S.',
                         avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-                        review: 'Fixed my leak fast! The plumber arrived within an hour and had it fixed in no time.',
-                        rating: 4,
+                        review: 'Excellent service! They fixed our water tank leak during the monsoon season. Very reliable Sri Lankan plumbers.',
+                        rating: 5,
                       },
                       {
-                        name: 'Sarah K.',
+                        name: 'Chamari P.',
                         avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-                        review: "Professional and friendly team. They explained everything clearly and didn't overcharge me. Highly recommend!",
+                        review: "Professional team from Colombo. They installed our bore well pump system perfectly. Highly recommend for any plumbing work!",
                         rating: 5,
                       },
                       {
-                        name: 'Mike R.',
+                        name: 'Roshan M.',
                         avatar: 'https://randomuser.me/api/portraits/men/67.jpg',
-                        review: "Affordable and reliable service. I've used them three times now and they always deliver quality work.",
+                        review: "Best plumbing service in Kandy area. They understand local water pressure issues and provided perfect solutions.",
                         rating: 5,
                       },
                       {
-                        name: 'Lisa M.',
+                        name: 'Nimalka R.',
                         avatar: 'https://randomuser.me/api/portraits/women/26.jpg',
-                        review: 'Emergency call at midnight — they came fast and fixed our issue. Lifesavers!',
+                        review: 'Emergency call during heavy rains in Galle — they came quickly and fixed our drainage problem. Excellent local service!',
                         rating: 5,
                       },
                       {
-                        name: 'David T.',
+                        name: 'Kasun T.',
                         avatar: 'https://randomuser.me/api/portraits/men/35.jpg',
-                        review: 'Installed a new system safely and efficiently. Explained everything clearly.',
+                        review: 'Installed overhead water tank system for our new house in Negombo. Professional work and fair pricing.',
                         rating: 5,
                       },
                       {
-                        name: 'Emma R.',
+                        name: 'Sanduni W.',
                         avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
-                        review: 'Fast, reliable, and affordable. They’ve become our go-to for all plumbing needs.',
+                        review: 'Reliable and honest plumbers. They have been maintaining our apartment complex in Mount Lavinia for 3 years.',
                         rating: 5,
                       },
                     ].map((r, i) => (
@@ -541,34 +634,34 @@ const Plumber = () => {
                 <div className="accordion" id="faqAccordion">
                   {[
                     {
-                      question: 'What areas do you service?',
+                      question: 'Which areas in Sri Lanka do you service?',
                       answer:
-                        'We proudly serve the Greater Metro Area, including Downtown, Northside, East Valley, and West Hills. Contact us to confirm if we cover your neighborhood!',
+                        'We provide plumbing services across major cities including Colombo, Kandy, Galle, Negombo, Mount Lavinia, Dehiwala, and surrounding suburban areas. Contact us to confirm coverage in your specific location.',
                     },
                     {
-                      question: 'Do you offer emergency services?',
+                      question: 'Do you provide emergency services during monsoon season?',
                       answer:
-                        'Yes! We provide 24/7 emergency plumbing support for burst pipes, major leaks, sewer backups, and no-water situations. Call us anytime — we’ll be there fast.',
+                        'Yes! We offer 24/7 emergency plumbing services, especially crucial during monsoon seasons for drainage blockages, water tank overflows, and flood-related plumbing issues. Our rapid response team is always ready.',
                     },
                     {
-                      question: 'Are your plumbers licensed and insured?',
+                      question: 'Are your plumbers certified for Sri Lankan standards?',
                       answer:
-                        'Absolutely. All our technicians are fully licensed, bonded, and insured. Your safety and satisfaction are guaranteed with every job.',
+                        'Absolutely. All our technicians are certified according to Sri Lankan plumbing standards, fully licensed, and experienced with local water supply systems, bore wells, and tropical climate challenges.',
                     },
                     {
-                      question: 'How quickly can you respond to a service call?',
+                      question: 'How quickly can you respond in Colombo and suburbs?',
                       answer:
-                        'For emergencies, we aim to arrive within 60 minutes. For non-urgent requests, we typically schedule same-day or next-day appointments.',
+                        'For emergency calls in Colombo metropolitan area, we typically arrive within 45-60 minutes. For other cities like Kandy or Galle, response time is usually 1-2 hours depending on location and traffic conditions.',
                     },
                     {
-                      question: 'Do you provide free estimates?',
+                      question: 'Do you install and maintain water tanks and bore wells?',
                       answer:
-                        'Yes! We offer free, no-obligation estimates for all installations, replacements, and major repairs. Just give us a call or book online.',
+                        'Yes! We specialize in overhead water tank installation, underground tank systems, bore well drilling, water pump installation, and complete water storage solutions suitable for Sri Lankan homes and businesses.',
                     },
                     {
-                      question: 'What payment methods do you accept?',
+                      question: 'What payment methods do you accept in Sri Lanka?',
                       answer:
-                        'We accept all major credit/debit cards, cash, checks, and digital payments like Zelle and PayPal. Financing options are also available for larger projects.',
+                        'We accept cash payments in Sri Lankan Rupees, bank transfers, mobile payments through eZ Cash and mCash, and major credit/debit cards. We also offer flexible payment plans for larger projects like bore well installations.',
                     },
                   ].map((faq, index) => (
                     <div className="accordion-item mb-3 shadow-sm rounded-3 border-0" key={index}>
@@ -602,7 +695,6 @@ const Plumber = () => {
             </div>
           </div>
         </section>
-      </div>
     </>
   );
 };

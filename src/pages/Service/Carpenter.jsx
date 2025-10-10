@@ -1,6 +1,11 @@
 import React, { Component, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Import local carpenter images
+import carpenter1 from '../../assets/user/carpenter1.jpg';
+import carpenter2 from '../../assets/user/carpenter2.jpg';
+import carpenter3 from '../../assets/user/carpenter3.jpg';
+
 class ErrorBoundary extends Component {
   state = { hasError: false };
 
@@ -84,13 +89,14 @@ const Carpenter = () => {
           .hero-slider {
             position: relative;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 80px);
+            margin-top: 80px;
             overflow: hidden;
-            background-color: #8B4513;
+            background-color: transparent;
           }
 
           .carousel-item {
-            height: 100vh;
+            height: calc(100vh - 80px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -114,22 +120,17 @@ const Carpenter = () => {
             transform: scale(1);
           }
 
-          /* Blur Box Overlay */
-          .blur-box {
+          /* Text Overlay */
+          .text-overlay {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             max-width: 800px;
             padding: 2rem;
-            background: rgba(69, 67, 67, 0.4);
-            backdrop-filter: blur(0.5px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             text-align: center;
             z-index: 2;
-            box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
           }
 
           /* Animated Text */
@@ -177,19 +178,61 @@ const Carpenter = () => {
             box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
           }
 
-          /* Controls */
-          .carousel-control-prev-icon,
-          .carousel-control-next-icon {
-            width: 40px;
-            height: 40px;
-            background-size: 100% 100%;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
+          /* Custom Slider Navigation */
+          .custom-slider-nav {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
           }
 
-          .carousel-control-prev-icon:hover,
-          .carousel-control-next-icon:hover {
-            opacity: 1;
+          .slider-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+          }
+
+          .slider-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .slider-dot::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: linear-gradient(45deg, #FF8C42, #FF6B35);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+          }
+
+          .slider-dot.active::before {
+            width: 100%;
+            height: 100%;
+          }
+
+          .slider-dot:hover {
+            transform: scale(1.2);
+            background: rgba(255, 255, 255, 0.8);
+          }
+
+          .slider-dot.active {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(255, 140, 66, 0.6);
           }
 
           /* Responsive */
@@ -333,16 +376,20 @@ const Carpenter = () => {
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         {/* Full-Screen Hero Carousel */}
         <section className="hero-slider">
-          <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
+          <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" data-bs-interval="5000" id="heroCarousel">
             <div className="carousel-inner">
               {[
-                { src: 'https://images.unsplash.com/photo-1608613304899-ea8098577e38?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Carpentry Tools' },
-                { src: 'https://images.unsplash.com/photo-1595844730289-b248c919d6f9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Woodworking' },
-                { src: 'https://images.unsplash.com/photo-1611021061218-761c355ed331?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Furniture Making' },
+                { src: carpenter2, alt: 'Woodworking' },
+                { src: carpenter1, alt: 'Carpentry Tools' },
+                { src: carpenter3, alt: 'Furniture Making' },
               ].map((img, i) => (
                 <div key={i} className={`carousel-item${i === 0 ? ' active' : ''}`}>
-                  <img src={img.src} alt={img.alt} />
-                  <div className="blur-box">
+                  <img 
+                    src={img.src} 
+                    alt={img.alt} 
+                    style={i === 2 ? { objectPosition: 'center center' } : {}}
+                  />
+                  <div className="text-overlay">
                     <h1 className="animated-text">Expert Carpenter Services</h1>
                     <p className="lead-text">Precision Craftsmanship & Quality Woodwork</p>
                     <button
@@ -356,29 +403,21 @@ const Carpenter = () => {
               ))}
             </div>
 
-            {/* Controls */}
-            <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Previous</span>
-            </button>
-            <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-              <span className="carousel-control-next-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Next</span>
-            </button>
-
-            {/* Indicators */}
-            <div className="carousel-indicators">
-              {[0, 1, 2].map((i) => (
-                <button
-                  key={i}
-                  type="button"
-                  data-bs-target="#heroCarousel"
-                  data-bs-slide-to={i}
-                  className={i === 0 ? 'active' : ''}
-                  aria-current={i === 0 ? 'true' : 'false'}
-                  aria-label={`Slide ${i + 1}`}
-                ></button>
-              ))}
+            {/* Custom Slider Navigation */}
+            <div className="custom-slider-nav">
+              <div className="slider-dots">
+                {[0, 1, 2].map((i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    data-bs-target="#heroCarousel"
+                    data-bs-slide-to={i}
+                    className={`slider-dot ${i === 0 ? 'active' : ''}`}
+                    aria-current={i === 0 ? 'true' : 'false'}
+                    aria-label={`Slide ${i + 1}`}
+                  ></button>
+                ))}
+              </div>
             </div>
           </div>
         </section>
