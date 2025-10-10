@@ -1,6 +1,11 @@
 import React, { Component, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Import local carpenter images
+import carpenter1 from '../../assets/user/carpenter1.jpg';
+import carpenter2 from '../../assets/user/carpenter2.jpg';
+import carpenter3 from '../../assets/user/carpenter3.jpg';
+
 class ErrorBoundary extends Component {
   state = { hasError: false };
 
@@ -84,13 +89,14 @@ const Carpenter = () => {
           .hero-slider {
             position: relative;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 80px);
+            margin-top: 80px;
             overflow: hidden;
-            background-color: #8B4513;
+            background-color: transparent;
           }
 
           .carousel-item {
-            height: 100vh;
+            height: calc(100vh - 80px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -178,18 +184,81 @@ const Carpenter = () => {
           }
 
           /* Controls */
+          .carousel-control-prev,
+          .carousel-control-next {
+            width: 5%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            z-index: 3;
+          }
+
+          .carousel-control-prev {
+            left: 30px;
+            z-index: 5;
+          }
+
+          .carousel-control-next {
+            right: 30px;
+            z-index: 5;
+          }
+
           .carousel-control-prev-icon,
           .carousel-control-next-icon {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             background-size: 100% 100%;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
           }
 
           .carousel-control-prev-icon:hover,
           .carousel-control-next-icon:hover {
             opacity: 1;
+            background-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.15);
+            border-color: rgba(255, 255, 255, 0.8);
+          }
+
+          /* Indicators */
+          .carousel-indicators {
+            bottom: 40px;
+            margin-bottom: 0;
+            z-index: 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .carousel-indicators button {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin: 0 8px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            cursor: pointer;
+          }
+
+          .carousel-indicators button.active {
+            background-color: #FF8C42;
+            border-color: #FF8C42;
+            transform: scale(1.3);
+            box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+          }
+
+          .carousel-indicators button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            transform: scale(1.2);
+            border-color: rgba(255, 255, 255, 1);
           }
 
           /* Responsive */
@@ -336,12 +405,16 @@ const Carpenter = () => {
           <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
             <div className="carousel-inner">
               {[
-                { src: 'https://images.unsplash.com/photo-1608613304899-ea8098577e38?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Carpentry Tools' },
-                { src: 'https://images.unsplash.com/photo-1595844730289-b248c919d6f9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Woodworking' },
-                { src: 'https://images.unsplash.com/photo-1611021061218-761c355ed331?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Furniture Making' },
+                { src: carpenter2, alt: 'Woodworking' },
+                { src: carpenter1, alt: 'Carpentry Tools' },
+                { src: carpenter3, alt: 'Furniture Making' },
               ].map((img, i) => (
                 <div key={i} className={`carousel-item${i === 0 ? ' active' : ''}`}>
-                  <img src={img.src} alt={img.alt} />
+                  <img 
+                    src={img.src} 
+                    alt={img.alt} 
+                    style={i === 2 ? { objectPosition: 'center center' } : {}}
+                  />
                   <div className="blur-box">
                     <h1 className="animated-text">Expert Carpenter Services</h1>
                     <p className="lead-text">Precision Craftsmanship & Quality Woodwork</p>

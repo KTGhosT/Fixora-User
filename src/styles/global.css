@@ -1,21 +1,37 @@
-/* Global styles for floating header alignment */
+/* Global styles for floating header alignment - Dark Theme */
+
+/* Dark theme color variables */
+:root {
+  --primary-dark: #1A1D23;
+  --secondary-dark: #2D3748;
+  --accent-orange: #FF8C42;
+  --accent-orange-light: #FFB366;
+  --text-light: #E2E8F0;
+  --text-muted: #A0AEC0;
+  --border-dark: rgba(45, 55, 72, 0.6);
+}
 
 /* Remove default margins and padding that create white space */
 body {
   margin: 0;
   padding: 0;
+  background-color: var(--primary-dark);
+  color: var(--text-light);
 }
 
 /* Remove any default margins from html */
 html {
   margin: 0;
   padding: 0;
+  background-color: var(--primary-dark);
 }
 
 /* Ensure main app content is properly positioned */
 .App {
   position: relative;
   z-index: 1;
+  background-color: var(--primary-dark);
+  min-height: 100vh;
 }
 
 /* Specific styling for hero with floating header */
@@ -37,59 +53,59 @@ html {
   scroll-behavior: smooth;
 }
 
-/* --- Simple Buttons (app-wide) --- */
-/* Make buttons minimal: no hover effects, no transitions/shadows */
+/* --- Dark Theme Buttons (app-wide) --- */
+/* Make buttons minimal with dark theme colors */
 .btn,
 .btn-primary,
 .btn-outline-primary,
 .btn-secondary,
 .btn-outline-secondary {
-  transition: none !important;
+  transition: all 0.2s ease !important;
   box-shadow: none !important;
 }
 
 /* Base button */
 .btn {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ddd;
+  background-color: var(--secondary-dark);
+  color: var(--text-light);
+  border: 1px solid var(--border-dark);
   border-radius: 6px;
 }
 
 .btn:hover,
 .btn:focus,
 .btn:active {
-  background-color: #fff;
-  color: #333;
-  border-color: #ddd;
+  background-color: #4A5568;
+  color: var(--text-light);
+  border-color: rgba(255, 140, 66, 0.3);
 }
 
 /* Filled (used for active state like Ongoing/Pending/Upcoming) */
 .btn-primary {
-  background-color: #e9ecef;
-  color: #333;
-  border: 1px solid #ddd;
+  background-color: var(--accent-orange);
+  color: var(--primary-dark);
+  border: 1px solid var(--accent-orange);
 }
 
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
-  background-color: #e9ecef;
-  color: #333;
-  border-color: #ddd;
+  background-color: var(--accent-orange-light);
+  color: var(--primary-dark);
+  border-color: var(--accent-orange-light);
 }
 
 /* Outline (used for inactive state) */
 .btn-outline-primary {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ddd;
+  background-color: transparent;
+  color: var(--accent-orange);
+  border: 1px solid var(--accent-orange);
 }
 
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
 .btn-outline-primary:active {
-  background-color: #fff;
-  color: #333;
-  border-color: #ddd;
+  background-color: var(--accent-orange);
+  color: var(--primary-dark);
+  border-color: var(--accent-orange);
 }
