@@ -48,6 +48,9 @@ const PasswordResetDebug = lazy(() => import("./components/PasswordResetDebug"))
 const ManageServiceCategories = lazy(() => import("./pages/admin/ManageServiceCategories"));
 const ManageWorkerLocation = lazy(() => import("./pages/admin/ManageWorkerLocation"));
 
+
+const AgotaSample = lazy(() => import("./agotasample"));
+
 // Header wrapper for all public pages except login and signup
 function HeaderWrapper({ user, setUser }) {
   const location = useLocation();
@@ -55,7 +58,7 @@ function HeaderWrapper({ user, setUser }) {
   const publicHeaderPaths = [
     "/", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
     "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
-    , "/feedback", "/booking"
+    "/feedback", "/booking"
   ];
   // If the path starts with /worker or /admin, don't show header
   const isWorkerOrAdmin = location.pathname.startsWith("/worker") || location.pathname.startsWith("/admin");
@@ -243,6 +246,11 @@ function App() {
           
           {/* Catch-all route - must be last */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
+
+
+          <Route path="/agora" element={<AgotaSample />} />
+          
         </Routes>
       </div>
     </Router>

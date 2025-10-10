@@ -65,21 +65,35 @@ const BookWorkerPage = () => {
         console.warn("Failed to initialize notification service:", error);
       }
     };
-    
     initializeNotifications();
   }, []);
 
   // Reverse geocode to get address from lat/lng
+  // Rewritten to avoid CORS issues by using fetch directly to Nominatim (no proxy)
+  // and with fallback to not auto-fill address if CORS fails.
   const fetchAddress = async (lat, lng) => {
     try {
-      const res = await axiosInstance.get(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-      );
-      if (res.data && res.data.display_name) {
-        setFormData((prev) => ({ ...prev, address: res.data.display_name }));
+      // Use fetch directly to Nominatim, no proxy, and do not send credentials
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+      const res = await fetch(url, {
+        headers: {
+          "Accept": "application/json",
+        },
+        method: "GET",
+        // mode: "cors" is default, do not set credentials
+      });
+      if (!res.ok) {
+        throw new Error(`Nominatim error: ${res.status}`);
+      }
+      const data = await res.json();
+      if (data && data.display_name) {
+        setFormData((prev) => ({ ...prev, address: data.display_name }));
       }
     } catch (err) {
-      console.error("Error fetching address:", err);
+      // Only log a warning, do not block the user
+      console.warn("Could not auto-fill address from map location. Please enter your address manually.", err);
+      // Optionally, you could set a message in state to inform the user
+      // setFormData((prev) => ({ ...prev, address: "" }));
     }
   };
 
@@ -182,99 +196,96 @@ const BookWorkerPage = () => {
   };
 
   // Handle form submission
-// Update your handleSubmit function in Booking.jsx
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return;
-  setIsSubmitting(true);
-  setSuccessMessage("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+    setSuccessMessage("");
 
-  try {
-    const data = new FormData();
-    data.append("serviceCategoryId", formData.serviceCategoryId);
-    data.append("description", formData.description);
-    data.append("specialInstructions", formData.specialInstructions);
-
-    // Send both separate fields AND combined bookingDate for backend compatibility
-    data.append("scheduledDate", formData.scheduledDate);
-    data.append("scheduledTime", formData.scheduledTime);
-    
-    // Also send the combined bookingDate that the backend expects
-    const bookingDate = `${formData.scheduledDate} ${formData.scheduledTime}`;
-    data.append("bookingDate", bookingDate);
-
-    data.append("latitude", formData.latitude);
-    data.append("longitude", formData.longitude);
-    data.append("address", formData.address);
-
-    if (formData.issueImage) data.append("image", formData.issueImage);
-
-    // Debug: Log what we're sending
-    console.log("Form data being sent:");
-    for (let [key, value] of data.entries()) {
-      console.log(key, value);
-    }
-
-    const response = await axiosInstance.post("/api/bookings", data);
-    console.log("Success response:", response.data);
-
-    const { booking, id: topLevelId, bookingId: topLevelBookingId } = response.data || {};
-    const bookingId = (booking && (booking.id ?? booking.bookingId)) ?? topLevelId ?? topLevelBookingId;
-    if (!bookingId) {
-      throw new Error("Booking ID missing from response");
-    }
-
-    // Send push notification for successful booking
     try {
-      const bookingData = {
-        id: bookingId,
-        serviceCategoryId: formData.serviceCategoryId,
-        bookingDate: bookingDate,
-        description: formData.description,
-        address: formData.address
-      };
-      
-      await notificationService.sendBookingConfirmation(bookingData);
-      console.log("Push notification sent successfully");
-    } catch (notificationError) {
-      console.warn("Failed to send push notification:", notificationError);
-      // Don't fail the booking if notification fails
-    }
+      const data = new FormData();
+      data.append("serviceCategoryId", formData.serviceCategoryId);
+      data.append("description", formData.description);
+      data.append("specialInstructions", formData.specialInstructions);
 
-    setSuccessMessage("Worker booked successfully! Check your notifications for confirmation.");
-    navigate(`/booking-status/${bookingId}`);
-    
-    setFormData({
-      serviceCategoryId: "",
-      specialInstructions: "",
-      description: "",
-      scheduledDate: "",
-      scheduledTime: "",
-      latitude: formData.latitude,
-      longitude: formData.longitude,
-      address: formData.address,
-      locationError: null,
-      issueImage: null,
-    });
-    setImagePreview(null);
-  } catch (err) {
-    console.error("Full error:", err);
-    console.error("Error response:", err.response?.data);
-    console.error("Error status:", err.response?.status);
-    
-    if (err.response?.data?.errors) {
-      console.error("Validation errors:", JSON.stringify(err.response.data.errors, null, 2));
-      setErrors(err.response.data.errors);
-    } else {
-      setErrors({ general: err.response?.data?.message || "Something went wrong. Please try again." });
+      // Send both separate fields AND combined bookingDate for backend compatibility
+      data.append("scheduledDate", formData.scheduledDate);
+      data.append("scheduledTime", formData.scheduledTime);
+
+      // Also send the combined bookingDate that the backend expects
+      const bookingDate = `${formData.scheduledDate} ${formData.scheduledTime}`;
+      data.append("bookingDate", bookingDate);
+
+      data.append("latitude", formData.latitude);
+      data.append("longitude", formData.longitude);
+      data.append("address", formData.address);
+
+      if (formData.issueImage) data.append("image", formData.issueImage);
+
+      // Debug: Log what we're sending
+      console.log("Form data being sent:");
+      for (let [key, value] of data.entries()) {
+        console.log(key, value);
+      }
+
+      const response = await axiosInstance.post("/api/bookings", data);
+      console.log("Success response:", response.data);
+
+      const { booking, id: topLevelId, bookingId: topLevelBookingId } = response.data || {};
+      const bookingId = (booking && (booking.id ?? booking.bookingId)) ?? topLevelId ?? topLevelBookingId;
+      if (!bookingId) {
+        throw new Error("Booking ID missing from response");
+      }
+
+      // Send push notification for successful booking
+      try {
+        const bookingData = {
+          id: bookingId,
+          serviceCategoryId: formData.serviceCategoryId,
+          bookingDate: bookingDate,
+          description: formData.description,
+          address: formData.address
+        };
+
+        await notificationService.sendBookingConfirmation(bookingData);
+        console.log("Push notification sent successfully");
+      } catch (notificationError) {
+        console.warn("Failed to send push notification:", notificationError);
+        // Don't fail the booking if notification fails
+      }
+
+      setSuccessMessage("Worker booked successfully! Check your notifications for confirmation.");
+      // After successful booking, navigate to BookingCompletion page
+      navigate("/BookingCompletion");
+
+      setFormData({
+        serviceCategoryId: "",
+        specialInstructions: "",
+        description: "",
+        scheduledDate: "",
+        scheduledTime: "",
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        address: formData.address,
+        locationError: null,
+        issueImage: null,
+      });
+      setImagePreview(null);
+    } catch (err) {
+      console.error("Full error:", err);
+      console.error("Error response:", err.response?.data);
+      console.error("Error status:", err.response?.status);
+
+      if (err.response?.data?.errors) {
+        console.error("Validation errors:", JSON.stringify(err.response.data.errors, null, 2));
+        setErrors(err.response.data.errors);
+      } else {
+        setErrors({ general: err.response?.data?.message || "Something went wrong. Please try again." });
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-  
-  
-  
+  };
 
   // Handler for "Relocate Me" button
   const handleRelocateMe = () => {
@@ -298,7 +309,7 @@ const handleSubmit = async (e) => {
             mapRef.current.setView([latitude, longitude], mapRef.current.getZoom());
           }
         },
-        (error) => { 
+        (error) => {
           setFormData((prev) => ({
             ...prev,
             locationError:
@@ -318,6 +329,24 @@ const handleSubmit = async (e) => {
 
   return (
     <div className={styles["book-worker-container"]}>
+      {/* Back button to home */}
+      <button
+        type="button"
+        className={styles["btn-back"]}
+        style={{
+          marginBottom: "1rem",
+          background: "#eee",
+          color: "#333",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+          padding: "0.5rem 1rem",
+          cursor: "pointer",
+        }}
+        onClick={() => navigate("/")}
+      >
+        &larr; Back to Home
+      </button>
+
       <h2>Book a Worker</h2>
 
       {successMessage && (
@@ -402,38 +431,38 @@ const handleSubmit = async (e) => {
         {/* Scheduled Date & Time */}
         {/* Update your form JSX - replace the datetime-local input with separate fields */}
 
-{/* Scheduled Date & Time - Separate Fields */}
-<div className={styles["form-group"]}>
-  <label>Schedule Date *</label>
-  <input
-    type="date"
-    name="scheduledDate"
-    value={formData.scheduledDate}
-    onChange={handleChange}
-    className={styles["form-control"]}
-  />
-  {errors.scheduledDate && (
-    <div className={styles["text-danger"]}>
-      {errors.scheduledDate}
-    </div>
-  )}
-</div>
+        {/* Scheduled Date & Time - Separate Fields */}
+        <div className={styles["form-group"]}>
+          <label>Schedule Date *</label>
+          <input
+            type="date"
+            name="scheduledDate"
+            value={formData.scheduledDate}
+            onChange={handleChange}
+            className={styles["form-control"]}
+          />
+          {errors.scheduledDate && (
+            <div className={styles["text-danger"]}>
+              {errors.scheduledDate}
+            </div>
+          )}
+        </div>
 
-<div className={styles["form-group"]}>
-  <label>Schedule Time *</label>
-  <input
-    type="time"
-    name="scheduledTime"
-    value={formData.scheduledTime}
-    onChange={handleChange}
-    className={styles["form-control"]}
-  />
-  {errors.scheduledTime && (
-    <div className={styles["text-danger"]}>
-      {errors.scheduledTime}
-    </div>
-  )}
-</div>
+        <div className={styles["form-group"]}>
+          <label>Schedule Time *</label>
+          <input
+            type="time"
+            name="scheduledTime"
+            value={formData.scheduledTime}
+            onChange={handleChange}
+            className={styles["form-control"]}
+          />
+          {errors.scheduledTime && (
+            <div className={styles["text-danger"]}>
+              {errors.scheduledTime}
+            </div>
+          )}
+        </div>
 
         {/* Address */}
         <div className={styles["form-group"]}>
@@ -495,3 +524,6 @@ const handleSubmit = async (e) => {
 };
 
 export default BookWorkerPage;
+
+
+        

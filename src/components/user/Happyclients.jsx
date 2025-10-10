@@ -1,23 +1,24 @@
 import React from 'react';
 import styles from './Happyclients.module.css';
 
+
 const testimonials = [
   {
-    image: 'https://randomuser.me/api/portraits/men/32.jpg',
+    image: '/src/assest/Home/Electrician.jpg',
     name: 'VENUJAN',
     position: 'PRODUCT MANAGER',
     text: 'Fixora has completely streamlined our workforce management. The app is intuitive and has saved us countless hours every week.',
     highlighted: false,
   },
   {
-    image: 'https://randomuser.me/api/portraits/men/45.jpg',
+    image: '/src/assest/Home/HouseKeeeping.png',
     name: 'SABEESAN',
     position: 'FULL STACK DEVELOPER',
     text: 'With Fixora, scheduling and tracking our team’s work has never been easier. Highly recommended for any business looking to boost productivity!',
     highlighted: true,
   },
   {
-    image: 'https://randomuser.me/api/portraits/men/67.jpg',
+    image: '/src/assest/Home/plumber.png',
     name: 'KAVISHAN',
     position: 'UI/UX DESIGNER',
     text: 'The support from the Fixora team is outstanding. The app’s features are exactly what we needed to manage our projects efficiently.',
