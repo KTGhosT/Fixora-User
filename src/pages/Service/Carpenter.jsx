@@ -120,22 +120,17 @@ const Carpenter = () => {
             transform: scale(1);
           }
 
-          /* Blur Box Overlay */
-          .blur-box {
+          /* Text Overlay */
+          .text-overlay {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             max-width: 800px;
             padding: 2rem;
-            background: rgba(69, 67, 67, 0.4);
-            backdrop-filter: blur(0.5px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             text-align: center;
             z-index: 2;
-            box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
           }
 
           /* Animated Text */
@@ -183,82 +178,61 @@ const Carpenter = () => {
             box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
           }
 
-          /* Controls */
-          .carousel-control-prev,
-          .carousel-control-next {
-            width: 5%;
-            height: 100%;
+          /* Custom Slider Navigation */
+          .custom-slider-nav {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+          }
+
+          .slider-dots {
             display: flex;
-            align-items: center;
             justify-content: center;
-            background: none;
+            align-items: center;
+            gap: 15px;
+          }
+
+          .slider-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
             border: none;
-            z-index: 3;
-          }
-
-          .carousel-control-prev {
-            left: 30px;
-            z-index: 5;
-          }
-
-          .carousel-control-next {
-            right: 30px;
-            z-index: 5;
-          }
-
-          .carousel-control-prev-icon,
-          .carousel-control-next-icon {
-            width: 60px;
-            height: 60px;
-            background-size: 100% 100%;
-            opacity: 0.9;
-            transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-          }
-
-          .carousel-control-prev-icon:hover,
-          .carousel-control-next-icon:hover {
-            opacity: 1;
-            background-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.15);
-            border-color: rgba(255, 255, 255, 0.8);
-          }
-
-          /* Indicators */
-          .carousel-indicators {
-            bottom: 40px;
-            margin-bottom: 0;
-            z-index: 4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-
-          .carousel-indicators button {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin: 0 8px;
-            background-color: rgba(255, 255, 255, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.5);
             cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
           }
 
-          .carousel-indicators button.active {
-            background-color: #FF8C42;
-            border-color: #FF8C42;
-            transform: scale(1.3);
-            box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+          .slider-dot::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: linear-gradient(45deg, #FF8C42, #FF6B35);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
           }
 
-          .carousel-indicators button:hover {
-            background-color: rgba(255, 255, 255, 0.9);
+          .slider-dot.active::before {
+            width: 100%;
+            height: 100%;
+          }
+
+          .slider-dot:hover {
             transform: scale(1.2);
-            border-color: rgba(255, 255, 255, 1);
+            background: rgba(255, 255, 255, 0.8);
+          }
+
+          .slider-dot.active {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(255, 140, 66, 0.6);
           }
 
           /* Responsive */
@@ -402,7 +376,7 @@ const Carpenter = () => {
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         {/* Full-Screen Hero Carousel */}
         <section className="hero-slider">
-          <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
+          <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" data-bs-interval="5000" id="heroCarousel">
             <div className="carousel-inner">
               {[
                 { src: carpenter2, alt: 'Woodworking' },
@@ -415,7 +389,7 @@ const Carpenter = () => {
                     alt={img.alt} 
                     style={i === 2 ? { objectPosition: 'center center' } : {}}
                   />
-                  <div className="blur-box">
+                  <div className="text-overlay">
                     <h1 className="animated-text">Expert Carpenter Services</h1>
                     <p className="lead-text">Precision Craftsmanship & Quality Woodwork</p>
                     <button
@@ -429,29 +403,21 @@ const Carpenter = () => {
               ))}
             </div>
 
-            {/* Controls */}
-            <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Previous</span>
-            </button>
-            <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-              <span className="carousel-control-next-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Next</span>
-            </button>
-
-            {/* Indicators */}
-            <div className="carousel-indicators">
-              {[0, 1, 2].map((i) => (
-                <button
-                  key={i}
-                  type="button"
-                  data-bs-target="#heroCarousel"
-                  data-bs-slide-to={i}
-                  className={i === 0 ? 'active' : ''}
-                  aria-current={i === 0 ? 'true' : 'false'}
-                  aria-label={`Slide ${i + 1}`}
-                ></button>
-              ))}
+            {/* Custom Slider Navigation */}
+            <div className="custom-slider-nav">
+              <div className="slider-dots">
+                {[0, 1, 2].map((i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    data-bs-target="#heroCarousel"
+                    data-bs-slide-to={i}
+                    className={`slider-dot ${i === 0 ? 'active' : ''}`}
+                    aria-current={i === 0 ? 'true' : 'false'}
+                    aria-label={`Slide ${i + 1}`}
+                  ></button>
+                ))}
+              </div>
             </div>
           </div>
         </section>
