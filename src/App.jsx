@@ -172,9 +172,7 @@ function App() {
           <Route
             path="/worker/register"
             element={
-              <ProtectedRoute user={user}>
-                <Suspense fallback={<LoadingSpinner />}><RegisterPage /></Suspense>
-              </ProtectedRoute>
+              <Suspense fallback={<LoadingSpinner />}><RegisterPage /></Suspense>
             }
           />
           <Route
