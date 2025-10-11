@@ -1,9 +1,27 @@
 import React from "react";
 import styles from "./About.module.css";
 
+// Breadcrumb Path Component
+const BreadcrumbPath = () => (
+  <div className={styles.breadcrumbContainer}>
+    <nav className={styles.breadcrumb} aria-label="Breadcrumb navigation">
+      <ol className={styles.breadcrumbList}>
+        <li className={styles.breadcrumbItem}>
+          <a href="/" className={styles.breadcrumbLink}>Home</a>
+        </li>
+        <li className={styles.breadcrumbSeparator} aria-hidden="true">/</li>
+        <li className={styles.breadcrumbItem}>
+          <span className={styles.breadcrumbCurrent} aria-current="page">About Us</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+);
+
 const About = () => (
   <section id="about" className={styles.aboutSection}>
     <div className={styles.container}>
+      <BreadcrumbPath />
       <div className={styles.row + " " + styles.alignItemsCenter}>
         {/* Left Image */}
         <div className={`${styles.colMd6} ${styles.mb4}`}>

@@ -57,7 +57,7 @@ const UniqueHeader = ({ user, setUser }) => {
 
             {/* Center Navigation */}
             <nav className={styles.centerNav}>
-              <a href="#about" className={styles.navLink}>About</a>
+              <a href="/about" className={styles.navLink}>About</a>
               <a href="/feedback" className={styles.navLink}>Feedback Center</a>
             </nav>
 
@@ -138,7 +138,7 @@ const UniqueHeader = ({ user, setUser }) => {
           <div className={styles.mobileMenuContent} onClick={(e) => e.stopPropagation()}>
             {/* Navigation Links */}
             <div className={styles.mobileNavLinks}>
-              <a href="#about" className={styles.mobileNavLink} onClick={closeMobileMenu}>About</a>
+              <a href="/about" className={styles.mobileNavLink} onClick={closeMobileMenu}>About</a>
               <a href="/feedback" className={styles.mobileNavLink} onClick={closeMobileMenu}>Feedback Center</a>
             </div>
 

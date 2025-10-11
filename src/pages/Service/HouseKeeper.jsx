@@ -31,49 +31,48 @@ const HouseKeeper = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
 
-  // Auto-scroll hero every 4 seconds
+  // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (carouselRef.current) {
-        const nextButton = carouselRef.current.querySelector('.carousel-control-next');
-        if (nextButton) {
-          nextButton.click();
-        }
+    let carouselInstance = null;
+    let autoScrollInterval = null;
+
+    const initializeCarousel = () => {
+      if (carouselRef.current && window.bootstrap) {
+        // Initialize Bootstrap carousel
+        carouselInstance = new window.bootstrap.Carousel(carouselRef.current, {
+          interval: false, // Disable Bootstrap's auto interval
+          ride: false,
+          wrap: true
+        });
+
+        // Set up custom auto-scroll
+        autoScrollInterval = setInterval(() => {
+          if (carouselInstance) {
+            carouselInstance.next();
+          }
+        }, 4000);
       }
-    }, 4000);
+    };
 
-    return () => clearInterval(interval);
-  }, []);
-
-  // Remove broken review carousel auto-scroll effect (no such carousel exists)
-  // (The original code tried to auto-scroll a non-existent review carousel.)
-
-  // Initialize Bootstrap carousel after component mounts
-  useEffect(() => {
-    const loadBootstrapJS = () => {
+    // Load Bootstrap if not available
+    if (typeof window.bootstrap === 'undefined') {
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
       script.async = true;
+      script.onload = initializeCarousel;
       document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
-    };
-
-    // Wait for window.bootstrap to be available before initializing
-    let cleanup = null;
-    if (typeof window.bootstrap === 'undefined') {
-      cleanup = loadBootstrapJS();
-    } else if (carouselRef.current && window.bootstrap) {
-      new window.bootstrap.Carousel(carouselRef.current, {
-        interval: false,
-        ride: false,
-      });
+    } else {
+      initializeCarousel();
     }
 
+    // Cleanup function
     return () => {
-      if (cleanup) cleanup();
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+      }
+      if (carouselInstance) {
+        carouselInstance.dispose();
+      }
     };
   }, []);
 
@@ -89,31 +88,28 @@ const HouseKeeper = () => {
         {`
           /* Full-Screen Hero Carousel */
           .hero-slider {
-            position: relative;
+             position: relative;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 80px);
+            margin-top: 80px;
             overflow: hidden;
-            background-color: #1565C0;
+            background-color: transparent;
           }
 
           .carousel-item {
+            position: relative;
+            width: 100%;
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-size: cover;
-            background-position: center;
-            transition: opacity 0.8s ease-in-out;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
           }
 
           .carousel-item img {
-            width: 100%;
+           width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 0;
-            opacity: 0;
-            transform: scale(0.05);
-            transition: opacity 0.4s ease-in-out, transform 0.6s ease-in-out;
+            object-position: center;
+            display: block;
           }
 
           .carousel-item.active img {
@@ -139,26 +135,12 @@ const HouseKeeper = () => {
             box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
           }
 
-          /* Animated Text */
+          /* Static Text */
           .animated-text {
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 2px solid white;
-            animation: typing 4s steps(30, end), blink 0.7s step-end infinite;
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 1rem;
-          }
-
-          @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-          }
-
-          @keyframes blink {
-            from, to { border-color: transparent; }
-            50% { border-color: white; }
+            color: white;
           }
 
           .lead-text {
@@ -184,19 +166,75 @@ const HouseKeeper = () => {
             box-shadow: 0 6px 20px rgba(13, 71, 161, 0.4);
           }
 
-          /* Controls */
-          .carousel-control-prev-icon,
-          .carousel-control-next-icon {
-            width: 40px;
-            height: 40px;
-            background-size: 100% 100%;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
+          /* Carousel Controls */
+          .carousel-control-prev,
+          .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
           }
 
-          .carousel-control-prev-icon:hover,
-          .carousel-control-next-icon:hover {
-            opacity: 1;
+          .carousel-control-prev {
+            left: 30px;
+          }
+
+          .carousel-control-next {
+            right: 30px;
+          }
+
+          .carousel-control-prev:hover,
+          .carousel-control-next:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-50%) scale(1.1);
+          }
+
+          .carousel-control-prev-icon,
+          .carousel-control-next-icon {
+            width: 20px;
+            height: 20px;
+            background-size: 100% 100%;
+          }
+
+          /* Carousel Indicators */
+          .carousel-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+          }
+
+          .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+          }
+
+          .carousel-indicators button.active {
+            background: white;
+            border-color: white;
+            transform: scale(1.2);
+          }
+
+          .carousel-indicators button:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.7);
           }
 
           /* Responsive */

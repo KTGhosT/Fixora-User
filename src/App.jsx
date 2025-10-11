@@ -27,6 +27,7 @@ const Signup = lazy(() => import("./pages/auth/Signup"));
 const PasswordReset = lazy(() => import("./pages/auth/PasswordReset"));
 const Homepage = lazy(() => import("./pages/Homepage"));
 const Services = lazy(() => import("./pages/Services"));
+const About = lazy(() => import("./pages/About"));
 const UniqueHeader = lazy(() => import("./components/user/Header"));
 const Booking = lazy(() => import("./pages/Booking"));
 const BookingStatus = lazy(() => import("./pages/BookingStatus"));
@@ -125,6 +126,7 @@ function App() {
           <Route path="/reset-password" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
           <Route path="/forgot-password" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
           <Route path="/services" element={<Suspense fallback={<LoadingSpinner />}><Services /></Suspense>} />
+          <Route path="/about" element={<Suspense fallback={<LoadingSpinner />}><About /></Suspense>} />
           <Route path="/services/plumber" element={<Suspense fallback={<LoadingSpinner />}><Plumber /></Suspense>} />
           <Route path="/services/electrician" element={<Suspense fallback={<LoadingSpinner />}><Electrician /></Suspense>} />
           <Route path="/services/carpenter" element={<Suspense fallback={<LoadingSpinner />}><Carpenter /></Suspense>} />
