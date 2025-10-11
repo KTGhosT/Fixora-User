@@ -25,6 +25,31 @@ export async function fetchBookingsApi() {
   }
 }
 
+export async function fetchUserBookingsApi(userId) {
+  try {
+    const response = await axiosInstance.get(`/api/bookings/user/${userId}`);
+    const raw = Array.isArray(response.data)
+      ? response.data
+      : response.data?.bookings || response.data?.data || [];
+    return raw.map((b) => ({
+      id: b.id ?? b.booking_id ?? b.uuid ?? b._id ?? b.code,
+      ...b,
+    }));
+  } catch (err) {
+    if (err?.response?.status === 404) {
+      const fallback = await axiosInstance.get(`/bookings/user/${userId}`);
+      const raw = Array.isArray(fallback.data)
+        ? fallback.data
+        : fallback.data?.bookings || fallback.data?.data || [];
+      return raw.map((b) => ({
+        id: b.id ?? b.booking_id ?? b.uuid ?? b._id ?? b.code,
+        ...b,
+      }));
+    }
+    throw err;
+  }
+}
+
 export async function getBookingApi(id) {
   const response = await axiosInstance.get(`/api/bookings/${id}`);
   return response.data;

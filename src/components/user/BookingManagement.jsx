@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock, MapPin, User, Phone, Mail, Eye, X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
-import { fetchBookingsApi, getBookingApi, updateBookingApi, deleteBookingApi } from "../../services/bookings";
+import { fetchUserBookingsApi, fetchBookingsApi, getBookingApi, updateBookingApi, deleteBookingApi } from "../../services/bookings";
 import styles from "./BookingManagement.module.css";
 
 const BookingManagement = ({ user }) => {
@@ -12,23 +12,38 @@ const BookingManagement = ({ user }) => {
   const [filter, setFilter] = useState("all"); // all, pending, confirmed, completed, cancelled
 
   useEffect(() => {
-    fetchBookings();
-  }, []);
+    if (user?.id) {
+      fetchBookings();
+    }
+  }, [user?.id]);
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const data = await fetchBookingsApi();
-      // Filter bookings for current user
-      const userBookings = data.filter(booking => 
-        booking.user_id === user?.id || 
-        booking.email === user?.email ||
-        booking.phone === user?.phone
-      );
-      setBookings(userBookings);
+      if (!user?.id) {
+        setError("User information not available. Please login again.");
+        return;
+      }
+      
+      try {
+        // Try to fetch bookings specific to the current user
+        const userBookings = await fetchUserBookingsApi(user.id);
+        setBookings(userBookings);
+      } catch (userApiError) {
+        console.warn("User-specific bookings API not available, falling back to general API:", userApiError);
+        
+        // Fallback: fetch all bookings and filter on frontend
+        const allBookings = await fetchBookingsApi();
+        const userBookings = allBookings.filter(booking => 
+          booking.user_id === user.id || 
+          booking.email === user.email ||
+          booking.phone === user.phone
+        );
+        setBookings(userBookings);
+      }
     } catch (err) {
-      console.error("Error fetching bookings:", err);
-      setError("Failed to load bookings. Please try again.");
+      console.error("Error fetching user bookings:", err);
+      setError("Failed to load your bookings. Please try again.");
     } finally {
       setLoading(false);
     }
