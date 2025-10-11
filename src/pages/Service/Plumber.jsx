@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const Plumber = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
+  const [fullScreenImage, setFullScreenImage] = React.useState(null);
 
   // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
@@ -62,21 +63,14 @@ const Plumber = () => {
 
       <style>
         {`
+          /* Full-Screen Hero Carousel */
           .hero-slider {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-          .carousel {
-            width: 100%;
-            height: 100%;
-          }
-
-          .carousel-inner {
-            width: 100%;
-            height: 100%;
+            position: relative;
+            width: 100vw;
+            height: calc(100vh - 80px);
+            margin-top: 80px;
+            overflow: hidden;
+            background-color: transparent;
           }
 
           .carousel-item {
@@ -93,71 +87,143 @@ const Plumber = () => {
             object-fit: cover;
             object-position: center;
             display: block;
+           
           }
 
-          .carousel-item.active {
-            display: block;
+          .carousel-item img:hover {
+            transform: scale(1.05);
           }
 
-          /* Blur Box Overlay */
-          .blur-box {
+          .carousel-item.active img {
+            opacity: 1;
+            transform: scale(1);
+          }
+
+          /* Text Overlay */
+          .text-overlay {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 90%;
-            width: 100%;
             max-width: 800px;
-            padding: 3rem 2rem;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
             color: white;
             text-align: center;
-            z-index: 10;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 2;
           }
 
-          /* Animated Text */
+          /* Static Text */
           .animated-text {
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 2px solid white;
-            animation: typing 4s steps(30, end), blink 0.7s step-end infinite;
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            line-height: 1.2;
-          }
-
-          @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-          }
-
-          @keyframes blink {
-            from, to { border-color: transparent; }
-            50% { border-color: white; }
+            color: white;
           }
 
           .lead-text {
             font-size: 1.5rem;
             margin-bottom: 2rem;
-            opacity: 0.95;
-            line-height: 1.4;
+            opacity: 0.9;
           }
 
           .btn-book-now {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+          }
+
+          .btn-book-now:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+          }
+
+          /* Carousel Controls */
+          .carousel-control-prev,
+          .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+          }
+
+          .carousel-control-prev {
+            left: 30px;
+          }
+
+          .carousel-control-next {
+            right: 30px;
+          }
+
+          .carousel-control-prev:hover,
+          .carousel-control-next:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-50%) scale(1.1);
+          }
+
+          .carousel-control-prev-icon,
+          .carousel-control-next-icon {
+            width: 20px;
+            height: 20px;
+            background-size: 100% 100%;
+          }
+
+          /* Carousel Indicators */
+          .carousel-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+          }
+
+          .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+          }
+
+          .carousel-indicators button.active {
+            background: white;
+            border-color: white;
+            transform: scale(1.2);
+          }
+
+          .carousel-indicators button:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.7);
+          }
+          }
+
+          .btn-book-now {
+            background: linear-gradient(135deg, #007bff, #0056b3);
             border: none;
             color: white;
             padding: 1rem 2rem;
             font-size: 1.1rem;
             font-weight: 600;
             border-radius: 50px;
-            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
             transition: all 0.3s ease;
             cursor: pointer;
             text-transform: uppercase;
@@ -166,22 +232,40 @@ const Plumber = () => {
 
           .btn-book-now:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(239, 68, 68, 0.5);
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 12px 35px rgba(0, 123, 255, 0.4);
+            background: linear-gradient(135deg, #0056b3, #004085);
           }
 
-          /* Responsive */
-          @media (max-width: 768px) {
-            .blur-box {
-              padding: 2rem 1.5rem;
-              max-width: 95%;
+          /* Responsive Design */
+          @media (max-width: 991px) {
+            .hero-content {
+              padding: 3rem 2rem;
+              min-height: 50vh;
+              text-align: center;
             }
+            
+            .hero-slider-container {
+              height: 50vh;
+            }
+            
             .animated-text {
-              font-size: 2.2rem;
+              font-size: 2.5rem;
             }
+          }
+
+          @media (max-width: 768px) {
+            .hero-content {
+              padding: 2rem 1.5rem;
+            }
+            
+            .animated-text {
+              font-size: 2rem;
+            }
+            
             .lead-text {
-              font-size: 1.2rem;
+              font-size: 1.1rem;
             }
+            
             .btn-book-now {
               padding: 0.8rem 1.5rem;
               font-size: 1rem;
@@ -189,15 +273,14 @@ const Plumber = () => {
           }
 
           @media (max-width: 576px) {
-            .blur-box {
+            .hero-content {
               padding: 1.5rem 1rem;
             }
+            
             .animated-text {
               font-size: 1.8rem;
             }
-            .lead-text {
-              font-size: 1.1rem;
-            }
+          }
             .btn-book-now {
               padding: 0.7rem 1.2rem;
               font-size: 0.9rem;
@@ -220,6 +303,60 @@ const Plumber = () => {
             justify-content: center;
             transition: all 0.3s ease;
             z-index: 10;
+          }
+
+          /* Full Screen Modal Styles */
+          .fullscreen-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: pointer;
+          }
+
+          .fullscreen-image {
+            max-width: 95vw;
+            max-height: 95vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+          }
+
+          .fullscreen-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+            transition: color 0.3s ease;
+          }
+
+          .fullscreen-close:hover {
+            color: #ccc;
+          }
+
+          /* Image hover effect for full screen */
+          .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+          }
+
+          .carousel-item img:hover {
+            transform: scale(1.02);
           }
 
           .carousel-control-prev {
@@ -429,7 +566,21 @@ const Plumber = () => {
                 { src: '/src/assets/user/plumber3.jpg', alt: 'Pipe Installation' },
               ].map((img, i) => (
                 <div key={i} className={`carousel-item${i === 0 ? ' active' : ''}`}>
-                  <img src={img.src} alt={img.alt} />
+                  <img 
+                    src={img.src} 
+                    alt={img.alt} 
+                    onClick={() => setFullScreenImage(img)}
+                  />
+                  <div className="text-overlay">
+                    <h1 className="animated-text">Expert Plumbing Services</h1>
+                    <p className="lead-text">Professional plumbing solutions for your home and business in Sri Lanka</p>
+                    <button
+                      className="btn-book-now"
+                      onClick={() => navigate('/booking')}
+                    >
+                      Book Now
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -695,6 +846,21 @@ const Plumber = () => {
             </div>
           </div>
         </section>
+
+        {/* Full Screen Image Modal */}
+        {fullScreenImage && (
+          <div className="fullscreen-modal" onClick={() => setFullScreenImage(null)}>
+            <span className="fullscreen-close" onClick={() => setFullScreenImage(null)}>
+              &times;
+            </span>
+            <img 
+              src={fullScreenImage.src} 
+              alt={fullScreenImage.alt} 
+              className="fullscreen-image"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        )}
     </>
   );
 };
