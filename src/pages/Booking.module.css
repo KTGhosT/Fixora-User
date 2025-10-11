@@ -249,6 +249,110 @@ input[type="time"].form-control {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Employment Type Tabs */
+.employment-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tab {
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(209, 213, 219, 0.8);
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2937;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-color: transparent;
+}
+
+/* Availability Grid */
+.availability-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 992px) {
+  .availability-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .availability-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.slot-card {
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: all 0.25s ease;
+}
+
+.slot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  border-color: #93c5fd;
+}
+
+.selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.slot-date {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.slot-time {
+  font-weight: 600;
+  color: #374151;
+}
+
+.slot-duration {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.slot-select-btn {
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.slot-select-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.35);
+}
+
 /* Relocate Me Button */
 .btn-submit[type="button"] {
   width: auto;
