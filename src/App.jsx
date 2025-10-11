@@ -57,7 +57,7 @@ function HeaderWrapper({ user, setUser }) {
   const location = useLocation();
   // Show header on all public pages except /login and /signup
   const publicHeaderPaths = [
-    "/", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
+    "/", "/about", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
     "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
     "/feedback", "/booking"
   ];

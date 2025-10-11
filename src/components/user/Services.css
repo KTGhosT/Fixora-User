@@ -73,12 +73,34 @@
   margin-bottom: 60px;
 }
 
+/* --- Reveal on Scroll --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  will-change: opacity, transform;
+}
+
+.reveal.in-view {
+  animation: fadeUp 600ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* --- Service Card Styles --- */
 .service-card {
   background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
   padding: 40px 30px;
   text-align: center;
-  border: 2px solid transparent;
+  border: 2px solid rgba(30, 58, 138, 0.35); /* dark blue ring */
   border-radius: 20px;
   box-shadow: 
     0 10px 30px rgba(0, 0, 0, 0.3),
@@ -97,7 +119,7 @@
   height: 100%;
   background: linear-gradient(90deg, 
     transparent, 
-    rgba(255, 140, 0, 0.05), 
+    rgba(255, 255, 255, 0.06), 
     transparent);
   transition: left 0.6s ease;
 }
@@ -107,11 +129,11 @@
 }
 
 .service-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  border: 2px solid #ffa94d;
+  transform: translateY(-6px) scale(1.01);
+  border: 2px solid #2563EB; /* blue-600 */
   box-shadow: 
-    0 20px 40px rgba(255, 140, 0, 0.15),
-    0 0 0 1px rgba(255, 140, 0, 0.1);
+    0 20px 40px rgba(37, 99, 235, 0.25),
+    0 0 0 2px rgba(37, 99, 235, 0.18);
 }
 
 .card-glow {
@@ -120,11 +142,10 @@
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(135deg, #ff8c00, #ffa94d, #ff8c00);
+  background: none;
   border-radius: 22px;
   z-index: -1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  display: none;
 }
 
 .service-card:hover .card-glow {
@@ -148,7 +169,7 @@
   width: 80px;
   height: 80px;
   margin: 0 auto 25px auto;
-  background: linear-gradient(135deg, #ff8c00 0%, #ffa94d 100%);
+  background: linear-gradient(135deg, #3a3a3a 0%, #222222 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -159,7 +180,7 @@
 
 .service-card:hover .service-icon-container {
   transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 10px 25px rgba(255, 140, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 .service-icon {
@@ -178,7 +199,7 @@
   left: -5px;
   right: -5px;
   bottom: -5px;
-  border: 2px solid #ffa94d;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   animation: iconPulse 2s ease-out infinite;
   opacity: 0;
@@ -207,7 +228,7 @@
 }
 
 .service-card:hover .service-title {
-  color: #ff8c00;
+  color: #ffffff;
   transform: translateY(-2px);
 }
 
@@ -233,18 +254,18 @@
 }
 
 .feature-tag {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  color: #ff8c00;
+  background: linear-gradient(135deg, #e5e7eb 0%, #cbd5e1 100%);
+  color: #1f2937;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
-  border: 1px solid rgba(255, 140, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 0.3s ease;
 }
 
 .service-card:hover .feature-tag {
-  background: linear-gradient(135deg, #ff8c00 0%, #ffa94d 100%);
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
   color: white;
   transform: translateY(-2px);
 }
@@ -264,15 +285,15 @@
 .hover-line {
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, #ff8c00, #ffa94d);
+  background: linear-gradient(90deg, #94a3b8, #cbd5e1);
   margin: 0 auto 20px auto;
   border-radius: 1px;
 }
 
 .service-cta {
-  background: transparent;
-  border: 2px solid #ff8c00;
-  color: #ff8c00;
+  background: linear-gradient(135deg, #ff8c00 0%, #ffa94d 100%);
+  border: none;
+  color: #ffffff;
   padding: 10px 20px;
   border-radius: 25px;
   font-weight: 600;
@@ -281,12 +302,21 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  box-shadow: 0 8px 18px rgba(255, 140, 0, 0.25);
 }
 
 .service-cta:hover {
-  background: #ff8c00;
-  color: white;
+  background: linear-gradient(135deg, #ffa94d 0%, #ff8c00 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(255, 140, 0, 0.35);
   transform: translateX(5px);
+}
+
+.service-cta:active {
+  background: linear-gradient(135deg, #ff8c00 0%, #e67e22 100%);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.25);
+  transform: translateX(5px) translateY(1px) scale(0.99);
 }
 
 .cta-arrow {
@@ -295,6 +325,11 @@
 
 .service-cta:hover .cta-arrow {
   transform: translateX(3px);
+}
+
+.service-cta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.35);
 }
 
 /* --- CTA Section --- */

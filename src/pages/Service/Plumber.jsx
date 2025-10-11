@@ -621,26 +621,6 @@ const Plumber = () => {
                 <p className="lead">
                   With over 15 years of experience serving homes and businesses across Sri Lanka, our certified local plumbers understand the unique plumbing challenges of tropical climate and provide reliable solutions for water supply, drainage, and emergency repairs.
                 </p>
-                <div className="row mt-5 text-center">
-                  <div className="col-md-4">
-                    <div className="p-4">
-                      <h3 className="display-4 fw-bold text-primary">15+</h3>
-                      <p className="text-muted">Years in Sri Lanka</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="p-4">
-                      <h3 className="display-4 fw-bold text-primary">800+</h3>
-                      <p className="text-muted">Local Projects</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="p-4">
-                      <h3 className="display-4 fw-bold text-primary">95%</h3>
-                      <p className="text-muted">Customer Satisfaction</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -679,7 +659,7 @@ const Plumber = () => {
                 },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="service-card" onClick={() => alert(`Learn more about ${s.title}`)}>
+                  <div className="service-card">
                     <img src={s.img} alt={s.title} className="service-img" />
                     <div className="p-4 text-center">
                       <h5 className="service-title">{s.title}</h5>
