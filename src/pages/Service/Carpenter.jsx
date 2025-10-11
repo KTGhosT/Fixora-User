@@ -33,46 +33,49 @@ const Carpenter = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
 
-  // Auto-scroll hero every 4 seconds
+  // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (carouselRef.current) {
-        const nextButton = carouselRef.current.querySelector('.carousel-control-next');
-        if (nextButton) {
-          nextButton.click();
-        }
+    let carouselInstance = null;
+    let autoScrollInterval = null;
+
+    const initializeCarousel = () => {
+      if (carouselRef.current && window.bootstrap) {
+        // Initialize Bootstrap carousel
+        carouselInstance = new window.bootstrap.Carousel(carouselRef.current, {
+          interval: false, // Disable Bootstrap's auto interval
+          ride: false,
+          wrap: true
+        });
+
+        // Set up custom auto-scroll
+        autoScrollInterval = setInterval(() => {
+          if (carouselInstance) {
+            carouselInstance.next();
+          }
+        }, 4000);
       }
-    }, 4000);
+    };
 
-    return () => clearInterval(interval);
-  }, []);
-
-  // Initialize Bootstrap carousel after component mounts
-  useEffect(() => {
-    const loadBootstrapJS = () => {
+    // Load Bootstrap if not available
+    if (typeof window.bootstrap === 'undefined') {
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
       script.async = true;
+      script.onload = initializeCarousel;
       document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
-    };
-
-    if (typeof window.bootstrap === 'undefined') {
-      loadBootstrapJS();
+    } else {
+      initializeCarousel();
     }
 
-    if (carouselRef.current) {
-      const carouselElement = carouselRef.current;
-      if (carouselElement && typeof window.bootstrap !== 'undefined') {
-        new window.bootstrap.Carousel(carouselElement, {
-          interval: false,
-          ride: false,
-        });
+    // Cleanup function
+    return () => {
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
       }
-    }
+      if (carouselInstance) {
+        carouselInstance.dispose();
+      }
+    };
   }, []);
 
   return (
@@ -96,23 +99,19 @@ const Carpenter = () => {
           }
 
           .carousel-item {
-            height: calc(100vh - 80px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-size: cover;
-            background-position: center;
-            transition: opacity 0.8s ease-in-out;
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
           }
 
           .carousel-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 0;
-            opacity: 0;
-            transform: scale(0.05);
-            transition: opacity 0.4s ease-in-out, transform 0.6s ease-in-out;
+            object-position: center;
+            display: block;
           }
 
           .carousel-item.active img {
@@ -133,26 +132,12 @@ const Carpenter = () => {
             z-index: 2;
           }
 
-          /* Animated Text */
+          /* Static Text */
           .animated-text {
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 2px solid white;
-            animation: typing 4s steps(30, end), blink 0.7s step-end infinite;
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 1rem;
-          }
-
-          @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-          }
-
-          @keyframes blink {
-            from, to { border-color: transparent; }
-            50% { border-color: white; }
+            color: white;
           }
 
           .lead-text {
@@ -178,61 +163,75 @@ const Carpenter = () => {
             box-shadow: 0 6px 20px rgba(210, 105, 30, 0.4);
           }
 
-          /* Custom Slider Navigation */
-          .custom-slider-nav {
+          /* Carousel Controls */
+          .carousel-control-prev,
+          .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+          }
+
+          .carousel-control-prev {
+            left: 30px;
+          }
+
+          .carousel-control-next {
+            right: 30px;
+          }
+
+          .carousel-control-prev:hover,
+          .carousel-control-next:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-50%) scale(1.1);
+          }
+
+          .carousel-control-prev-icon,
+          .carousel-control-next-icon {
+            width: 20px;
+            height: 20px;
+            background-size: 100% 100%;
+          }
+
+          /* Carousel Indicators */
+          .carousel-indicators {
             position: absolute;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 5;
-          }
-
-          .slider-dots {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
+            gap: 10px;
+            z-index: 10;
           }
 
-          .slider-dot {
-            width: 16px;
-            height: 16px;
+          .carousel-indicators button {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            border: none;
-            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
           }
 
-          .slider-dot::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: linear-gradient(45deg, #FF8C42, #FF6B35);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.4s ease;
-          }
-
-          .slider-dot.active::before {
-            width: 100%;
-            height: 100%;
-          }
-
-          .slider-dot:hover {
+          .carousel-indicators button.active {
+            background: white;
+            border-color: white;
             transform: scale(1.2);
-            background: rgba(255, 255, 255, 0.8);
           }
 
-          .slider-dot.active {
-            background: rgba(255, 255, 255, 0.9);
-            transform: scale(1.3);
-            box-shadow: 0 0 15px rgba(255, 140, 66, 0.6);
+          .carousel-indicators button:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.7);
           }
 
           /* Responsive */
@@ -387,7 +386,12 @@ const Carpenter = () => {
                   <img 
                     src={img.src} 
                     alt={img.alt} 
-                    style={i === 2 ? { objectPosition: 'center center' } : {}}
+                    style={i === 2 ? { 
+                      objectFit: 'cover', 
+                      objectPosition: 'center center',
+                      width: '100%',
+                      height: '100%'
+                    } : {}}
                   />
                   <div className="text-overlay">
                     <h1 className="animated-text">Expert Carpenter Services</h1>
@@ -403,21 +407,29 @@ const Carpenter = () => {
               ))}
             </div>
 
-            {/* Custom Slider Navigation */}
-            <div className="custom-slider-nav">
-              <div className="slider-dots">
-                {[0, 1, 2].map((i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    data-bs-target="#heroCarousel"
-                    data-bs-slide-to={i}
-                    className={`slider-dot ${i === 0 ? 'active' : ''}`}
-                    aria-current={i === 0 ? 'true' : 'false'}
-                    aria-label={`Slide ${i + 1}`}
-                  ></button>
-                ))}
-              </div>
+            {/* Controls */}
+            <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Previous</span>
+            </button>
+            <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Next</span>
+            </button>
+
+            {/* Indicators */}
+            <div className="carousel-indicators">
+              {[0, 1, 2].map((i) => (
+                <button
+                  key={i}
+                  type="button"
+                  data-bs-target="#heroCarousel"
+                  data-bs-slide-to={i}
+                  className={i === 0 ? 'active' : ''}
+                  aria-current={i === 0 ? 'true' : undefined}
+                  aria-label={`Slide ${i + 1}`}
+                ></button>
+              ))}
             </div>
           </div>
         </section>
