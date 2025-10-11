@@ -90,11 +90,6 @@ const ModernHero = () => {
               }}
             >
               
-              {/* Badge */}
-              <div className={`hero-badge fade-in-up ${isVisible ? "visible stagger-delay-0" : ""}`}>
-                🏆 Rated #1 Home Service Platform
-              </div>
-
               {/* Main Title */}
               <Typography
                 variant="h1"
@@ -139,31 +134,6 @@ const ModernHero = () => {
                 Professional, reliable, and affordable services at your doorstep
               </Typography>
 
-              {/* Feature Pills */}
-              <div 
-                className={`feature-pills fade-in-up ${isVisible ? "visible stagger-delay-2" : ""}`}
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "100%",
-                  textAlign: "center"
-                }}
-              >
-                <div className="feature-pill">
-                  <span className="pill-icon">✓</span>
-                  Verified Professionals
-                </div>
-                <div className="feature-pill">
-                  <span className="pill-icon">🕒</span>
-                  24/7 Support
-                </div>
-                <div className="feature-pill">
-                  <span className="pill-icon">⭐</span>
-                  100% Satisfaction
-                </div>
-              </div>
-
               {/* Buttons */}
               <div 
                 className={`hero-buttons fade-in-up ${isVisible ? "visible stagger-delay-3" : ""}`}
@@ -187,7 +157,6 @@ const ModernHero = () => {
                   onClick={() => navigate('/worker/register')}
                 >
                   Register as a Worker
-                  <span className="btn-icon">👷</span>
                 </button>
               </div>
 
