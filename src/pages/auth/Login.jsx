@@ -81,6 +81,8 @@ function Login({ setUser }) {
       const { user, token } = loginResponse.data;
 
       localStorage.setItem("auth_token", token);
+      // Store user data in localStorage for persistence
+      localStorage.setItem("user", JSON.stringify({ role: user.role?.toLowerCase() || "user", ...user }));
 
       if (rememberMe) {
         localStorage.setItem(useEmail ? "email" : "phone", formData[useEmail ? "email" : "phone"]);

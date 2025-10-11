@@ -86,6 +86,8 @@ function PhoneLogin({ setUser }) {
         if (response.data.token) {
           localStorage.setItem('auth_token', response.data.token);
         }
+        // Store user data in localStorage for persistence
+        localStorage.setItem('user', JSON.stringify(response.data.user));
         setUser(response.data.user);
         setSuccess("Login successful!");
         navigate("/");

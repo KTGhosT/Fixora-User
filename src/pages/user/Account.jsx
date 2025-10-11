@@ -93,6 +93,8 @@ const ProfileForm = ({ user, setUser, setPropUser }) => {
       if (setPropUser) {
         setPropUser(updatedUser);
       }
+      // Update localStorage with new user data
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       setMessage("Profile updated successfully!");
       setTimeout(() => setMessage(""), 3000);
     } catch (err) {
@@ -251,6 +253,8 @@ const Account = ({ user: propUser, setUser: setPropUser }) => {
           if (setPropUser) {
             setPropUser(userData);
           }
+          // Update localStorage with fresh user data
+          localStorage.setItem('user', JSON.stringify(userData));
         } catch (err) {
           console.error("User fetch error:", err);
           if (err.response?.status === 401) {

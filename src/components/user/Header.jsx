@@ -25,6 +25,7 @@ const UniqueHeader = ({ user, setUser }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('auth_token');
     navigate('/');
   };
 
@@ -76,7 +77,7 @@ const UniqueHeader = ({ user, setUser }) => {
                 <div className={styles.userSection}>
                   <button
                     className={styles.profileButton}
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate('/user/account')}
                     aria-label="Go to account page"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -161,7 +162,7 @@ const UniqueHeader = ({ user, setUser }) => {
 
               {user ? (
                 <div className={styles.mobileAuthButtons}>
-                  <button className={styles.mobileSignInButton} onClick={() => navigate('/profile')}>
+                  <button className={styles.mobileSignInButton} onClick={() => navigate('/user/account')}>
                     Profile ({user.name})
                   </button>
                   <button className={styles.mobileSignUpButton} onClick={logout}>

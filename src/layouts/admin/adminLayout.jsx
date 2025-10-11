@@ -277,16 +277,16 @@ const ManageBookings = () => (
   </div>
 );
 
-const ManageLocations = () => (
-  <div className="section-container">
-    <Typography variant="h4" gutterBottom className="section-title">
-      Manage Locations
-    </Typography>
-    <Paper className="content-paper">
-      <Typography>Locations management interface coming soon...</Typography>
-    </Paper>
-  </div>
-);
+// const ManageLocations = () => (
+//   <div className="section-container">
+//     <Typography variant="h4" gutterBottom className="section-title">
+//       Manage Locations
+//     </Typography>
+//     <Paper className="content-paper">
+//       <Typography>Locations management interface coming soon...</Typography>
+//     </Paper>
+//   </div>
+// );
 
 // NEW: Manage Worker Location placeholder
 const ManageWorkerLocation = () => (

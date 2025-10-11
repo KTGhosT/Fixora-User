@@ -99,10 +99,25 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // ✅ FIXED: Changed from "/profile" to "/api/profile"
+        // First check if user data exists in localStorage
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          const userData = JSON.parse(savedUser);
+          setUser(userData);
+          setLoading(false);
+          return;
+        }
+
+        // If no saved user, try to fetch from API
         const res = await axios.get("/api/profile"); // Sanctum cookie auth
-        setUser(res.data); // expects { id, name, email, role }
+        const userData = res.data;
+        setUser(userData);
+        // Store user data in localStorage for persistence
+        localStorage.setItem("user", JSON.stringify(userData));
       } catch {
+        // Clear any invalid user data
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth_token");
         setUser(null);
       } finally {
         setLoading(false);
