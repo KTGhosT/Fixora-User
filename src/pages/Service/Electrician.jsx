@@ -434,26 +434,6 @@ const Electrician = () => {
                 <p className="lead">
                   With 20+ years of experience, our certified electricians provide professional solutions for wiring, installations, and electrical emergencies.
                 </p>
-                <div className="row mt-5 text-center">
-                  <div className="col-md-4">
-                    <div className="p-4">
-                      <h3 className="display-4 fw-bold text-danger">20+</h3>
-                      <p className="text-muted">Years Experience</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="p-4">
-                      <h3 className="display-4 fw-bold text-danger">1000+</h3>
-                      <p className="text-muted">Projects Completed</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="p-4">
-                      <h3 className="display-4 fw-bold text-danger">99%</h3>
-                      <p className="text-muted">Customer Satisfaction</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -492,7 +472,7 @@ const Electrician = () => {
                 },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="service-card" onClick={() => alert(`Learn more about ${s.title}`)}>
+                  <div className="service-card">
                     <img src={s.img} alt={s.title} className="service-img" />
                     <div className="p-4 text-center">
                       <h5 className="service-title">{s.title}</h5>

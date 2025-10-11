@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Services.css';
 
@@ -51,13 +51,14 @@ const servicesData = [
 // Reusable Service Card component
 const ServiceCard = ({ title, icon, description, features, path }) => {
   const navigate = useNavigate();
+  const cardRef = useRef(null);
 
   const handleLearnMore = () => {
     navigate(path);
   };
 
   return (
-    <div className="service-card">
+    <div ref={cardRef} className="service-card reveal">
       <div className="card-glow"></div>
       <div className="service-icon-container">
         <span className="service-icon">{icon}</span>
@@ -89,11 +90,32 @@ const ServicesSection = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    const cards = document.querySelectorAll('.service-card.reveal');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+          }
+        });
+      },
+      { root: null, rootMargin: '0px', threshold: 0.15 }
+    );
+
+    cards.forEach((el) => observer.observe(el));
+
+    return () => {
+      cards.forEach((el) => observer.unobserve(el));
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <section className="services-section">
       <div className="services-container">
         <div className="services-header">
-          <h1>MY <span className="highlight">SERVICES</span></h1>
+          <h1>Our <span className="highlight">services</span></h1>
           <div className="header-underline"></div>
           <p className="services-subtitle">
             Professional solutions tailored to your needs with quality and creativity

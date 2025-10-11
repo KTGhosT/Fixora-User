@@ -1,54 +1,77 @@
 import React from "react";
+import Footer from "../components/user/Footer";
 import styles from "../components/user/About.module.css";
-
-const BreadcrumbPath = () => (
-  <nav className={styles.breadcrumbNav} aria-label="Breadcrumb">
-    <ol className={styles.breadcrumbList}>
-      <li className={styles.breadcrumbItem}>
-        <a href="/" className={styles.breadcrumbLink}>Home</a>
-      </li>
-      <li className={styles.breadcrumbSeparator} aria-hidden="true">/</li>
-      <li className={styles.breadcrumbItem}>
-        <span className={styles.breadcrumbCurrent} aria-current="page">About Us</span>
-      </li>
-    </ol>
-  </nav>
-);
 
 const About = () => {
   return (
-    <div>
-      <section id="about" className={styles.aboutSection}>
-        <BreadcrumbPath />
+    <>
+      
+      {/* Hero Section */}
+      <section className={styles.heroSection}>
+        <div className={styles.heroOverlay}>
+          <div className={styles.heroContent}>
+            <h1 className={styles.heroTitle}>About Fixora</h1>
+            <p className={styles.heroSubtitle}>
+              We are a forward-thinking technology company dedicated to
+              transforming home services through innovative digital solutions.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission and Vision Section */}
+      <section className={styles.missionVisionSection}>
         <div className={styles.container}>
-          <div className={styles.row}>
-            <div className={styles.colMd6}>
-              <img
-                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                alt="Professional home service team"
-                className={styles.aboutImage}
-              />
+          <div className={styles.cardGrid}>
+            <div className={styles.missionCard}>
+              <div className={styles.cardContent}>
+                <h2 className={styles.cardTitle}>Our Mission</h2>
+                <p className={styles.cardDescription}>
+                  To deliver modern and scalable digital solutions that help homeowners grow, 
+                  innovate, and succeed in the digital era. We strive to make home services 
+                  accessible and beneficial for every household we work with.
+                </p>
+              </div>
             </div>
-            <div className={styles.colMd6}>
-              <h2 className={styles.aboutTitle}>About Us</h2>
-              <p className={styles.aboutDescription}>
-                At Fixora, we're dedicated to connecting homeowners with skilled professionals who deliver exceptional service. 
-                Our platform brings together experienced plumbers, electricians, carpenters, and cleaning specialists to handle 
-                all your home maintenance needs with precision and care.
-              </p>
-              <p className={styles.aboutDescription}>
-                Founded with a mission to make home services accessible and reliable, we've built a community of trusted 
-                professionals who are committed to quality workmanship and customer satisfaction. Whether you need emergency 
-                repairs or routine maintenance, our network of verified experts is ready to help.
-              </p>
-              <a href="#learn-more" className={styles.learnMoreBtn} aria-label="Learn more about Fixora">
-                Learn More
-              </a>
+            
+            <div className={styles.visionCard}>
+              <div className={styles.cardContent}>
+                <h2 className={styles.cardTitle}>Our Vision</h2>
+                <p className={styles.cardDescription}>
+                  To become a global leader in home service & AI-powered technologies, setting new 
+                  standards for innovation and excellence in the digital solutions industry.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
-    </div>
+
+      {/* Additional Features Section */}
+      <section className={styles.featuresSection}>
+        <div className={styles.container}>
+          <div className={styles.featuresGrid}>
+            <div className={styles.featureItem}>
+              <div className={styles.featureIcon}>✓</div>
+              <h3 className={styles.featureTitle}>Verified Professionals</h3>
+              <p className={styles.featureDescription}>All our service providers are thoroughly vetted and verified for your peace of mind.</p>
+            </div>
+            <div className={styles.featureItem}>
+              <div className={styles.featureIcon}>🕒</div>
+              <h3 className={styles.featureTitle}>24/7 Support</h3>
+              <p className={styles.featureDescription}>Round-the-clock customer support to assist you whenever you need help.</p>
+            </div>
+            <div className={styles.featureItem}>
+              <div className={styles.featureIcon}>⭐</div>
+              <h3 className={styles.featureTitle}>Quality Guarantee</h3>
+              <p className={styles.featureDescription}>We guarantee 100% satisfaction with every service booking through our platform.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </>
   );
 };
 
