@@ -47,6 +47,7 @@ const BackendConnectionTest = lazy(() => import("./components/BackendConnectionT
 const PasswordResetDebug = lazy(() => import("./components/PasswordResetDebug"));
 const ManageServiceCategories = lazy(() => import("./pages/admin/ManageServiceCategories"));
 const ManageWorkerLocation = lazy(() => import("./pages/admin/ManageWorkerLocation"));
+const HomeService = lazy(() => import("./pages/Service/HomeService"));
 
 
 const AgotaSample = lazy(() => import("./agotasample"));
@@ -265,6 +266,7 @@ function App() {
 
 
           <Route path="/agora" element={<AgotaSample />} />
+          <Route path="/HomeService" element={<HomeService />} />
           
         </Routes>
       </div>
