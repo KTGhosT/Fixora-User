@@ -44,4 +44,9 @@ export async function deleteWorkerApi(id) {
   return response.data;
 }
 
+export async function createWorkerApi(payload) {
+  const response = await axiosInstance.post('/api/workers', payload);
+  return response.data;
+}
+
 
