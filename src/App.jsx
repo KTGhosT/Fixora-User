@@ -51,6 +51,7 @@ const HomeService = lazy(() => import("./pages/Service/HomeService"));
 
 
 const AgotaSample = lazy(() => import("./agotasample"));
+const LoadingSpinnerTest = lazy(() => import("./components/LoadingSpinnerTest"));
 
 // Header wrapper for all public pages except login and signup
 function HeaderWrapper({ user, setUser }) {
@@ -265,6 +266,7 @@ function App() {
 
           <Route path="/agora" element={<AgotaSample />} />
           <Route path="/HomeService" element={<HomeService />} />
+          <Route path="/test-spinner" element={<Suspense fallback={<LoadingSpinner />}><LoadingSpinnerTest /></Suspense>} />
           
         </Routes>
       </div>

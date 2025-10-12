@@ -37,12 +37,6 @@ const BookWorkerPage = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [serviceCategories, setServiceCategories] = useState([]);
 
-  // Employment type and availability state
-  const employmentTypes = ["Full-time", "Part-time", "Contract", "Dayworker"];
-  const [employmentType, setEmploymentType] = useState("Dayworker");
-  const [availability, setAvailability] = useState([]);
-  const [selectedSlotId, setSelectedSlotId] = useState(null);
-
   // Ref for map instance
   const mapRef = useRef(null);
 
@@ -73,129 +67,6 @@ const BookWorkerPage = () => {
     };
     initializeNotifications();
   }, []);
-
-  // Helpers for availability generation
-  const formatDateInput = (date) => {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
-  const generateSlots = (type) => {
-    const slots = [];
-    const today = new Date();
-    for (let i = 0; i < 14; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      const dateStr = formatDateInput(date);
-
-      if (type === "Full-time") {
-        slots.push({
-          id: `${type}-${dateStr}-ft`,
-          type,
-          date: dateStr,
-          startTime: "09:00",
-          endTime: "17:00",
-          durationMinutes: 8 * 60,
-          label: "Full-day (8h)",
-        });
-      } else if (type === "Part-time") {
-        slots.push({
-          id: `${type}-${dateStr}-am`,
-          type,
-          date: dateStr,
-          startTime: "09:00",
-          endTime: "13:00",
-          durationMinutes: 4 * 60,
-          label: "Morning (4h)",
-        });
-        slots.push({
-          id: `${type}-${dateStr}-pm`,
-          type,
-          date: dateStr,
-          startTime: "14:00",
-          endTime: "18:00",
-          durationMinutes: 4 * 60,
-          label: "Afternoon (4h)",
-        });
-      } else if (type === "Dayworker") {
-        const dayworkerBlocks = [
-          ["09:00", "11:00"],
-          ["11:00", "13:00"],
-          ["13:00", "15:00"],
-          ["15:00", "17:00"],
-        ];
-        dayworkerBlocks.forEach(([start, end], idx) => {
-          slots.push({
-            id: `${type}-${dateStr}-dw-${idx}`,
-            type,
-            date: dateStr,
-            startTime: start,
-            endTime: end,
-            durationMinutes: 2 * 60,
-            label: "Hourly (2h)",
-          });
-        });
-      } else if (type === "Contract") {
-        // Contract starts on Mondays: 3-day and 7-day options
-        const day = date.getDay(); // 1 = Monday
-        if (day === 1) {
-          // 3-day contract
-          const end3 = new Date(date);
-          end3.setDate(date.getDate() + 2);
-          slots.push({
-            id: `${type}-${dateStr}-3d`,
-            type,
-            date: dateStr,
-            startTime: "09:00",
-            endTime: "17:00",
-            durationMinutes: 3 * 8 * 60,
-            durationDays: 3,
-            endDate: formatDateInput(end3),
-            label: "3-day contract (8h/day)",
-          });
-          // 7-day contract
-          const end7 = new Date(date);
-          end7.setDate(date.getDate() + 6);
-          slots.push({
-            id: `${type}-${dateStr}-7d`,
-            type,
-            date: dateStr,
-            startTime: "09:00",
-            endTime: "17:00",
-            durationMinutes: 7 * 8 * 60,
-            durationDays: 7,
-            endDate: formatDateInput(end7),
-            label: "7-day contract (8h/day)",
-          });
-        }
-      }
-    }
-    return slots;
-  };
-
-  useEffect(() => {
-    setAvailability(generateSlots(employmentType));
-    // Reset selected slot on type change
-    setSelectedSlotId(null);
-  }, [employmentType]);
-
-  const handleSelectSlot = (slot) => {
-    setSelectedSlotId(slot.id);
-    const durationHours = slot.durationDays
-      ? `${slot.durationDays} days`
-      : `${Math.round(slot.durationMinutes / 60)} hrs`;
-    const tag = `Employment: ${employmentType} (${durationHours})`;
-    setFormData((prev) => ({
-      ...prev,
-      scheduledDate: slot.date,
-      scheduledTime: slot.startTime,
-      specialInstructions: prev.specialInstructions
-        ? `${prev.specialInstructions}\n${tag}`
-        : tag,
-    }));
-  };
 
   // Reverse geocode to get address from lat/lng
   // Rewritten to avoid CORS issues by using fetch directly to Nominatim (no proxy)
@@ -488,48 +359,6 @@ const BookWorkerPage = () => {
       )}
 
       <form onSubmit={handleSubmit}>
-        {/* Employment Type Selection */}
-        <div className={styles["form-group"]}>
-          <label>Employment Type</label>
-          <div className={styles["employment-tabs"]}>
-            {employmentTypes.map((type) => (
-              <button
-                key={type}
-                type="button"
-                className={`${styles["tab"]} ${employmentType === type ? styles["active"] : ""}`}
-                onClick={() => setEmploymentType(type)}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Availability Slots */}
-        <div className={styles["form-group"]}>
-          <label>Available Slots</label>
-          <div className={styles["availability-grid"]}>
-            {(availability || []).map((slot) => (
-              <div
-                key={slot.id}
-                className={`${styles["slot-card"]} ${selectedSlotId === slot.id ? styles["selected"] : ""}`}
-              >
-                <div className={styles["slot-date"]}>{slot.date}{slot.durationDays ? ` → ${slot.endDate}` : ""}</div>
-                <div className={styles["slot-time"]}>{slot.startTime} - {slot.endTime}</div>
-                <div className={styles["slot-duration"]}>
-                  {slot.label}
-                </div>
-                <button
-                  type="button"
-                  className={styles["slot-select-btn"]}
-                  onClick={() => handleSelectSlot(slot)}
-                >
-                  Select
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
         {/* Service Category Selection */}
         <div className={styles["form-group"]}>
           <label>Service Category *</label>
