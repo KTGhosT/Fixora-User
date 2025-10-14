@@ -92,8 +92,8 @@ const Carpenter = () => {
           .hero-slider {
             position: relative;
             width: 100vw;
-            height: calc(100vh - 80px);
-            margin-top: 80px;
+            height: 100vh;
+            margin-top: 0;
             overflow: hidden;
             background-color: transparent;
           }
