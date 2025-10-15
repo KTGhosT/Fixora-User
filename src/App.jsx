@@ -60,7 +60,7 @@ function HeaderWrapper({ user, setUser }) {
   const location = useLocation();
   // Show header on all public pages except /login and /signup
   const publicHeaderPaths = [
-    "/", "/about", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
+    "/", "/about", "/services", "/services/plumber", "/services/electrician",
     "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
     "/feedback"
   ];
@@ -70,10 +70,12 @@ function HeaderWrapper({ user, setUser }) {
   const isPasswordReset = location.pathname === "/password-reset" || 
                          location.pathname === "/reset-password" || 
                          location.pathname === "/forgot-password";
+  const isCarpenter = location.pathname === "/services/carpenter";
   const showHeader =
     !isWorkerOrAdmin &&
     !isLoginOrSignup &&
     !isPasswordReset &&
+    !isCarpenter &&
     (
       publicHeaderPaths.includes(location.pathname) ||
       // Also show header for any /services/* route
