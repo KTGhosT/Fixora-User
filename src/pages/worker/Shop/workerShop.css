@@ -1,0 +1,120 @@
+/* Home.css */
+.home-container {
+  background-color: #f8f9fa;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Carousel Styling */
+.carousel-img {
+  height: 85vh;
+  object-fit: cover;
+  filter: brightness(75%);
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.45);
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+}
+
+.carousel-caption h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.carousel-caption p {
+  font-size: 1.1rem;
+}
+
+/* Introduction Section */
+.intro-section {
+  background: linear-gradient(135deg, #0d6efd, #1f2937);
+  color: white;
+  padding: 80px 20px;
+}
+
+.intro-section h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.intro-section span {
+  color: #ffc107;
+}
+
+.intro-section p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto 30px;
+}
+
+.intro-buttons .btn {
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.intro-buttons .btn-primary:hover {
+  background-color: #0043a8;
+}
+
+.intro-buttons .btn-outline-light:hover {
+  background-color: white;
+  color: #0d6efd;
+}
+
+/* Highlights Section */
+.highlights {
+  padding: 80px 0;
+}
+
+.highlight {
+  padding: 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.highlight:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  border-radius: 12px;
+}
+
+.highlight .icon {
+  font-size: 3rem;
+  color: #0d6efd;
+  margin-bottom: 20px;
+}
+
+.highlight h4 {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.highlight p {
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .carousel-img {
+    height: 60vh;
+  }
+
+  .carousel-caption h2 {
+    font-size: 1.8rem;
+  }
+
+  .intro-section h1 {
+    font-size: 2.2rem;
+  }
+
+  .highlight .icon {
+    font-size: 2.5rem;
+  }
+}

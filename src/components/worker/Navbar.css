@@ -1,0 +1,56 @@
+.navbar {
+  background-color: #0d0d0d !important;
+  border-bottom: 2px solid #ff6f00;
+}
+
+.navbar-brand {
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 1px;
+  transition: 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: #ffa31a !important;
+}
+
+.nav-link {
+  color: #ffffff !important;
+  font-weight: 500;
+  padding: 8px 15px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #ff6f00 !important;
+  text-decoration: underline;
+}
+
+.dropdown-menu {
+  background-color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-item {
+  color: #f1f1f1;
+  transition: 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #ff6f00;
+  color: #fff;
+}
+
+.cart-btn {
+  font-weight: 600;
+  color: #000;
+  transition: all 0.3s ease;
+}
+
+.cart-btn:hover {
+  background-color: #ffa31a;
+  color: #000;
+  transform: scale(1.05);
+}
