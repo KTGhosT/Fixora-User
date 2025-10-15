@@ -248,6 +248,10 @@ function App() {
           <Route path="/agora" element={<AgotaSample />} />
           <Route path="/HomeService" element={<HomeService />} />
           <Route path="/test-spinner" element={<Suspense fallback={<LoadingSpinner />}><LoadingSpinnerTest /></Suspense>} />
+
+
+
+          {/* inmoly */}
           
         </Routes>
       </div>
