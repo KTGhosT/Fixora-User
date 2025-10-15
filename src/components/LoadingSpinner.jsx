@@ -5,15 +5,15 @@ const Loader = () => {
   return (
     <StyledWrapper>
       <div className="loader">
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
-        <div className="text"><span>Loading</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
+        <div className="text"><span>Fixora</span></div>
         <div className="line" />
       </div>
     </StyledWrapper>

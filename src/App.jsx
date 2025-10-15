@@ -5,17 +5,19 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import "leaflet/dist/leaflet.css";
 
 
-// Lazy load components
-const Dashboard = lazy(() => import("./pages/worker/dashboard"));
-const RegisterPage = lazy(() => import("./pages/worker/register"));
-const Settings = lazy(() => import("./pages/worker/Settings"));
-const WorkerWorks = lazy(() => import("./pages/worker/works"));
-// Removed Tasks and Sales pages after merging into Works
-const WorkerPayments = lazy(() => import("./pages/worker/Payments"));
-const WorkerInventory = lazy(() => import("./pages/worker/Inventory"));
-const WorkerClients = lazy(() => import("./pages/worker/Clients"));
-const WorkerReports = lazy(() => import("./pages/worker/Reports"));
-const WorkerCalls = lazy(() => import("./pages/worker/Calls"));
+// Import worker components directly (no lazy loading for better UX)
+import WorkerLayout from "./layouts/worker/WorkerLayout";
+import Dashboard from "./pages/worker/dashboard";
+import Settings from "./pages/worker/Settings";
+import WorkerWorks from "./pages/worker/works";
+import WorkerPayments from "./pages/worker/Payments";
+import WorkerInventory from "./pages/worker/Inventory";
+import WorkerClients from "./pages/worker/Clients";
+import WorkerReports from "./pages/worker/Reports";
+import WorkerCalls from "./pages/worker/Calls";
+
+// Lazy load other components
+const RegisterPage = lazy(() => import("./pages/register"));
 const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
@@ -60,7 +62,7 @@ function HeaderWrapper({ user, setUser }) {
   const publicHeaderPaths = [
     "/", "/about", "/services", "/services/plumber", "/services/electrician", "/services/carpenter",
     "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
-    "/feedback", "/booking"
+    "/feedback"
   ];
   // If the path starts with /worker or /admin, don't show header
   const isWorkerOrAdmin = location.pathname.startsWith("/worker") || location.pathname.startsWith("/admin");
@@ -155,55 +157,32 @@ function App() {
           <Route path="/booking" element={<Suspense fallback={<LoadingSpinner />}><Booking /></Suspense>} />
           <Route path="/booking-status/:id" element={<Suspense fallback={<LoadingSpinner />}><BookingStatus /></Suspense>} />
 
-          {/* Worker Routes */}
-          <Route
-            path="/worker/dashboard"
-            element={
-              <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
-            }
-          />
-          <Route
-            path="/worker/dashboard/:id"
-            element={
+          {/* Worker Routes with Layout */}
+          <Route path="/worker" element={<WorkerLayout user={user} />}>
+            <Route index element={<Navigate to="/worker/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard/:id" element={
               <ProtectedRoute user={user} roles={["worker", "admin"]}>
-                <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
+                <Dashboard />
               </ProtectedRoute>
-            }
-          />
+            } />
+            <Route path="settings" element={<Settings />} />
+            <Route path="works" element={<WorkerWorks />} />
+            <Route path="works/:id" element={<WorkerWorks />} />
+            <Route path="payments" element={<WorkerPayments />} />
+            <Route path="inventory" element={<WorkerInventory />} />
+            <Route path="clients" element={<WorkerClients />} />
+            <Route path="reports" element={<WorkerReports />} />
+            <Route path="calls" element={<WorkerCalls />} />
+          </Route>
+          
+          {/* Worker Register (standalone) */}
           <Route
             path="/worker/register"
             element={
               <Suspense fallback={<LoadingSpinner />}><RegisterPage /></Suspense>
             }
           />
-          <Route
-            path="/worker/settings"
-            element={
-              // Allow settings without login for now
-              <Suspense fallback={<LoadingSpinner />}><Settings /></Suspense>
-            }
-          />
-          <Route
-            path="/worker/works"
-            element={
-              // Allow works without login for now
-              <Suspense fallback={<LoadingSpinner />}><WorkerWorks /></Suspense>
-            }
-          />
-          <Route
-            path="/worker/works/:id"
-            element={
-              <Suspense fallback={<LoadingSpinner />}><WorkerWorks /></Suspense>
-            }
-          />
-
-          {/* Additional worker sections from sidebar (Tasks and Sales removed) */}
-          <Route path="/worker/payments" element={<Suspense fallback={<LoadingSpinner />}><WorkerPayments /></Suspense>} />
-          <Route path="/worker/inventory" element={<Suspense fallback={<LoadingSpinner />}><WorkerInventory /></Suspense>} />
-          <Route path="/worker/clients" element={<Suspense fallback={<LoadingSpinner />}><WorkerClients /></Suspense>} />
-          <Route path="/worker/reports" element={<Suspense fallback={<LoadingSpinner />}><WorkerReports /></Suspense>} />
-          <Route path="/worker/calls" element={<Suspense fallback={<LoadingSpinner />}><WorkerCalls /></Suspense>} />
-          <Route path="/worker" element={<Navigate to="/worker/dashboard" />} />
 
           {/* Admin Routes */}
           <Route

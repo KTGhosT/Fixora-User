@@ -387,6 +387,34 @@
     font-weight: 500;
   }
   
+  /* Chart Container */
+  .chartContainer {
+    width: 100%;
+    height: 300px;
+    margin-top: 1rem;
+  }
+
+  /* Error Container */
+  .errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .errorContainer h2 {
+    color: #ef4444;
+    margin-bottom: 1rem;
+  }
+
+  .errorContainer p {
+    color: #64748b;
+    margin-bottom: 2rem;
+  }
+
   /* Skeleton Loading */
   .skeletonText {
     background: #e2e8f0;

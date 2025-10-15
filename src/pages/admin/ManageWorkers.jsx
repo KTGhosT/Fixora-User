@@ -10,7 +10,14 @@ import { fetchWorkersApi, updateWorkerApi, deleteWorkerApi, verifyWorkerApi, set
 
 function ManageWorkers() {
   const [workers, setWorkers] = useState([]);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", service: "", availability: "available" });
+  const [formData, setFormData] = useState({ 
+    work_role: "", 
+    bio: "", 
+    experience_level: "", 
+    availability: "available",
+    status: "pending",
+    minimum_education: ""
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWorker, setEditingWorker] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +53,14 @@ function ManageWorkers() {
         await updateWorkerApi(editingWorker.id, formData);
       }
       await fetchWorkers();
-      setFormData({ name: "", email: "", phone: "", service: "", availability: "available" });
+      setFormData({ 
+        work_role: "", 
+        bio: "", 
+        experience_level: "", 
+        availability: "available",
+        status: "pending",
+        minimum_education: ""
+      });
       setIsModalOpen(false);
       setEditingWorker(null);
     } catch (err) {
@@ -59,11 +73,12 @@ function ManageWorkers() {
   const handleEdit = (worker) => {
     setEditingWorker(worker);
     setFormData({
-      name: worker.name || "",
-      email: worker.email || "",
-      phone: worker.phone || "",
-      service: worker.service || "",
+      work_role: worker.work_role || "",
+      bio: worker.bio || "",
+      experience_level: worker.experience_level || "",
       availability: worker.availability || "available",
+      status: worker.status || "pending",
+      minimum_education: worker.minimum_education || "",
     });
     setIsModalOpen(true);
   };
@@ -84,10 +99,11 @@ function ManageWorkers() {
 
   const columns = useMemo(() => [
     { accessorKey: 'id', header: '#', size: 60 },
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'email', header: 'Email' },
-    { accessorKey: 'phone', header: 'Phone' },
-    { accessorKey: 'service', header: 'Service' },
+    { accessorKey: 'user_id', header: 'User ID', size: 80 },
+    { accessorKey: 'work_role', header: 'Work Role' },
+    { accessorKey: 'bio', header: 'Bio', size: 200 },
+    { accessorKey: 'experience_level', header: 'Experience' },
+    { accessorKey: 'status', header: 'Status' },
     { accessorKey: 'availability', header: 'Availability' },
   ], []);
 
@@ -147,13 +163,31 @@ function ManageWorkers() {
         <form onSubmit={handleSubmit}>
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <TextField label="Name" name="name" value={formData.name} onChange={handleChange} required fullWidth />
-              <TextField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required fullWidth />
-              <TextField label="Phone" name="phone" value={formData.phone} onChange={handleChange} required fullWidth />
-              <TextField label="Service" name="service" value={formData.service} onChange={handleChange} required fullWidth />
+              <TextField label="Work Role" name="work_role" value={formData.work_role} onChange={handleChange} required fullWidth />
+              <TextField label="Bio" name="bio" value={formData.bio} onChange={handleChange} multiline rows={3} fullWidth />
+              <TextField select label="Experience Level" name="experience_level" value={formData.experience_level} onChange={handleChange} required fullWidth>
+                <MenuItem value="entry">Entry Level</MenuItem>
+                <MenuItem value="mid">Mid Level</MenuItem>
+                <MenuItem value="senior">Senior Level</MenuItem>
+                <MenuItem value="expert">Expert</MenuItem>
+              </TextField>
+              <TextField select label="Minimum Education" name="minimum_education" value={formData.minimum_education} onChange={handleChange} required fullWidth>
+                <MenuItem value="O/L">O/L</MenuItem>
+                <MenuItem value="A/L">A/L</MenuItem>
+                <MenuItem value="NVQ4">NVQ Level 4</MenuItem>
+                <MenuItem value="Diploma">Diploma</MenuItem>
+                <MenuItem value="Degree">Degree</MenuItem>
+              </TextField>
+              <TextField select label="Status" name="status" value={formData.status} onChange={handleChange} required fullWidth>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+                <MenuItem value="verified">Verified</MenuItem>
+              </TextField>
               <TextField select label="Availability" name="availability" value={formData.availability} onChange={handleChange} required fullWidth>
                 <MenuItem value="available">Available</MenuItem>
                 <MenuItem value="unavailable">Unavailable</MenuItem>
+                <MenuItem value="busy">Busy</MenuItem>
               </TextField>
             </Box>
           </DialogContent>

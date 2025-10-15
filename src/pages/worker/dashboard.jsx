@@ -1,36 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Row, Col, Alert } from "react-bootstrap";
-import { Link, useParams } from 'react-router-dom'; // Added useParams for worker ID
-import styles from './dashboard.module.css';
-import axiosInstance from '../../services/api'; // Use your configured instance
+import { Link } from 'react-router-dom';
+import { getWorkerDashboardStatsApi } from '../../services/workers';
+import { getWorkerByUserId } from '../../services/workerdashboard';
 
 const Dashboard = () => {
-  const { id } = useParams(); // Get worker ID from route parameter
-  const [workerData, setWorkerData] = useState(null);
-  const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone_number: '',
-    address: '',
-    experience_level: '',
-    availability: '',
-    short_info: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [user, setUser] = useState(null);
+  const [worker, setWorker] = useState(null);
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [range, setRange] = useState('month');
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Tasks and time tracking state
-  const [tasks, setTasks] = useState([
-    { id: 101, title: 'Complete client installation', details: 'Project Alpha - 3 hours', priority: 'high' },
-    { id: 102, title: 'Follow up on quote', details: 'Client Beta - 1 hour', priority: 'medium' },
-    { id: 103, title: 'Update inventory records', details: 'Warehouse - 2 hours', priority: 'low' },
-  ]);
-  const [timeTracking, setTimeTracking] = useState({}); // { [taskId]: { startTime, endTime, running, saved, totalSeconds } }
-  const [tick, setTick] = useState(0); // re-render timer every second
-  const [feedback, setFeedback] = useState({}); // { [taskId]: string }
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Mock data for demonstration (will be replaced with real API data)
+  const mockStats = {
+    day: { orders: 11, sales: 1245.75, tasks: 8, performance: 92 },
+    week: { orders: 58, sales: 7425.3, tasks: 39, performance: 90 },
+    month: { orders: 223, sales: 28450.9, tasks: 164, performance: 93 },
+  };
+
+  const mockTasks = [
+    { id: 101, title: 'Complete client installation', details: 'Project Alpha - 3 hours', priority: 'high', dueTime: '2:30 PM' },
+    { id: 102, title: 'Follow up on quote', details: 'Client Beta - 1 hour', priority: 'medium', dueTime: '4:00 PM' },
+    { id: 103, title: 'Update inventory records', details: 'Warehouse - 2 hours', priority: 'low', dueTime: '6:00 PM' },
+  ];
+
+  const mockSalesData = [
+    { day: 'Mon', sales: 1200 },
+    { day: 'Tue', sales: 1900 },
+    { day: 'Wed', sales: 3000 },
+    { day: 'Thu', sales: 5000 },
+    { day: 'Fri', sales: 2000 },
+    { day: 'Sat', sales: 2400 },
+    { day: 'Sun', sales: 1800 },
+  ];
+
+  const mockRecentActivity = [
+    { id: 1, action: 'Completed installation', client: 'John Smith', time: '2 hours ago', type: 'success' },
+    { id: 2, action: 'New booking received', client: 'Sarah Johnson', time: '4 hours ago', type: 'info' },
+    { id: 3, action: 'Payment received', amount: 'LKR 2,500', time: '6 hours ago', type: 'success' },
+    { id: 4, action: 'Client feedback', rating: '5 stars', time: '1 day ago', type: 'success' },
+  ];
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Get user from localStorage
+        const savedUser = JSON.parse(localStorage.getItem('user'));
+        if (!savedUser) {
+          throw new Error('User not logged in');
+        }
+        
+        setUser(savedUser);
+        
+        // Fetch worker data
+        const workerData = await getWorkerByUserId(savedUser.id);
+        setWorker(workerData.worker);
+        
+        // Try to fetch dashboard stats if worker ID is available
+        if (workerData.worker?.id) {
+          try {
+            const stats = await getWorkerDashboardStatsApi(workerData.worker.id);
+            setDashboardStats(stats);
+          } catch (statsError) {
+            console.warn('Could not fetch dashboard stats, using mock data:', statsError);
+            setDashboardStats(mockStats);
+          }
+        } else {
+          setDashboardStats(mockStats);
+        }
+        
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        setError(err.message);
+        // Fallback to mock data
+        setDashboardStats(mockStats);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const formatLKR = (value) =>
     `LKR ${Number(value || 0).toLocaleString('en-LK', {
@@ -38,585 +99,289 @@ const Dashboard = () => {
       maximumFractionDigits: 2,
     })}`;
 
-  const statsByRange = {
-    day: { orders: 11, sales: 1245.75, tasks: 8, performance: 92 },
-    week: { orders: 58, sales: 7425.3, tasks: 39, performance: 90 },
-    month: { orders: 223, sales: 28450.9, tasks: 164, performance: 93 },
+  const getCurrentStats = () => {
+    return dashboardStats?.[range] || mockStats[range];
   };
 
-  // Timer tick
-  useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Load/save time tracking from localStorage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('workerTaskTimeTracking');
-      if (saved) setTimeTracking(JSON.parse(saved));
-    } catch (_) {}
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('workerTaskTimeTracking', JSON.stringify(timeTracking));
-    } catch (_) {}
-  }, [timeTracking]);
-
-  const formatDuration = (seconds) => {
-    const s = Math.max(0, Math.floor(seconds || 0));
-    const hrs = Math.floor(s / 3600).toString().padStart(2, '0');
-    const mins = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
-    const secs = (s % 60).toString().padStart(2, '0');
-    return `${hrs}:${mins}:${secs}`;
-  };
-
-  const handleStart = (taskId) => {
-    setTimeTracking((prev) => {
-      const next = {
-        ...prev,
-        [taskId]: { startTime: Date.now(), endTime: null, running: true, saved: false, totalSeconds: 0 },
-      };
-      return next;
-    });
-    const startedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setFeedback((f) => ({ ...f, [taskId]: `Started at ${startedAt}` }));
-  };
-
-  const handleEnd = async (taskId) => {
-    setTimeTracking((prev) => {
-      const t = prev[taskId];
-      if (!t?.startTime) return prev;
-      const end = Date.now();
-      const totalSeconds = Math.floor((end - t.startTime) / 1000);
-      const next = {
-        ...prev,
-        [taskId]: { ...t, endTime: end, running: false, totalSeconds },
-      };
-      return next;
-    });
-
-    // Persist via API if worker id is present, else simulate
-    try {
-      const t = timeTracking[taskId];
-      const startIso = new Date(t?.startTime || Date.now()).toISOString();
-      const endIso = new Date(Date.now()).toISOString();
-      const payload = { start_time: startIso, end_time: endIso, total_seconds: Math.floor(((Date.now()) - (t?.startTime || Date.now())) / 1000) };
-      if (id) {
-        await axiosInstance.post(`/worker/${id}/tasks/${taskId}/time`, payload);
-      } else {
-        await new Promise((res) => setTimeout(res, 300));
-      }
-      setTimeTracking((prev) => ({
-        ...prev,
-        [taskId]: { ...prev[taskId], saved: true },
-      }));
-      setFeedback((f) => ({ ...f, [taskId]: `Saved total ${formatDuration(payload.total_seconds)}` }));
-    } catch (error) {
-      console.error('Failed to save time tracking:', error);
-      setFeedback((f) => ({ ...f, [taskId]: 'Failed to save. Please retry.' }));
-    }
-  };
-
-  // Fetch worker data on component mount (with mock fallback when no id)
-  useEffect(() => {
-    const fetchWorkerData = async () => {
-      try {
-        if (id) {
-          const response = await axiosInstance.get(`/worker/${id}`);
-          setWorkerData(response.data.worker);
-          setFormData({
-            name: response.data.worker.name,
-            email: response.data.worker.email,
-            phone_number: response.data.worker.phone_number,
-            address: response.data.worker.address,
-            experience_level: response.data.worker.experience_level,
-            availability: response.data.worker.availability,
-            short_info: response.data.worker.short_info || '',
-          });
-        } else {
-          const mock = {
-            id: 0,
-            name: 'John Doe',
-            email: 'john@example.com',
-            phone_number: '+1234567890',
-            address: 'New York, USA',
-            experience_level: 'Intermediate',
-            availability: 'Available',
-            short_info: 'Dedicated worker with 3 years experience',
-          };
-          setWorkerData(mock);
-          setFormData({
-            name: mock.name,
-            email: mock.email,
-            phone_number: mock.phone_number,
-            address: mock.address,
-            experience_level: mock.experience_level,
-            availability: mock.availability,
-            short_info: mock.short_info,
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching worker data:', error);
-        setErrors({ submit: 'Failed to load worker data. Please try again.' });
-      } finally {
-        setIsLoading(false);
-      }
+  const getProgressData = () => {
+    const stats = getCurrentStats();
+    return {
+      completed: Math.floor(stats.tasks * 0.3),
+      inProgress: Math.floor(stats.tasks * 0.6),
+      pending: Math.floor(stats.tasks * 0.1),
     };
-    fetchWorkerData();
-  }, [id]);
-
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // Validate form
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-    if (!formData.phone_number.trim()) newErrors.phone_number = 'Phone number is required';
-    else if (!/^\d{10,15}$/.test(formData.phone_number.replace(/\D/g, ''))) newErrors.phone_number = 'Phone number is invalid';
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
-    if (!formData.experience_level.trim()) newErrors.experience_level = 'Experience level is required';
-    if (!formData.availability.trim()) newErrors.availability = 'Availability is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full p-8">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Handle form submission for update
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setIsSubmitting(true);
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full p-8">
+        <div className="text-center">
+          <div className="text-red-500 text-xl mb-4">⚠️</div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-    try {
-      if (id) {
-        const response = await axiosInstance.put(`/worker/${id}`, formData);
-        setWorkerData(response.data.worker);
-      } else {
-        // simulate local update when no id
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        setWorkerData({ ...workerData, ...formData });
-      }
-      setEditMode(false);
-      setErrors({});
-      alert('Worker details updated successfully!');
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Failed to update worker details. Please try again.';
-      setErrors({ submit: errorMessage });
-      console.error('Error updating worker:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Toggle edit mode
-  const toggleEditMode = () => {
-    setEditMode(!editMode);
-    if (!editMode) {
-      setFormData({
-        name: workerData?.name || '',
-        email: workerData?.email || '',
-        phone_number: workerData?.phone_number || '',
-        address: workerData?.address || '',
-        experience_level: workerData?.experience_level || '',
-        availability: workerData?.availability || '',
-        short_info: workerData?.short_info || '',
-      });
-      setErrors({});
-    }
-  };
-
-  if (isLoading) return <div className={styles.loading}>Loading...</div>;
+  const stats = getCurrentStats();
+  const progress = getProgressData();
 
   return (
-    <div className={styles.dashboardContainer}>
-      {/* Modern Sidebar */}
-      <div className={styles.sidebar}>
-        <div className={styles.logo}>
-          <h2>WorkerDash</h2>
-        </div>
-        <nav className={styles.navMenu}>
-          <Link to={`/worker/dashboard`} className={`${styles.navItem} ${styles.active}`}>
-            <i className="icon-dashboard"></i>
-            <span>Dashboard</span>
-          </Link>
-          <Link to={`/worker/works`} className={styles.navItem}>
-            <i className="icon-orders"></i>
-            <span>Works</span>
-          </Link>
-          {/* Tasks and Sales paths removed after consolidation into Works */}
-          <Link to="/worker/payments" className={styles.navItem}>
-            <i className="icon-payments"></i>
-            <span>Payments</span>
-          </Link>
-          <Link to="/worker/inventory" className={styles.navItem}>
-            <i className="icon-inventory"></i>
-            <span>Inventory</span>
-          </Link>
-          <Link to="/worker/clients" className={styles.navItem}>
-            <i className="icon-clients"></i>
-            <span>Clients</span>
-          </Link>
-          <Link to="/worker/reports" className={styles.navItem}>
-            <i className="icon-reports"></i>
-            <span>Reports</span>
-          </Link>
-          <Link to="/worker/calls" className={styles.navItem}>
-            <i className="icon-calls"></i>
-            <span>Calls</span>
-          </Link>
-          <Link to={`/worker/settings`} className={styles.navItem}>
-            <i className="icon-settings"></i>
-            <span>Settings</span>
-          </Link>
-        </nav>
-        <div className={styles.userProfile}>
-          <div className={styles.avatar}>
-            <i className="icon-user"></i>
+    <div className="p-6 space-y-6 animate-fade-in">
+      {/* Welcome Header with Real-time Clock */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name || 'Worker'}! 👋</h1>
+            <p className="text-blue-100 text-lg">Here's what's happening with your work today</p>
           </div>
-          <div className={styles.userInfo}>
-            <div className={styles.username}>{workerData?.name || 'John Doe'}</div>
-            <div className={styles.role}>Worker</div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">
+              {currentTime.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+              })}
+            </div>
+            <div className="text-blue-100">
+              {currentTime.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className={styles.mainContent}>
-        <div className={styles.header}>
-          <h1>Worker Dashboard</h1>
-          <div className={styles.dateFilter}>
+      {/* Time Range Selector */}
+      <div className="flex justify-end">
+        <div className="flex space-x-2 bg-gray-100 rounded-lg p-1">
+          {[
+            { key: 'day', label: 'Today' },
+            { key: 'week', label: 'This Week' },
+            { key: 'month', label: 'This Month' }
+          ].map((option) => (
             <button
-              className={`${styles.filterBtn} ${range === 'day' ? styles.active : ''}`}
-              onClick={() => setRange('day')}
+              key={option.key}
+              onClick={() => setRange(option.key)}
+              className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                range === option.key 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
-              Today
+              {option.label}
             </button>
-            <button
-              className={`${styles.filterBtn} ${range === 'week' ? styles.active : ''}`}
-              onClick={() => setRange('week')}
-            >
-              This Week
-            </button>
-            <button
-              className={`${styles.filterBtn} ${range === 'month' ? styles.active : ''}`}
-              onClick={() => setRange('month')}
-            >
-              This Month
-            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* KPI Cards with Animations */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Orders This {range === 'day' ? 'Day' : range === 'week' ? 'Week' : 'Month'}</p>
+              <p className="text-3xl font-bold text-gray-900 animate-count-up">{stats.orders}</p>
+              <p className="text-sm text-green-600 flex items-center">
+                <span className="mr-1">↗</span>
+                +3 from previous period
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <span className="text-2xl">📦</span>
+            </div>
           </div>
-          {workerData && (
-            <Button variant="primary" onClick={toggleEditMode} className="mt-3">
-              {editMode ? 'Cancel' : 'Edit Profile'}
-            </Button>
-          )}
         </div>
 
-        {editMode ? (
-          <Form onSubmit={handleSubmit} className="p-4 bg-light rounded">
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Name *</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    isInvalid={!!errors.name}
-                  />
-                  <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email *</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    isInvalid={!!errors.email}
-                  />
-                  <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Phone Number *</Form.Label>
-                  <Form.Control
-                    type="tel"
-                    name="phone_number"
-                    value={formData.phone_number}
-                    onChange={handleChange}
-                    isInvalid={!!errors.phone_number}
-                  />
-                  <Form.Control.Feedback type="invalid">{errors.phone_number}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Address *</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    isInvalid={!!errors.address}
-                  />
-                  <Form.Control.Feedback type="invalid">{errors.address}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Experience Level *</Form.Label>
-                  <Form.Select
-                    name="experience_level"
-                    value={formData.experience_level}
-                    onChange={handleChange}
-                    isInvalid={!!errors.experience_level}
-                  >
-                    <option value="">Select Experience</option>
-                    <option value="entry">Entry Level</option>
-                    <option value="mid">Mid Level</option>
-                    <option value="senior">Senior Level</option>
-                    <option value="expert">Expert</option>
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">{errors.experience_level}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Availability *</Form.Label>
-                  <Form.Select
-                    name="availability"
-                    value={formData.availability}
-                    onChange={handleChange}
-                    isInvalid={!!errors.availability}
-                  >
-                    <option value="">Select Availability</option>
-                    <option value="immediate">Immediate</option>
-                    <option value="1week">Within 1 Week</option>
-                    <option value="2weeks">Within 2 Weeks</option>
-                    <option value="1month">Within 1 Month</option>
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Form.Group className="mb-3">
-              <Form.Label>Short Info</Form.Label>
-              <Form.Control
-                type="text"
-                name="short_info"
-                value={formData.short_info}
-                onChange={handleChange}
-                placeholder="Briefly describe yourself (max 255 characters)"
-                maxLength={255}
-              />
-            </Form.Group>
-            {errors.submit && <Alert variant="danger" className="mb-3">{errors.submit}</Alert>}
-            <Button variant="primary" type="submit" className="w-100" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </Form>
-        ) : (
-          <>
-            {/* Stats Cards */}
-            <div className={styles.statsGrid}>
-              <div className={styles.statCard}>
-                <div className={styles.statHeader}>
-                  <h3>Orders {range === 'day' ? 'Today' : range === 'week' ? 'This Week' : 'This Month'}</h3>
-                  <i className={`icon-orders ${styles.statIcon}`}></i>
-                </div>
-                <div className={styles.statValue}>{statsByRange[range].orders}</div>
-                <div className={`${styles.statTrend} ${styles.positive}`}>+3 from previous period</div>
-              </div>
-              
-              <div className={styles.statCard}>
-                <div className={styles.statHeader}>
-                  <h3>Sales {range === 'day' ? 'Today' : range === 'week' ? 'This Week' : 'This Month'}</h3>
-                  <i className={`icon-sales ${styles.statIcon}`}></i>
-                </div>
-                <div className={styles.statValue}>{formatLKR(statsByRange[range].sales)}</div>
-                <div className={`${styles.statTrend} ${styles.negative}`}>-LKR 245.25 from previous</div>
-              </div>
-              
-              <div className={styles.statCard}>
-                <div className={styles.statHeader}>
-                  <h3>Tasks Completed</h3>
-                  <i className={`icon-tasks ${styles.statIcon}`}></i>
-                </div>
-                <div className={styles.statValue}>{statsByRange[range].tasks}</div>
-                <div className={`${styles.statTrend} ${styles.positive}`}>+2 from previous period</div>
-              </div>
-              
-              <div className={styles.statCard}>
-                <div className={styles.statHeader}>
-                  <h3>Performance</h3>
-                  <i className={`icon-performance ${styles.statIcon}`}></i>
-                </div>
-                <div className={styles.statValue}>{statsByRange[range].performance}%</div>
-                <div className={`${styles.statTrend} ${styles.positive}`}>+5% from last period</div>
-              </div>
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Sales This {range === 'day' ? 'Day' : range === 'week' ? 'Week' : 'Month'}</p>
+              <p className="text-3xl font-bold text-gray-900 animate-count-up">{formatLKR(stats.sales)}</p>
+              <p className="text-sm text-red-600 flex items-center">
+                <span className="mr-1">↘</span>
+                -LKR 245.25 from previous
+              </p>
             </div>
-
-            {/* Charts and Lists */}
-            <div className={styles.contentSections}>
-              <div className={styles.chartSection}>
-                <h3>Work Progress</h3>
-                <div className={styles.progressChart}>
-                  <div className={styles.progressBarContainer}>
-                    <div className={styles.progressBar} style={{ width: '75%' }}></div>
-                  </div>
-                  <div className={styles.progressLabels}>
-                    <span>Completed</span>
-                    <span>In Progress</span>
-                    <span>Pending</span>
-                  </div>
-                </div>
-                <h4 style={{ marginTop: 24 }}>Sales (last 7 days)</h4>
-                {(() => {
-                  const sales7 = [1200, 800, 1500, 900, 2000, 1750, 1900];
-                  const max = Math.max(...sales7);
-                  return (
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', height: 80, marginTop: 8 }}>
-                      {sales7.map((v, i) => (
-                        <div key={i} style={{ width: 24, background: '#3b82f6', height: `${(v / max) * 100}%`, borderRadius: 4 }} title={`Day ${i + 1}: ${formatLKR(v)}`}></div>
-                      ))}
-                    </div>
-                  );
-                })()}
-              </div>
-
-              <div className={styles.taskList}>
-                <h3>Upcoming Tasks</h3>
-                {tasks.map((task) => {
-                  const t = timeTracking[task.id] || {};
-                  const running = !!t.running;
-                  const elapsedSeconds = running ? Math.floor((Date.now() - (t.startTime || Date.now())) / 1000) : t.totalSeconds || 0;
-                  const priorityClass = task.priority === 'high' ? styles.high : task.priority === 'medium' ? styles.medium : styles.low;
-                  return (
-                    <div className={styles.taskItem} key={task.id}>
-                      <div className={styles.taskInfo}>
-                        <div className={styles.taskTitle}>{task.title}</div>
-                        <div className={styles.taskDetails}>{task.details}</div>
-                        <div style={{ marginTop: 8, fontWeight: 500 }}>
-                          {running ? (
-                            <span>Elapsed: {formatDuration(elapsedSeconds)}</span>
-                          ) : t.totalSeconds ? (
-                            <span>Worked: {formatDuration(t.totalSeconds)}</span>
-                          ) : (
-                            <span>Not started</span>
-                          )}
-                        </div>
-                        {feedback[task.id] && (
-                          <div style={{ marginTop: 6 }}>
-                            <Alert variant={t.saved ? 'success' : 'info'} className="p-2 m-0">
-                              {feedback[task.id]}
-                            </Alert>
-                          </div>
-                        )}
-                      </div>
-                      <div className={`${styles.taskPriority} ${priorityClass}`}>{task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</div>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }}>
-                        <Button variant="success" onClick={() => handleStart(task.id)} disabled={running}>
-                          {running ? 'Running' : 'Start'}
-                        </Button>
-                        <Button variant="danger" onClick={() => handleEnd(task.id)} disabled={!running && !t.startTime}>
-                          {t.endTime && !running ? 'Ended' : 'End'}
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <span className="text-2xl">💰</span>
             </div>
+          </div>
+        </div>
 
-            {/* Quick Actions */}
-            <div style={{ marginTop: 24 }}>
-              <h3>Quick Actions</h3>
-              <div className={styles.statsGrid}>
-                <Link to="/worker/tasks" className={styles.statCard} style={{ textDecoration: 'none' }}>
-                  <div className={styles.statHeader}>
-                    <h3>Create Task</h3>
-                    <i className={`icon-tasks ${styles.statIcon}`}></i>
-                  </div>
-                  <div className={styles.statTrend}>Jump to task manager</div>
-                </Link>
-                <Link to="/worker/sales" className={styles.statCard} style={{ textDecoration: 'none' }}>
-                  <div className={styles.statHeader}>
-                    <h3>New Sale</h3>
-                    <i className={`icon-sales ${styles.statIcon}`}></i>
-                  </div>
-                  <div className={styles.statTrend}>View and add orders</div>
-                </Link>
-                <Link to="/worker/payments" className={styles.statCard} style={{ textDecoration: 'none' }}>
-                  <div className={styles.statHeader}>
-                    <h3>Record Payment</h3>
-                    <i className={`icon-payments ${styles.statIcon}`}></i>
-                  </div>
-                  <div className={styles.statTrend}>Manage payment entries</div>
-                </Link>
-                <Link to="/worker/inventory" className={styles.statCard} style={{ textDecoration: 'none' }}>
-                  <div className={styles.statHeader}>
-                    <h3>Add Inventory</h3>
-                    <i className={`icon-inventory ${styles.statIcon}`}></i>
-                  </div>
-                  <div className={styles.statTrend}>Update stock levels</div>
-                </Link>
-              </div>
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Tasks Completed</p>
+              <p className="text-3xl font-bold text-gray-900 animate-count-up">{stats.tasks}</p>
+              <p className="text-sm text-green-600 flex items-center">
+                <span className="mr-1">↗</span>
+                +2 from previous period
+              </p>
             </div>
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <span className="text-2xl">✅</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Recent Activity */}
-            <div className={styles.activitySection}>
-              <h3>Recent Activity</h3>
-              <div className={styles.activityFeed}>
-                <div className={styles.activityItem}>
-                  <div className={styles.activityIcon}>
-                    <i className="icon-check"></i>
-                  </div>
-                  <div className={styles.activityContent}>
-                    <div className={styles.activityText}>Completed order #ORD-1245 — {formatLKR(1450)}</div>
-                    <div className={styles.activityTime}>2 hours ago</div>
-                  </div>
+      {/* Performance and Progress Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <span className="mr-2">📊</span>
+            Performance Score
+          </h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-4xl font-bold text-gray-900 animate-count-up">{stats.performance}%</p>
+              <p className="text-sm text-green-600 flex items-center">
+                <span className="mr-1">↗</span>
+                +5% from last period
+              </p>
+            </div>
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-3xl">📈</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <span className="mr-2">⚡</span>
+            Work Progress
+          </h3>
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm">
+              <span>Completed</span>
+              <span className="font-semibold">{progress.completed}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="bg-blue-600 h-3 rounded-full animate-progress" style={{ width: '30%' }}></div>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>In Progress</span>
+              <span className="font-semibold">{progress.inProgress}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="bg-green-600 h-3 rounded-full animate-progress" style={{ width: '60%' }}></div>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Pending</span>
+              <span className="font-semibold">{progress.pending}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="bg-gray-400 h-3 rounded-full animate-progress" style={{ width: '10%' }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Tasks */}
+        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <span className="mr-2">📋</span>
+            Upcoming Tasks
+          </h3>
+          <div className="space-y-3">
+            {mockTasks.map((task, index) => (
+              <div key={task.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 animate-slide-in" style={{ animationDelay: `${index * 100}ms` }}>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">{task.title}</p>
+                  <p className="text-sm text-gray-600">{task.details}</p>
+                  <p className="text-xs text-blue-600 font-medium">Due: {task.dueTime}</p>
                 </div>
-                <div className={styles.activityItem}>
-                  <div className={styles.activityIcon}>
-                    <i className="icon-message"></i>
-                  </div>
-                  <div className={styles.activityContent}>
-                    <div className={styles.activityText}>Received message from client</div>
-                    <div className={styles.activityTime}>4 hours ago</div>
-                  </div>
-                </div>
-                <div className={styles.activityItem}>
-                  <div className={styles.activityIcon}>
-                    <i className="icon-clock"></i>
-                  </div>
-                  <div className={styles.activityContent}>
-                    <div className={styles.activityText}>Recorded payment — {formatLKR(2500)}</div>
-                    <div className={styles.activityTime}>Yesterday</div>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    task.priority === 'high' ? 'bg-red-100 text-red-800' :
+                    task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-green-100 text-green-800'
+                  }`}>
+                    {task.priority}
+                  </span>
+                  <button className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    Start
+                  </button>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <span className="mr-2">🔄</span>
+            Recent Activity
+          </h3>
+          <div className="space-y-3">
+            {mockRecentActivity.map((activity, index) => (
+              <div key={activity.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 animate-slide-in" style={{ animationDelay: `${index * 100}ms` }}>
+                <div className={`w-2 h-2 rounded-full ${
+                  activity.type === 'success' ? 'bg-green-500' :
+                  activity.type === 'info' ? 'bg-blue-500' :
+                  'bg-yellow-500'
+                }`}></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                  <p className="text-xs text-gray-600">
+                    {activity.client && `${activity.client} • `}
+                    {activity.amount && `${activity.amount} • `}
+                    {activity.rating && `${activity.rating} • `}
+                    {activity.time}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Sales Chart */}
+      <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <span className="mr-2">📈</span>
+          Sales Performance (Last 7 Days)
+        </h3>
+        <div className="space-y-4">
+          {mockSalesData.map((item, index) => (
+            <div key={index} className="flex items-center justify-between animate-slide-in" style={{ animationDelay: `${index * 100}ms` }}>
+              <span className="text-sm font-medium text-gray-600 w-12">{item.day}</span>
+              <div className="flex items-center space-x-2 flex-1 mx-4">
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full animate-progress" 
+                    style={{ width: `${(item.sales / 5000) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+              <span className="text-sm font-medium text-gray-900 w-20 text-right">{formatLKR(item.sales)}</span>
             </div>
-          </>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );
