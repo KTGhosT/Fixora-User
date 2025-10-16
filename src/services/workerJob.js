@@ -1,98 +1,59 @@
 import axiosInstance from './api';
 
-// Get all bookings assigned to a specific worker
-export async function getWorkerBookings(workerId) {
-  try {
-    const response = await axiosInstance.get(`/api/worker/${workerId}/bookings`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching worker bookings:', error);
-    throw error;
-  }
-}
+// 🔹 Worker overview
+export const getWorkerBookings = async (workerId) => {
+  const res = await axiosInstance.get(`/api/worker/${workerId}/bookings`);
+  return res.data;
+};
 
-// Get booking details by booking ID
-export async function getBookingDetails(bookingId) {
-  try {
-    const response = await axiosInstance.get(`/api/bookings/${bookingId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching booking details:', error);
-    throw error;
-  }
-}
+export const getWorkerServiceHistory = async (workerId) => {
+  const res = await axiosInstance.get(`/api/worker/${workerId}/services`);
+  return res.data;
+};
 
-// Start a service (update status to 'Ongoing')
-export async function startService(serviceId) {
-  try {
-    const response = await axiosInstance.put(`/api/services/${serviceId}/start`, {
-      status: 'Ongoing'
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error starting service:', error);
-    throw error;
-  }
-}
+export const getWorkerJobStats = async (workerId) => {
+  const res = await axiosInstance.get(`/api/worker/${workerId}/stats`);
+  return res.data;
+};
 
-// Complete a service (update status to 'Finished')
-export async function completeService(serviceId) {
-  try {
-    const response = await axiosInstance.put(`/api/services/${serviceId}/complete`, {
-      status: 'Finished'
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error completing service:', error);
-    throw error;
-  }
-}
+export const getWorkerRecentActivity = async (workerId) => {
+  const res = await axiosInstance.get(`/api/worker/${workerId}/activity`);
+  return res.data;
+};
 
-// Update service status
-export async function updateServiceStatus(serviceId, status) {
-  try {
-    const response = await axiosInstance.put(`/api/services/${serviceId}/status`, {
-      status: status
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error updating service status:', error);
-    throw error;
-  }
-}
+// 🔹 Booking details
+export const getBookingDetails = async (bookingId) => {
+  const res = await axiosInstance.get(`/api/worker/booking/${bookingId}`);
+  return res.data;
+};
 
-// Get service details by booking ID
-export async function getServiceByBookingId(bookingId) {
-  try {
-    const response = await axiosInstance.get(`/api/services/booking/${bookingId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching service by booking ID:', error);
-    throw error;
-  }
-}
+// 🔹 Service actions
+export const getServiceByBookingId = async (bookingId) => {
+  const res = await axiosInstance.get(`/api/worker/service/booking/${bookingId}`);
+  return res.data;
+};
 
-// Create a new service for a booking
-export async function createServiceForBooking(bookingId, serviceData) {
-  try {
-    const response = await axiosInstance.post(`/api/services`, {
-      bookingId,
-      ...serviceData
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error creating service for booking:', error);
-    throw error;
-  }
-}
+export const createServiceForBooking = async (data) => {
+  const res = await axiosInstance.post(`/api/worker/service`, data);
+  return res.data;
+};
 
-// Get worker's service history
-export async function getWorkerServiceHistory(workerId) {
-  try {
-    const response = await axiosInstance.get(`/api/worker/${workerId}/services`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching worker service history:', error);
-    throw error;
-  }
-}
+export const startService = async (serviceId) => {
+  const res = await axiosInstance.put(`/api/worker/service/${serviceId}/start`);
+  return res.data;
+};
+
+export const completeService = async (serviceId) => {
+  const res = await axiosInstance.put(`/api/worker/service/${serviceId}/complete`);
+  return res.data;
+};
+
+export const updateServiceStatus = async (serviceId, data) => {
+  const res = await axiosInstance.put(`/api/worker/service/${serviceId}/status`, data);
+  return res.data;
+};
+
+export const updateServiceDuration = async (serviceId, data) => {
+  const res = await axiosInstance.put(`/api/worker/service/${serviceId}/duration`, data);
+  return res.data;
+};

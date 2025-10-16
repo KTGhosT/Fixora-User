@@ -9,7 +9,7 @@ import "leaflet/dist/leaflet.css";
 import WorkerLayout from "./layouts/worker/WorkerLayout";
 import Dashboard from "./pages/worker/dashboard";
 import Settings from "./pages/worker/Settings";
-import WorkerWorks from "./pages/worker/works";
+import WorkerWorks from "./pages/worker/WorkerJob";
 import WorkerPayments from "./pages/worker/Payments";
 import WorkerInventory from "./pages/worker/Inventory";
 import WorkerClients from "./pages/worker/Clients";
@@ -170,7 +170,7 @@ function App() {
             } />
             <Route path="settings" element={<Settings />} />
             <Route path="works" element={<WorkerWorks />} />
-            <Route path="works/:id" element={<WorkerWorks />} />
+            {/* <Route path="works/:id" element={<WorkerWorks />} /> */}
             <Route path="payments" element={<WorkerPayments />} />
             <Route path="inventory" element={<WorkerInventory />} />
             <Route path="clients" element={<WorkerClients />} />

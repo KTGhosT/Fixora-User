@@ -1,6 +1,6 @@
 // src/layouts/DashboardLayout.jsx
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -37,6 +37,7 @@ const navItems = [
 ];
 
 const WorkerLayout = ({ user }) => {
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:768px)');
   const location = useLocation();
@@ -61,7 +62,6 @@ const WorkerLayout = ({ user }) => {
       <List className="flex-1 px-2 py-4">
         {navItems.map((item) => (
           <ListItem
-            button
             key={item.text}
             component={Link}
             to={item.path}
@@ -134,6 +134,18 @@ const WorkerLayout = ({ user }) => {
             >
               <MenuIcon />
             </IconButton>
+            
+            {/* Back Button */}
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200 mr-4"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+            
             <Typography variant="h6" noWrap component="div" className="font-semibold">
               Welcome back, {user?.name || 'Worker'}!
             </Typography>
