@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import bg from '../../assets/user/bg.jpg';
 import shinyBg from '../../assets/user/shiny-orange-light-abstract-background-600nw-2455043705.webp';
 
 const HomeService = () => {
+  const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState(null);
 
   const roles = [
@@ -348,6 +350,32 @@ const HomeService = () => {
 
   return (
     <div style={styles.wrapper}>
+      {/* Back Button (top-left corner, slightly down) */}
+      <button
+        aria-label="Go back"
+        onClick={() => navigate(-1)}
+        style={{
+          position: 'fixed',
+          left: '18px',
+          top: '24px',
+          zIndex: 9999,
+          background: 'rgba(18,18,18,0.85)',
+          color: '#fff',
+          border: '1px solid rgba(255,123,0,0.12)',
+          padding: '10px 14px',
+          borderRadius: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          fontWeight: 700,
+          boxShadow: '0 8px 20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,123,0,0.04)'
+        }}
+      >
+        <span aria-hidden style={{ fontSize: '1.1rem' }}>←</span>
+        <span style={{ fontSize: '0.95rem' }}>Back</span>
+      </button>
       {/* Global Styles */}
       <style>
         {`
