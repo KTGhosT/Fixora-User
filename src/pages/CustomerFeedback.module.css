@@ -139,7 +139,6 @@ textarea:focus {
   font-family: inherit;
 }
 
-
 .heroStats {
   display: flex;
   gap: 3rem;
@@ -204,9 +203,7 @@ textarea:focus {
   right: 0;
   bottom: 0;
   background: 
-    /* Your image URL - positioned on the right side */
     url('https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') right center/cover no-repeat,
-    /* Keep the glass morphism effects */
     radial-gradient(circle at 30% 30%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
     radial-gradient(circle at 70% 70%, rgba(255, 107, 107, 0.2) 0%, transparent 50%),
     radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
@@ -253,7 +250,7 @@ textarea:focus {
 }
 
 .floatingCard:hover {
-  transform: translateY(-1.5px) scale(0.);
+  transform: translateY(-5px);
   box-shadow: 
     0 30px 60px rgba(0, 0, 0, 0.2),
     0 15px 35px rgba(0, 0, 0, 0.15);
@@ -452,7 +449,7 @@ textarea:focus {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* Running Feedbacks Section */
+/* Running Feedbacks Section - UPDATED */
 .feedbacksSection {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 6rem 2rem;
@@ -473,50 +470,178 @@ textarea:focus {
   line-height: 1.6;
 }
 
-.feedbacksContainer {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  margin: 3rem 0;
+/* NEW: Divided Layout Styles */
+.feedbacksDividedLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.feedbacksTrack {
+.textFeedbacksSection,
+.voiceFeedbacksSection {
   display: flex;
-  gap: 2rem;
-  animation: scrollFeedbacks 40s linear infinite;
-  width: max-content;
+  flex-direction: column;
 }
 
-@keyframes scrollFeedbacks {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc(-50% - 1rem));
-  }
-}
-
-.feedbacksContainer:hover .feedbacksTrack {
-  animation-play-state: paused;
-}
-
-.feedbackCard {
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem 1.5rem;
   background: white;
-  padding: 2rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  min-width: 350px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #667eea;
+}
+
+.voiceFeedbacksSection .sectionLabel {
+  border-left-color: #ff6b6b;
+}
+
+.labelIcon {
+  font-size: 1.5rem;
+}
+
+.sectionLabel h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.countBadge {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.voiceFeedbacksSection .countBadge {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+}
+
+/* Text Feedbacks List */
+.textFeedbacksList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.textFeedbackItem {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(102, 126, 234, 0.1);
   transition: all 0.3s ease;
   position: relative;
+  overflow: hidden;
 }
 
-.feedbackCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+.textFeedbackItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(45deg, #667eea, #764ba2);
 }
 
+.textFeedbackItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+/* Voice Feedbacks List */
+.voiceFeedbacksList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.voiceFeedbackItem {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 107, 107, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.voiceFeedbackItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+}
+
+.voiceFeedbackItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.15);
+}
+
+.voiceFeedbackHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.voiceUserInfo {
+  flex: 1;
+}
+
+.voiceRating {
+  margin-top: 0.5rem;
+}
+
+.voicePlayer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.audioWrapper {
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 2px solid #e9ecef;
+}
+
+.audioPlayer {
+  width: 100%;
+  height: 40px;
+  border-radius: 0.5rem;
+}
+
+.voiceDuration {
+  display: flex;
+  justify-content: center;
+}
+
+.durationBadge {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+/* Common Feedback Styles */
 .feedbackHeader {
   display: flex;
   align-items: center;
@@ -565,7 +690,7 @@ textarea:focus {
 }
 
 .feedbackComment::before {
-  content: "";
+  content: "“";
   font-size: 3rem;
   color: #667eea;
   opacity: 0.1;
@@ -650,7 +775,7 @@ textarea:focus {
   box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
 }
 
-/* Modal Styles - Enhanced */
+/* Modal Styles - ENHANCED */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -672,7 +797,7 @@ textarea:focus {
   background: white;
   border-radius: 2rem;
   padding: 0;
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -732,6 +857,170 @@ textarea:focus {
 .closeBtn:hover {
   background: #f5f5f5;
   color: #333;
+}
+
+/* NEW: Choice Container */
+.choiceContainer {
+  padding: 2rem;
+}
+
+.choiceOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.choiceCard {
+  background: white;
+  border: 2px solid #e1e5e9;
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.choiceCard:hover {
+  border-color: #667eea;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+}
+
+.choiceIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.choiceCard h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.choiceCard p {
+  color: #666;
+  line-height: 1.5;
+}
+
+/* NEW: Choice Badge */
+.choiceBadge {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.choiceCard:nth-child(2) .choiceBadge {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+/* NEW: Voice Recording Section */
+.voiceRecordingSection {
+  margin-bottom: 1.5rem;
+}
+
+.voiceLabel {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  color: #ff6b6b !important;
+  text-align: center;
+  margin-bottom: 1.5rem !important;
+}
+
+.recordingControls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.recordButton, .stopButton, .rerecordButton {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.recordButton {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.recordButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.stopButton {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.stopButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.rerecordButton {
+  background: #f8f9fa;
+  color: #333;
+  border: 2px solid #ddd;
+}
+
+.rerecordButton:hover {
+  background: #e9ecef;
+  border-color: #999;
+}
+
+.audioPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+.audioPreviewLabel {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.recordingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+.recordingDot {
+  width: 12px;
+  height: 12px;
+  background: #ff6b6b;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .feedbackForm {
@@ -841,7 +1130,35 @@ textarea:focus {
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
+.btnSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btnSubmit:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 /* Responsive Design */
+@media (max-width: 968px) {
+  .feedbacksDividedLayout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .textFeedbacksSection,
+  .voiceFeedbacksSection {
+    order: 1;
+  }
+  
+  .voiceFeedbacksSection {
+    order: 2;
+  }
+}
+
 @media (max-width: 768px) {
   .heroSection {
     grid-template-columns: 1fr;
@@ -922,28 +1239,46 @@ textarea:focus {
     width: 100%;
   }
   
+  /* NEW: Mobile styles for choice options */
+  .choiceOptions {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .choiceCard {
+    padding: 2rem 1.5rem;
+  }
+  
+  .sectionLabel {
+    padding: 1rem;
+  }
+  
+  .labelIcon {
+    font-size: 1.25rem;
+  }
+  
+  .sectionLabel h3 {
+    font-size: 1.1rem;
+  }
+  
+  .textFeedbackItem,
+  .voiceFeedbackItem {
+    padding: 1.25rem;
+  }
+  
+  .voiceFeedbackHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .voiceUserInfo {
+    text-align: center;
+  }
+  
   /* Feedbacks Section Mobile */
   .feedbacksSection {
     padding: 4rem 1rem;
-  }
-  
-  .feedbacksTrack {
-    gap: 1rem;
-    animation: scrollFeedbacksMobile 30s linear infinite;
-  }
-  
-  @keyframes scrollFeedbacksMobile {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(calc(-50% - 0.5rem));
-    }
-  }
-  
-  .feedbackCard {
-    min-width: 300px;
-    padding: 1.5rem;
   }
   
   .ctaSection {
@@ -994,24 +1329,28 @@ textarea:focus {
     padding: 1.5rem;
   }
   
-  /* Feedbacks Section Small Mobile */
-  .feedbacksTrack {
-    animation-duration: 25s;
+  .choiceContainer {
+    padding: 1.5rem;
   }
   
-  .feedbackCard {
-    min-width: 280px;
-    padding: 1.25rem;
+  .recordButton, .stopButton, .rerecordButton {
+    width: 100%;
+    max-width: 250px;
   }
   
-  .feedbackAvatar {
-    width: 3rem;
-    height: 3rem;
-    font-size: 1rem;
+  .feedbacksDividedLayout {
+    gap: 1.5rem;
   }
   
-  .feedbackName {
-    font-size: 1rem;
+  .sectionLabel {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .textFeedbackItem,
+  .voiceFeedbackItem {
+    padding: 1rem;
   }
   
   .ctaButton {
@@ -1024,13 +1363,6 @@ textarea:focus {
 
 /* Pause animation when user prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .feedbacksTrack {
-    animation: none;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-  }
-  
   .floatingCard {
     animation: none;
   }
@@ -1043,13 +1375,21 @@ textarea:focus {
   .btnPrimary:hover,
   .btnSecondary:hover,
   .btnSubmit:hover,
-  .ctaButton:hover {
+  .ctaButton:hover,
+  .recordButton:hover,
+  .stopButton:hover {
     transform: none;
   }
   
   .featureCard:hover,
-  .feedbackCard:hover {
+  .textFeedbackItem:hover,
+  .voiceFeedbackItem:hover,
+  .choiceCard:hover {
     transform: none;
+  }
+  
+  .recordingDot {
+    animation: none;
   }
 }
 
@@ -1069,7 +1409,11 @@ textarea:focus {
   .btnSecondary,
   .featureBtn,
   .ctaButton,
-  .modalOverlay {
+  .modalOverlay,
+  .recordButton,
+  .stopButton,
+  .rerecordButton,
+  .audioPlayer {
     display: none !important;
   }
 }
