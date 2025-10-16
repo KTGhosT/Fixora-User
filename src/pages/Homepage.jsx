@@ -34,12 +34,12 @@ const WhiteSeparator = () => (
   }} />
 );
 
-const UserLayout = ({ children }) => {
+const UserLayout = ({ children, user }) => {
   return (
     <>
       {/* <Navbar /> */}
       <main style={{ paddingTop: 0, minHeight: 'calc(0vh - 0px)' }}>
-        <Home />
+        <Home user={user} />
         <DarkSeparator />
         <Services />
         <WhiteSeparator />
