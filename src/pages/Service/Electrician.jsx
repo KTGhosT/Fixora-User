@@ -1,5 +1,9 @@
-import React, { Component, useEffect, useRef } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import elec1 from '../../assets/user/elec1.jpg';
+import elec2 from '../../assets/user/elec2.png';
+import elec3 from '../../assets/user/elec3.png';
+import ServiceDetail from '../../components/user/ServiceDetail';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -30,6 +34,7 @@ class ErrorBoundary extends Component {
 const Electrician = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
+  const [selectedService, setSelectedService] = useState(null);
 
   // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
@@ -90,8 +95,8 @@ const Electrician = () => {
           .hero-slider {
             position: relative;
             width: 100vw;
-            height: calc(100vh - 80px);
-            margin-top: 80px;
+            height: 100vh;
+            margin-top: 0;
             overflow: hidden;
             background-color: transparent;
           }
@@ -125,14 +130,15 @@ const Electrician = () => {
             transform: translate(-50%, -50%);
             max-width: 800px;
             padding: 2rem;
-            background: rgba(69, 67, 67, 0.4);
-            backdrop-filter: blur(0.5px);
+            background: transparent;
+            backdrop-filter: none;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: none;
             color: white;
             text-align: center;
             z-index: 2;
-            box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
+            box-shadow: none;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
           }
 
           /* Static Text */
@@ -172,7 +178,7 @@ const Electrician = () => {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
+            background: transparent;
             border: none;
             width: 60px;
             height: 60px;
@@ -194,7 +200,7 @@ const Electrician = () => {
 
           .carousel-control-prev:hover,
           .carousel-control-next:hover {
-            background: rgba(0, 0, 0, 0.8);
+            background: transparent;
             transform: translateY(-50%) scale(1.1);
           }
 
@@ -381,9 +387,9 @@ const Electrician = () => {
           <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
             <div className="carousel-inner">
               {[
-                { src: 'https://images.unsplash.com/photo-1742416180133-cd9ab0816259?q=80&w=2058&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Electrical Work' },
-                { src: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Wiring Installation' },
-                { src: 'https://images.unsplash.com/photo-1555963966-b7ae5404b6ed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Electrical Panel' },
+                { src: elec1, alt: 'Electrical Work' },
+                { src: elec2, alt: 'Wiring Installation' },
+                { src: elec3, alt: 'Electrical Panel' },
               ].map((img, i) => (
                 <div key={i} className={`carousel-item${i === 0 ? ' active' : ''}`}>
                   <img src={img.src} alt={img.alt} />
@@ -472,7 +478,33 @@ const Electrician = () => {
                 },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="service-card">
+                  <div
+                    className="service-card"
+                    onClick={() => {
+                      const detail = {
+                        title: s.title,
+                        desc: s.desc,
+                        image: s.img,
+                        price:
+                          s.title === 'Wiring Installation'
+                            ? '8,500'
+                            : s.title === 'Repairs & Maintenance'
+                            ? '6,000'
+                            : s.title === 'Lighting Solutions'
+                            ? '5,500'
+                            : '9,500',
+                        features:
+                          s.title === 'Wiring Installation'
+                            ? ['New circuits', 'Safety checks', 'Code compliant installs']
+                            : s.title === 'Repairs & Maintenance'
+                            ? ['Fault finding', 'Emergency fixes', 'Preventive service']
+                            : s.title === 'Lighting Solutions'
+                            ? ['LED upgrades', 'Accent lighting', 'Outdoor fixtures']
+                            : ['Panel replacement', 'Load balancing', 'Surge protection'],
+                      };
+                      setSelectedService(detail);
+                    }}
+                  >
                     <img src={s.img} alt={s.title} className="service-img" />
                     <div className="p-4 text-center">
                       <h5 className="service-title">{s.title}</h5>
@@ -482,6 +514,12 @@ const Electrician = () => {
                 </div>
               ))}
             </div>
+            {selectedService && (
+              <ServiceDetail
+                service={selectedService}
+                onClose={() => setSelectedService(null)}
+              />
+            )}
           </div>
         </section>
 

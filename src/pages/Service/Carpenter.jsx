@@ -1,5 +1,6 @@
 import React, { Component, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ServiceDetail from '../../components/user/ServiceDetail';
 
 // Import local carpenter images
 import carpenter1 from '../../assets/user/carpenter1.jpg';
@@ -32,6 +33,7 @@ class ErrorBoundary extends Component {
 const Carpenter = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
+  const [selectedService, setSelectedService] = useState(null);
 
   // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
@@ -481,7 +483,33 @@ const Carpenter = () => {
                 },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="service-card">
+                  <div
+                    className="service-card"
+                    onClick={() => {
+                      const detail = {
+                        title: s.title,
+                        desc: s.desc,
+                        image: s.img,
+                        price:
+                          s.title === 'Custom Furniture'
+                            ? '15,000'
+                            : s.title === 'Repairs & Restoration'
+                            ? '8,500'
+                            : s.title === 'Cabinetry'
+                            ? '12,000'
+                            : '20,000',
+                        features:
+                          s.title === 'Custom Furniture'
+                            ? ['Solid wood options', 'Finish choices', 'Made-to-measure']
+                            : s.title === 'Repairs & Restoration'
+                            ? ['Joint repair', 'Refinishing', 'Hardware replacement']
+                            : s.title === 'Cabinetry'
+                            ? ['Soft-close hinges', 'Optimized storage', 'Premium laminates']
+                            : ['Pressure-treated lumber', 'Weather-resistant finishes', 'Sturdy framing'],
+                      };
+                      setSelectedService(detail);
+                    }}
+                  >
                     <img src={s.img} alt={s.title} className="service-img" />
                     <div className="p-4 text-center">
                       <h5 className="service-title">{s.title}</h5>
@@ -491,6 +519,12 @@ const Carpenter = () => {
                 </div>
               ))}
             </div>
+            {selectedService && (
+              <ServiceDetail
+                service={selectedService}
+                onClose={() => setSelectedService(null)}
+              />
+            )}
           </div>
         </section>
 

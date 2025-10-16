@@ -1,0 +1,611 @@
+/* ================= HOME PAGE STYLES ================= */
+
+/* Full-bleed cinematic carousel: Edge-to-edge, no side spaces */
+
+
+.carousel {
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 0;
+}
+
+.carousel-inner {
+  height: 100vh;
+  width: 100%;
+}
+
+.carousel-item {
+  height: 100vh;
+  position: relative;
+  transition: opacity 1s ease-in-out;
+  background: #000; /* Fallback for loading */
+  width: 100%;
+}
+
+.carousel-item.active {
+  display: block;
+}
+
+/* Cinematic image with ken burns zoom and pan - Adjusted for minimal cropping */
+.carousel-img {
+  object-fit: cover;
+  object-position: center center; /* Ensures centered positioning to reduce unwanted cropping */
+  width: 100%;
+  height: 100%;
+  filter: brightness(60%) contrast(1.15) saturate(1.1);
+  transition: transform 20s ease-out;
+  animation: kenBurns 20s ease-out infinite;
+}
+
+.carousel-item:nth-child(1) .carousel-img { animation-delay: 0s; }
+.carousel-item:nth-child(2) .carousel-img { animation-delay: 20s; }
+.carousel-item:nth-child(3) .carousel-img { animation-delay: 40s; }
+.carousel-item:nth-child(4) .carousel-img { animation-delay: 60s; }
+
+/* Ken Burns effect: Subtle zoom and pan for cinematic feel - Reduced scale to minimize cropping */
+@keyframes kenBurns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.05) translate(-1%, -0.5%); /* Gentler zoom/pan to preserve more of the image */
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+/* Enhanced overlay: Gradient for depth, cinematic vignette */
+.carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.8) 80%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  /* Vignette for cinematic edges */
+  box-shadow: inset 0 0 200px 50px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+/* Professional caption: Staggered entrance, cinematic typography */
+.carousel-caption {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  color: #fff;
+  text-align: center;
+  text-shadow: 
+    0 0 10px rgba(0, 0, 0, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.9),
+    0 4px 8px rgba(0, 0, 0, 0.7);
+  max-width: 85%;
+  animation: captionSlideIn 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+}
+
+.carousel-item.active .carousel-caption {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+.carousel-caption h2 {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-family: 'Playfair Display', serif; /* Elegant serif for headings */
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin-bottom: 1rem;
+  line-height: 1.1;
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(50px);
+  animation: titleFadeIn 1.2s ease-out 0.5s forwards;
+}
+
+.carousel-caption h2::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #ffb400, transparent);
+  opacity: 0;
+  animation: underlineGlow 1.5s ease-out 1s forwards;
+}
+
+.carousel-caption p {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  margin: 1.5rem 0 2rem;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: textFadeIn 1s ease-out 1s forwards;
+  line-height: 1.6;
+  font-weight: 300;
+  max-width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.carousel-caption .btn-group {
+  opacity: 0;
+  transform: translateY(40px);
+  animation: btnFadeIn 1s ease-out 1.5s forwards;
+}
+
+.carousel-caption .btn {
+  padding: 1rem 2.5rem;
+  font-weight: 700;
+  border-radius: 50px;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin: 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-caption .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.carousel-caption .btn:hover::before {
+  left: 100%;
+}
+
+.carousel-caption .btn-primary {
+  background: linear-gradient(135deg, #ffb400, #ffed4e);
+  border: none;
+  color: #000;
+  box-shadow: 0 8px 30px rgba(255, 180, 0, 0.4);
+}
+
+.carousel-caption .btn-primary:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(255, 180, 0, 0.5);
+  background: linear-gradient(135deg, #ffed4e, #ffb400);
+}
+
+.carousel-caption .btn-outline-light {
+  border: 2px solid #fff;
+  color: #fff;
+  background: transparent;
+}
+
+.carousel-caption .btn-outline-light:hover {
+  background: #fff;
+  color: #000;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+}
+
+/* Cinematic controls: Minimal, elegant, floating */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 4%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 3;
+}
+
+.carousel:hover .carousel-control-prev,
+.carousel:hover .carousel-control-next {
+  opacity: 0.8;
+}
+
+.carousel-control-prev {
+  left: 2%;
+}
+
+.carousel-control-next {
+  right: 2%;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  background-size: 22px 38px;
+  filter: invert(1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon {
+  background-color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Sleek indicators: Bottom bar with glow */
+.carousel-indicators {
+  bottom: 2rem;
+  z-index: 3;
+}
+
+.carousel-indicators [data-bs-target] {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4);
+  border: none;
+  margin: 0 6px;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(5px);
+}
+
+.carousel-indicators .active {
+  background: linear-gradient(135deg, #ffb400, #ffed4e);
+  transform: scale(1.3);
+  box-shadow: 0 0 15px rgba(255, 180, 0, 0.6);
+}
+
+/* ================= FULL-BLEED INTRO SECTION ================= */
+.intro-section {
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2c2c2c 100%);
+  color: #fff;
+  padding: 8rem 0;
+  position: relative;
+  overflow: hidden;
+  /* Full-bleed for entire section */
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.intro-section .container {
+  position: relative;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.intro-section .row {
+  --bs-gutter-x: 0;
+  padding: 0 2rem; /* Minimal side padding for readability */
+}
+
+.brand-name {
+  color: #ffb400;
+  font-weight: 900;
+  text-shadow: 0 0 20px rgba(255, 180, 0, 0.5);
+  letter-spacing: -1px;
+}
+
+.intro-section h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  text-align: center;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.intro-section p.lead {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  text-align: center;
+  margin-bottom: 3rem;
+  opacity: 0.9;
+}
+
+.intro-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0;
+}
+
+.intro-buttons .btn {
+  padding: 1.2rem 3rem;
+  font-weight: 700;
+  border-radius: 50px;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-width: 200px;
+}
+
+.intro-buttons .btn-primary {
+  background: linear-gradient(135deg, #ffb400, #ffed4e);
+  border: none;
+  color: #000;
+  box-shadow: 0 10px 35px rgba(255, 180, 0, 0.4);
+}
+
+.intro-buttons .btn-primary:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 20px 50px rgba(255, 180, 0, 0.5);
+}
+
+.intro-buttons .btn-outline-light {
+  border: 2px solid #fff;
+  color: #fff;
+  background: transparent;
+}
+
+.intro-buttons .btn-outline-light:hover {
+  background: #fff;
+  color: #000;
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 20px 50px rgba(255, 255, 255, 0.3);
+}
+
+.intro-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255, 180, 0, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 180, 0, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ================= FULL-BLEED HIGHLIGHTS ================= */
+.highlights {
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  padding: 6rem 0;
+  position: relative;
+  /* Full-bleed for entire section */
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.highlights .container {
+  position: relative;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.highlights .row {
+  --bs-gutter-x: 0;
+  padding: 0 2rem;
+  margin: 0;
+}
+
+.highlight-card {
+  background: #fff;
+  border-radius: 25px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  position: relative;
+  border: none;
+  padding: 2rem;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.highlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(to right, #ffb400, #ffed4e);
+  transform: scaleX(0);
+  transition: transform 0.5s ease;
+}
+
+.highlight-card:hover::before {
+  transform: scaleX(1);
+}
+
+.highlight-card:hover {
+  transform: translateY(-15px) scale(1.03);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.icon {
+  font-size: 3.5rem;
+  color: #ffb400;
+  margin-bottom: 1.5rem;
+  transition: all 0.4s ease;
+  filter: drop-shadow(0 4px 8px rgba(255, 180, 0, 0.3));
+}
+
+.highlight-card:hover .icon {
+  transform: scale(1.2) rotate(10deg);
+  filter: drop-shadow(0 6px 12px rgba(255, 180, 0, 0.4));
+}
+
+.highlight-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.highlight-card p {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Cinematic animations */
+@keyframes captionSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes titleFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes textFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes btnFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes underlineGlow {
+  to {
+    opacity: 1;
+    width: 200px;
+  }
+}
+
+/* Hide scrollbars for immersive feel */
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Advanced responsive for cinematic scaling */
+@media (max-width: 992px) {
+  .carousel-caption {
+    max-width: 95%;
+  }
+  
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 6%;
+  }
+  
+  .carousel-caption .btn {
+    display: block;
+    margin: 1rem auto;
+  }
+
+  .intro-section .row,
+  .highlights .row {
+    padding: 0 1.5rem;
+  }
+
+  .intro-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .intro-buttons .btn {
+    min-width: auto;
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-caption h2 {
+    font-size: 2.5rem;
+    letter-spacing: 0;
+  }
+
+  .carousel-caption p {
+    font-size: 1.2rem;
+    max-width: 90%;
+  }
+
+  .intro-section {
+    padding: 5rem 0;
+  }
+
+  .highlights {
+    padding: 4rem 0;
+  }
+
+  .highlight-card {
+    margin-bottom: 2.5rem;
+  }
+  
+  /* Reduce ken burns on mobile for performance */
+  .carousel-img {
+    animation-duration: 15s;
+  }
+
+  .intro-section .row,
+  .highlights .row {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .carousel-caption h2 {
+    font-size: 2rem;
+  }
+
+  .carousel-caption p {
+    font-size: 1.1rem;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .intro-section .row,
+  .highlights .row {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Accessibility enhancements */
+.carousel-control-prev:focus,
+.carousel-control-next:focus,
+.carousel-indicators button:focus {
+  outline: 3px solid #ffb400;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

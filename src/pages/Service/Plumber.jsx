@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ServiceDetail from '../../components/user/ServiceDetail';
 
 const Plumber = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
-  const [fullScreenImage, setFullScreenImage] = React.useState(null);
+  const [fullScreenImage, setFullScreenImage] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
 
   // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
@@ -67,8 +69,8 @@ const Plumber = () => {
           .hero-slider {
             position: relative;
             width: 100vw;
-            height: calc(100vh - 80px);
-            margin-top: 80px;
+            height: 100vh;
+            margin-top: 0;
             overflow: hidden;
             background-color: transparent;
           }
@@ -659,7 +661,33 @@ const Plumber = () => {
                 },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="service-card">
+                  <div
+                    className="service-card"
+                    onClick={() => {
+                      const detail = {
+                        title: s.title,
+                        desc: s.desc,
+                        image: s.img,
+                        price:
+                          s.title === 'Water Tank Installation'
+                            ? '8,500'
+                            : s.title === 'Monsoon Drainage Solutions'
+                            ? '10,500'
+                            : s.title === 'Bore Well Services'
+                            ? '25,000'
+                            : '6,500',
+                        features:
+                          s.title === 'Water Tank Installation'
+                            ? ['Site evaluation', 'Overhead/underground tanks', 'PVC & GI piping']
+                            : s.title === 'Monsoon Drainage Solutions'
+                            ? ['Flood prevention', 'Sump & pumps', 'Perimeter drains']
+                            : s.title === 'Bore Well Services'
+                            ? ['Drilling', 'Pump install', 'Annual maintenance']
+                            : ['Leak fixes', 'Burst pipes', 'Rapid dispatch'],
+                      };
+                      setSelectedService(detail);
+                    }}
+                  >
                     <img src={s.img} alt={s.title} className="service-img" />
                     <div className="p-4 text-center">
                       <h5 className="service-title">{s.title}</h5>
@@ -669,6 +697,12 @@ const Plumber = () => {
                 </div>
               ))}
             </div>
+            {selectedService && (
+              <ServiceDetail
+                service={selectedService}
+                onClose={() => setSelectedService(null)}
+              />
+            )}
           </div>
         </section>
 
