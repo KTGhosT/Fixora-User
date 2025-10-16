@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Accessories.css"; 
 
 function Accessories({ addToCart }) {
   const allAccessories = [
@@ -54,57 +55,57 @@ function Accessories({ addToCart }) {
 
 
     //Gardener//
-    { id: 46, name: "Gardening Gloves", price: 400, img: "src/assets/images/Gardener/gt1.png", category: "Gardener" },
-    { id: 47, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt2.png", category: "Gardener" },
-    { id: 48, name: "Gardening Gloves", price: 400, img: "src/assets/images/Gardener/gt3.png", category: "Gardener" },
-    { id: 49, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt4.png", category: "Gardener" },
-    { id: 50, name: "Gardening Gloves", price: 400, img: "src/assets/images/Gardener/gt5.png", category: "Gardener" },
-    { id: 51, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt6.png", category: "Gardener" },
-    { id: 52, name: "Gardening Gloves", price: 400, img: "src/assets/images/Gardener/gt7.png", category: "Gardener" },
-    { id: 53, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt8.png", category: "Gardener" },
-    { id: 54, name: "Gardening Gloves", price: 400, img: "src/assets/images/Gardener/gt9.png", category: "Gardener" },
-    { id: 55, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt10.png", category: "Gardener" },
-    { id: 56, name: "Gardening Gloves", price: 400, img: "src/assets/images/Gardener/gt11.png", category: "Gardener" },
-    { id: 57, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt12.png", category: "Gardener" },
-    { id: 58, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt13.png", category: "Gardener" },
-    { id: 59, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt14.png", category: "Gardener" },
-    { id: 60, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt15.png", category: "Gardener" },
-    { id: 61, name: "Watering Can", price: 900, img: "src/assets/images/Gardener/gt16.png", category: "Gardener" },
+    { id: 46, name: "Compost Bin", price: 400, img: "src/assets/images/Gardener/gt1.png", category: "Gardener" },
+    { id: 47, name: "Shovel / Spade", price: 900, img: "src/assets/images/Gardener/gt2.png", category: "Gardener" },
+    { id: 48, name: "Hoe", price: 400, img: "src/assets/images/Gardener/gt3.png", category: "Gardener" },
+    { id: 49, name: "Hand Trowel", price: 900, img: "src/assets/images/Gardener/gt4.png", category: "Gardener" },
+    { id: 50, name: "Combo", price: 400, img: "src/assets/images/Gardener/gt5.png", category: "Gardener" },
+    { id: 51, name: "Combo", price: 900, img: "src/assets/images/Gardener/gt6.png", category: "Gardener" },
+    { id: 52, name: "GWheelbarrow", price: 400, img: "src/assets/images/Gardener/gt7.png", category: "Gardener" },
+    { id: 53, name: "Soil Scoop", price: 900, img: "src/assets/images/Gardener/gt8.png", category: "Gardener" },
+    { id: 54, name: "Rake", price: 400, img: "src/assets/images/Gardener/gt9.png", category: "Gardener" },
+    { id: 55, name: "Garden Scissors", price: 900, img: "src/assets/images/Gardener/gt10.png", category: "Gardener" },
+    { id: 56, name: "Spray Bottle", price: 400, img: "src/assets/images/Gardener/gt11.png", category: "Gardener" },
+    { id: 57, name: "Tool bag", price: 900, img: "src/assets/images/Gardener/gt12.png", category: "Gardener" },
+    { id: 58, name: "Seed Trays", price: 900, img: "src/assets/images/Gardener/gt13.png", category: "Gardener" },
+    { id: 59, name: "Weeder", price: 900, img: "src/assets/images/Gardener/gt14.png", category: "Gardener" },
+    { id: 60, name: "Transplanter", price: 900, img: "src/assets/images/Gardener/gt15.png", category: "Gardener" },
+    { id: 61, name: "Toolmaster Apron:", price: 900, img: "src/assets/images/Gardener/gt16.png", category: "Gardener" },
 
 
     //Electrician//
-    { id: 62, name: "Insulated Gloves", price: 600, img: "src/assets/images/Electe/et1.png", category: "Electrician" },
-    { id: 63, name: "Voltage Tester", price: 1500, img: "src/assets/images/Electe/et2.png", category: "Electrician" },
-    { id: 64, name: "Insulated Gloves", price: 600, img: "src/assets/images/Electe/et3.png", category: "Electrician" },
-    { id: 65, name: "Voltage Tester", price: 1500, img: "src/assets/images/Electe/et4.png", category: "Electrician" },
-    { id: 67, name: "Insulated Gloves", price: 600, img: "src/assets/images/Electe/et5.png", category: "Electrician" },
-    { id: 68, name: "Voltage Tester", price: 1500, img: "src/assets/images/Electe/et6.png", category: "Electrician" },
-    { id: 69, name: "Insulated Gloves", price: 600, img: "src/assets/images/Electe/et7.png", category: "Electrician" },
-    { id: 70, name: "Voltage Tester", price: 1500, img: "src/assets/images/Electe/et8.png", category: "Electrician" },
-    { id: 71, name: "Insulated Gloves", price: 600, img: "src/assets/images/Electe/et9.png", category: "Electrician" },
-    { id: 72, name: "Voltage Tester", price: 1500, img: "src/assets/images/Electe/et10.png", category: "Electrician" },
-    { id: 73, name: "Insulated Gloves", price: 600, img: "src/assets/images/Electe/et11.png", category: "Electrician" },
-    { id: 74, name: "Voltage Tester", price: 1500, img: "src/assets/images/Electe/et12.png", category: "Electrician" },
-    { id: 75, name: "Voltage Tester", price: 1500, img: "src/assets/images/Electe/et13.png", category: "Electrician" },
+    { id: 62, name: "Screwdrivers", price: 600, img: "src/assets/images/Electe/et1.png", category: "Electrician" },
+    { id: 63, name: "Soldering Iron / Soldering Station", price: 1500, img: "src/assets/images/Electe/et2.png", category: "Electrician" },
+    { id: 64, name: "Tool Belt / Utility Pouch ", price: 600, img: "src/assets/images/Electe/et3.png", category: "Electrician" },
+    { id: 65, name: "Multimeter (Digital)", price: 1500, img: "src/assets/images/Electe/et4.png", category: "Electrician" },
+    { id: 67, name: "Extension Cord / Power Reel", price: 600, img: "src/assets/images/Electe/et5.png", category: "Electrician" },
+    { id: 68, name: "Utility Knife / Cutter ", price: 1500, img: "src/assets/images/Electe/et6.png", category: "Electrician" },
+    { id: 69, name: "Pliers (Combination / Needle Nose / Cutting)", price: 600, img: "src/assets/images/Electe/et7.png", category: "Electrician" },
+    { id: 70, name: "Wire Stripper.", price: 1500, img: "src/assets/images/Electe/et8.png", category: "Electrician" },
+    { id: 71, name: "Heat Gun", price: 600, img: "src/assets/images/Electe/et9.png", category: "Electrician" },
+    { id: 72, name: "Electrical Tape", price: 1500, img: "src/assets/images/Electe/et10.png", category: "Electrician" },
+    { id: 73, name: "Electric Drill ", price: 600, img: "src/assets/images/Electe/et11.png", category: "Electrician" },
+    { id: 74, name: "Cable Cutter", price: 1500, img: "src/assets/images/Electe/et12.png", category: "Electrician" },
+    { id: 75, name: "Crimping Tool", price: 1500, img: "src/assets/images/Electe/et13.png", category: "Electrician" },
 
     //DEvice Reapir//
     { id: 76, name: "Screwdriver Set", price: 1200, img: "src/assets/images/Device Repair/dt2.png", category: "Device Repair" },
-    { id: 77, name: "Magnifying Glass", price: 800, img: "src/assets/images/Device Repair/dt3.png", category: "Device Repair" },
-    { id: 78, name: "Screwdriver Set", price: 1200, img: "src/assets/images/Device Repair/dt4.png", category: "Device Repair" },
-    { id: 79, name: "Magnifying Glass", price: 800, img: "src/assets/images/Device Repair/dt5.png", category: "Device Repair" },
-    { id: 80, name: "Screwdriver Set", price: 1200, img: "src/assets/images/Device Repair/dt6.png", category: "Device Repair" },
-    { id: 81, name: "Magnifying Glass", price: 800, img: "src/assets/images/Device Repair/dt7.png", category: "Device Repair" },
+    { id: 77, name: " Clamp Meter", price: 800, img: "src/assets/images/Device Repair/dt3.png", category: "Device Repair" },
+    { id: 78, name: "Multimeter (Digital / Analog)", price: 1200, img: "src/assets/images/Device Repair/dt4.png", category: "Device Repair" },
+    { id: 79, name: "Pliers (Cutting, Needle Nose, Combination) ", price: 800, img: "src/assets/images/Device Repair/dt5.png", category: "Device Repair" },
+    { id: 80, name: "Circuit Board Analyzer / Checker", price: 1200, img: "src/assets/images/Device Repair/dt6.png", category: "Device Repair" },
+    { id: 81, name: "Screw pin", price: 800, img: "src/assets/images/Device Repair/dt7.png", category: "Device Repair" },
     { id: 82, name: "Screwdriver Set", price: 1200, img: "src/assets/images/Device Repair/dt8.png", category: "Device Repair" },
-    { id: 83, name: "Magnifying Glass", price: 800, img: "src/assets/images/Device Repair/dt9.png", category: "Device Repair" },
-    { id: 84, name: "Screwdriver Set", price: 1200, img: "src/assets/images/Device Repair/dt10.png", category: "Device Repair" },
+    { id: 83, name: "Continuity Tester", price: 800, img: "src/assets/images/Device Repair/dt9.png", category: "Device Repair" },
+    { id: 84, name: "Anti-Static Wrist Strap (ESD Band)", price: 1200, img: "src/assets/images/Device Repair/dt10.png", category: "Device Repair" },
     //Plumber//
-    { id: 85, name: "Pipe Wrench", price: 900, img: "src/assets/images/plumber/pt1.png", category: "Plumber" },
-    { id: 86, name: "Pipe Wrench", price: 900, img: "src/assets/images/plumber/pt2.png", category: "Plumber" },
-    { id: 87, name: "Plumber Tape", price: 300, img: "src/assets/images/plumber/pt3.png", category: "Plumber" },
-    { id: 88, name: "Pipe Wrench", price: 900, img: "src/assets/images/plumber/pt4.png", category: "Plumber" },
-    { id: 89, name: "Plumber Tape", price: 300, img: "src/assets/images/plumber/pt6.png", category: "Plumber" },
-    { id: 90, name: "Pipe Wrench", price: 900, img: "src/assets/images/plumber/pt7.png", category: "Plumber" },
-    { id: 91, name: "Plumber Tape", price: 300, img: "src/assets/images/plumber/pt8.png", category: "Plumber" },
+    { id: 85, name: "Basin Wrench – For hard-to-reach nuts", price: 900, img: "src/assets/images/plumber/pt1.png", category: "Plumber" },
+    { id: 86, name: "Pipe Threader Machine", price: 900, img: "src/assets/images/plumber/pt2.png", category: "Plumber" },
+    { id: 87, name: "Drain Cleaning Machine", price: 300, img: "src/assets/images/plumber/pt3.png", category: "Plumber" },
+    { id: 88, name: "Water Pump / Pressure Pump ", price: 900, img: "src/assets/images/plumber/pt4.png", category: "Plumber" },
+    { id: 89, name: "Slip Joint Pliers", price: 300, img: "src/assets/images/plumber/pt6.png", category: "Plumber" },
+    { id: 90, name: "Pipe Wrench (Large & Small)", price: 900, img: "src/assets/images/plumber/pt7.png", category: "Plumber" },
+    { id: 91, name: "Adjustable Wrench / Spanner", price: 300, img: "src/assets/images/plumber/pt8.png", category: "Plumber" },
   ];
 
   const categories = [...new Set(allAccessories.map(acc => acc.category))];
@@ -145,63 +146,6 @@ function Accessories({ addToCart }) {
           </div>
         ))}
       </div>
-
-      {/* Inline CSS */}
-      <style>{`
-        h2 {
-          font-weight: 700;
-          color: #333;
-        }
-        .btn-outline-primary {
-          border-radius: 20px;
-          padding: 8px 20px;
-          font-weight: 500;
-          transition: all 0.3s ease;
-        }
-        .btn-outline-primary:hover {
-          background-color: #0d6efd;
-          color: #fff;
-        }
-        .btn-primary {
-          border-radius: 20px;
-          padding: 8px 20px;
-          font-weight: 500;
-        }
-        .card {
-          border: 1px solid #e0e0e0;
-          border-radius: 12px;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-        }
-        .card-img-top {
-          border-top-left-radius: 12px;
-          border-top-right-radius: 12px;
-          height: 200px;
-          object-fit: cover;
-        }
-        .card-body h5 {
-          font-size: 1.1rem;
-          font-weight: 600;
-          color: #333;
-        }
-        .card-body p {
-          font-size: 1rem;
-          font-weight: 500;
-          color: #555;
-        }
-        .card-body .btn-success {
-          border-radius: 8px;
-          font-weight: 500;
-          transition: all 0.3s ease;
-        }
-        .card-body .btn-success:hover {
-          background-color: #28a745cc;
-          transform: translateY(-2px);
-        }
-      `}</style>
     </div>
   );
 }

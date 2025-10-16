@@ -1,0 +1,60 @@
+.dress-page h2 {
+  font-weight: 700;
+  color: #222;
+}
+
+.category-buttons .btn {
+  border-radius: 25px;
+  padding: 8px 22px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.category-buttons .btn:hover {
+  transform: translateY(-2px);
+}
+
+.active-cat {
+  background-color: #0d6efd;
+  color: #fff !important;
+}
+
+.card {
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card-img-top {
+  height: 220px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333;
+  min-height: 50px;
+}
+
+.card-text {
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.btn-success {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #2ea043;
+  transform: translateY(-2px);
+}
