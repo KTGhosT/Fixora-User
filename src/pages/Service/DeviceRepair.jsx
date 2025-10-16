@@ -1,5 +1,9 @@
-import React, { Component, useEffect, useRef } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import dev1 from '../../assets/user/dev1.png';
+import dev2 from '../../assets/user/dev2.png';
+import dev3 from '../../assets/user/dev3.png';
+import ServiceDetail from '../../components/user/ServiceDetail';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -30,6 +34,26 @@ class ErrorBoundary extends Component {
 const DeviceRepair = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
+
+  const detailsData = [
+    {
+      title: 'Smart TV & Display Repairs',
+      desc: 'Panel, backlight, mainboard fixes and firmware updates for major brands.',
+      highlights: ['4K/8K panels', 'Backlight replacement', 'No-signal issues', 'Software updates']
+    },
+    {
+      title: 'Appliance & Machine Repairs',
+      desc: 'Diagnostics and hardware replacements for washers, dryers, and small machinery.',
+      highlights: ['Motor issues', 'Board repairs', 'Sensor faults', 'Preventive maintenance']
+    },
+    {
+      title: 'Computer/Laptop Repairs',
+      desc: 'Upgrades, OS reinstallation, and component replacements with quick turnaround.',
+      highlights: ['SSD/RAM upgrades', 'Screen/keyboard', 'Thermal service', 'OS reinstall']
+    }
+  ];
 
   // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
@@ -90,8 +114,8 @@ const DeviceRepair = () => {
           .hero-slider {
             position: relative;
             width: 100vw;
-            height: calc(100vh - 80px);
-            margin-top: 80px;
+            height: 100vh;
+            margin-top: 0;
             overflow: hidden;
             background-color: transparent;
           }
@@ -110,6 +134,8 @@ const DeviceRepair = () => {
             object-fit: cover;
             object-position: center;
             display: block;
+            background: transparent;
+            cursor: pointer;
           }
 
           .carousel-item.active img {
@@ -125,14 +151,15 @@ const DeviceRepair = () => {
             transform: translate(-50%, -50%);
             max-width: 800px;
             padding: 2rem;
-            background: rgba(69, 67, 67, 0.4);
-            backdrop-filter: blur(0.5px);
+            background: transparent;
+            backdrop-filter: none;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: none;
             color: white;
             text-align: center;
             z-index: 2;
-            box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
+            box-shadow: none;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
           }
 
           /* Static Text */
@@ -164,6 +191,14 @@ const DeviceRepair = () => {
           .btn-book-now:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(123, 31, 162, 0.4);
+          }
+
+          .details-list {
+            margin: 1rem auto 1.5rem;
+            max-width: 640px;
+            text-align: left;
+            list-style: disc;
+            padding-left: 1.5rem;
           }
 
           /* Carousel Controls */
@@ -381,15 +416,29 @@ const DeviceRepair = () => {
           <div ref={carouselRef} className="carousel slide" data-bs-ride="carousel" id="heroCarousel">
             <div className="carousel-inner">
               {[
-                { src: 'https://images.unsplash.com/photo-1753964724380-2c5ae02512a8?q=80&w=1229&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Laptop Repair' },
-                { src: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Phone Repair' },
-                { src: 'https://plus.unsplash.com/premium_photo-1664301884434-228dd7cff3a6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', alt: 'Computer Repair' },
+                { src: dev1, alt: 'Device Repair 1' },
+                { src: dev2, alt: 'Device Repair 2' },
+                { src: dev3, alt: 'Device Repair 3' },
               ].map((img, i) => (
                 <div key={i} className={`carousel-item ${i === 0 ? 'active' : ''}`}>
-                  <img src={img.src} alt={img.alt} />
+                  <img src={img.src} alt={img.alt} onClick={() => setSelectedIndex(i)} />
                   <div className="blur-box">
-                    <h1 className="animated-text">Expert Device Repair Services</h1>
-                    <p className="lead-text">Fast, Reliable & Affordable Tech Repairs</p>
+                    {selectedIndex === i ? (
+                      <>
+                        <h1 className="animated-text">{detailsData[i].title}</h1>
+                        <p className="lead-text">{detailsData[i].desc}</p>
+                        <ul className="details-list">
+                          {detailsData[i].highlights.map((h, idx) => (
+                            <li key={idx}>{h}</li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <>
+                        <h1 className="animated-text">Expert Device Repair Services</h1>
+                        <p className="lead-text">Fast, Reliable & Affordable Tech Repairs</p>
+                      </>
+                    )}
                     <button className="btn-book-now" onClick={() => navigate('/booking')}>
                       Book Now
                     </button>
@@ -472,7 +521,33 @@ const DeviceRepair = () => {
                 },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="service-card">
+                  <div
+                    className="service-card"
+                    onClick={() => {
+                      const detail = {
+                        title: s.title,
+                        desc: s.desc,
+                        image: s.img,
+                        price:
+                          s.title === 'TV Repair'
+                            ? '4,500'
+                            : s.title === 'Machine Repair'
+                            ? '7,500'
+                            : s.title === 'Computer Repair'
+                            ? '6,500'
+                            : '12,500',
+                        features:
+                          s.title === 'TV Repair'
+                            ? ['Screen repair', 'Main board replacement', 'Smart TV software fixes']
+                            : s.title === 'Machine Repair'
+                            ? ['Diagnostics', 'Part replacement', 'Warranty support']
+                            : s.title === 'Computer Repair'
+                            ? ['Virus removal', 'SSD upgrade', 'OS reinstall']
+                            : ['HDD/SSD recovery', 'Phone data recovery', 'Encrypted data options'],
+                      };
+                      setSelectedService(detail);
+                    }}
+                  >
                     <img src={s.img} alt={s.title} className="service-img" />
                     <div className="p-4 text-center">
                       <h5 className="service-title">{s.title}</h5>
@@ -482,6 +557,12 @@ const DeviceRepair = () => {
                 </div>
               ))}
             </div>
+            {selectedService && (
+              <ServiceDetail
+                service={selectedService}
+                onClose={() => setSelectedService(null)}
+              />
+            )}
           </div>
         </section>
 

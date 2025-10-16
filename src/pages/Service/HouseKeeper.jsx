@@ -1,5 +1,6 @@
-import React, { Component, useEffect, useRef } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ServiceDetail from '../../components/user/ServiceDetail';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class ErrorBoundary extends Component {
 const HouseKeeper = () => {
   const carouselRef = useRef(null);
   const navigate = useNavigate();
+  const [selectedService, setSelectedService] = useState(null);
 
   // Initialize Bootstrap carousel and auto-scroll
   useEffect(() => {
@@ -88,10 +90,10 @@ const HouseKeeper = () => {
         {`
           /* Full-Screen Hero Carousel */
           .hero-slider {
-             position: relative;
+            position: relative;
             width: 100vw;
-            height: calc(100vh - 80px);
-            margin-top: 80px;
+            height: 100vh;
+            margin-top: 0;
             overflow: hidden;
             background-color: transparent;
           }
@@ -125,14 +127,15 @@ const HouseKeeper = () => {
             transform: translate(-50%, -50%);
             max-width: 800px;
             padding: 2rem;
-            background: rgba(69, 67, 67, 0.4);
-            backdrop-filter: blur(0.5px);
+            background: transparent;
+            backdrop-filter: none;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: none;
             color: white;
             text-align: center;
             z-index: 2;
-            box-shadow: 0 10px 30px rgba(41, 39, 39, 0.3);
+            box-shadow: none;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
           }
 
           /* Static Text */
@@ -472,7 +475,33 @@ const HouseKeeper = () => {
                 },
               ].map((s, i) => (
                 <div key={i} className="col-md-6 col-lg-3">
-                  <div className="service-card">
+                  <div
+                    className="service-card"
+                    onClick={() => {
+                      const detail = {
+                        title: s.title,
+                        desc: s.desc,
+                        image: s.img,
+                        price:
+                          s.title === 'Regular Cleaning'
+                            ? '4,000'
+                            : s.title === 'Deep Cleaning'
+                            ? '7,500'
+                            : s.title === 'Office Cleaning'
+                            ? '6,500'
+                            : '8,000',
+                        features:
+                          s.title === 'Regular Cleaning'
+                            ? ['Dusting & vacuuming', 'Bathroom & kitchen', 'Floors & surfaces']
+                            : s.title === 'Deep Cleaning'
+                            ? ['Appliances', 'Detail scrubbing', 'Windows & fixtures']
+                            : s.title === 'Office Cleaning'
+                            ? ['Workstations', 'Common areas', 'Restrooms']
+                            : ['Move-in ready', 'Post-move cleanup', 'Flexible scheduling'],
+                      };
+                      setSelectedService(detail);
+                    }}
+                  >
                     <img src={s.img} alt={s.title} className="service-img" />
                     <div className="p-4 text-center">
                       <h5 className="service-title">{s.title}</h5>
@@ -482,6 +511,12 @@ const HouseKeeper = () => {
                 </div>
               ))}
             </div>
+            {selectedService && (
+              <ServiceDetail
+                service={selectedService}
+                onClose={() => setSelectedService(null)}
+              />
+            )}
           </div>
         </section>
 

@@ -68,12 +68,10 @@ function HeaderWrapper({ user, setUser }) {
   const isPasswordReset = location.pathname === "/password-reset" || 
                          location.pathname === "/reset-password" || 
                          location.pathname === "/forgot-password";
-  const isCarpenter = location.pathname === "/services/carpenter";
   const showHeader =
     !isWorkerOrAdmin &&
     !isLoginOrSignup &&
     !isPasswordReset &&
-    !isCarpenter &&
     (
       publicHeaderPaths.includes(location.pathname) ||
       // Also show header for any /services/* route
