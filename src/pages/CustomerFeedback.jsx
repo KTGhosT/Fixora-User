@@ -329,9 +329,16 @@ const FeedbackCenter = () => {
       {/* Hero Section */}
       <section className={styles.heroSection}>
         <div className={styles.heroContent}>
-          <div className={styles.heroBadge}>
-            <span>✨ New Feedbacks Are Welcome</span>
-          </div>
+          
+
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
           <h1 className={styles.heroTitle}>
             "We'd love to hear what you think"
             <span className={styles.gradientText}> Share Your Experience</span>

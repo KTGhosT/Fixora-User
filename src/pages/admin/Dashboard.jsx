@@ -1,41 +1,161 @@
 // src/pages/admin/Dashboard.jsx
 import React, { useState, useEffect } from "react";
 import styles from "./Dashboard.module.css";
-
-// Example: import your API instance if you want to fetch real data
-// import api from "../../services/api";
+import { fetchUsersApi } from "../../services/users";
+import { fetchBookingsApi } from "../../services/bookings";
+import { fetchWorkersApi } from "../../services/workers";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 function Dashboard() {
-  // Replace with your actual data or fetch from your backend
   const [stats, setStats] = useState({
-    totalUsers: 321,
-    totalBookings: 87,
-    revenue: 12450,
-    pendingApprovals: 3
+    totalUsers: 0,
+    totalBookings: 0,
+    totalWorkers: 0,
+    pendingApprovals: 0,
+    completedBookings: 0,
+    revenue: 0
   });
 
-  const [recentActivities, setRecentActivities] = useState([
-    { id: 1, user: "Amanuel T.", action: "Booked a plumber", time: "5 mins ago", type: "booking" },
-    { id: 2, user: "Mekdes B.", action: "Registered as user", time: "20 mins ago", type: "user" },
-    { id: 3, user: "Kebede W.", action: "Booking cancelled", time: "1 hour ago", type: "cancellation" },
-    { id: 4, user: "Selamawit G.", action: "Payment received", time: "2 hours ago", type: "payment" },
-    { id: 5, user: "Yonas D.", action: "Updated profile", time: "3 hours ago", type: "update" }
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [bookingStatusData, setBookingStatusData] = useState([]);
 
-  // If you want to fetch from backend, uncomment and adjust this:
-  /*
+  // Fetch real data from APIs
   useEffect(() => {
-    setLoading(true);
-    api.get("/admin/dashboard-stats").then(res => {
-      setStats(res.data.stats);
-      setRecentActivities(res.data.activities);
-      setLoading(false);
-    });
-  }, []);
-  */
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const StatCard = ({ title, value, subtitle, trend }) => (
+        // Fetch all data in parallel
+        const [users, bookings, workers] = await Promise.all([
+          fetchUsersApi().catch(err => {
+            console.error('Error fetching users:', err);
+            return [];
+          }),
+          fetchBookingsApi().catch(err => {
+            console.error('Error fetching bookings:', err);
+            return [];
+          }),
+          fetchWorkersApi().catch(err => {
+            console.error('Error fetching workers:', err);
+            return [];
+          })
+        ]);
+
+        // Calculate statistics
+        const totalUsers = users.length;
+        const totalBookings = bookings.length;
+        const totalWorkers = workers.length;
+        const completedBookings = bookings.filter(booking => 
+          booking.status === 'completed' || booking.status === 'Completed'
+        ).length;
+        const pendingApprovals = workers.filter(worker => 
+          worker.status === 'pending' || worker.status === 'Pending'
+        ).length;
+
+        // Calculate revenue (assuming bookings have price/amount field)
+        const revenue = bookings
+          .filter(booking => booking.status === 'completed' || booking.status === 'Completed')
+          .reduce((sum, booking) => sum + (booking.price || booking.amount || 0), 0);
+
+        setStats({
+          totalUsers,
+          totalBookings,
+          totalWorkers,
+          pendingApprovals,
+          completedBookings,
+          revenue
+        });
+
+        // Generate recent activities from bookings
+        const activities = bookings
+          .slice(0, 10)
+          .map((booking, index) => ({
+            id: booking.id || index,
+            user: booking.user_name || booking.customer_name || 'Unknown User',
+            action: `Booking ${booking.status || 'created'}`,
+            time: formatTimeAgo(booking.created_at || booking.booking_date),
+            type: getActivityType(booking.status)
+          }));
+
+        setRecentActivities(activities);
+
+        // Generate chart data (last 7 days)
+        const chartData = generateChartData(bookings);
+        setChartData(chartData);
+
+        // Generate booking status pie chart data
+        const statusCounts = {};
+        bookings.forEach(booking => {
+          const status = booking.status || 'unknown';
+          statusCounts[status] = (statusCounts[status] || 0) + 1;
+        });
+
+        const pieData = Object.entries(statusCounts).map(([status, count]) => ({
+          name: status.charAt(0).toUpperCase() + status.slice(1),
+          value: count
+        }));
+
+        setBookingStatusData(pieData);
+
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // Helper functions
+  const formatTimeAgo = (dateString) => {
+    if (!dateString) return 'Unknown time';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes} mins ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`;
+    return `${Math.floor(diffInMinutes / 1440)} days ago`;
+  };
+
+  const getActivityType = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'completed': return 'payment';
+      case 'cancelled': return 'cancellation';
+      case 'pending': return 'booking';
+      default: return 'booking';
+    }
+  };
+
+  const generateChartData = (bookings) => {
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      const dayBookings = bookings.filter(booking => {
+        const bookingDate = new Date(booking.created_at || booking.booking_date);
+        return bookingDate.toISOString().split('T')[0] === dateStr;
+      });
+
+      last7Days.push({
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        bookings: dayBookings.length,
+        revenue: dayBookings.reduce((sum, booking) => sum + (booking.price || booking.amount || 0), 0)
+      });
+    }
+    return last7Days;
+  };
+
+  const StatCard = ({ title, value, subtitle, trend, icon }) => (
     <div className={styles.statCard}>
       <div className={styles.statContent}>
         <h3 className={styles.statTitle}>{title}</h3>
@@ -53,7 +173,7 @@ function Dashboard() {
         </div>
         <p className={styles.statSubtitle}>{subtitle}</p>
       </div>
-      <div className={styles.statIcon}></div>
+      <div className={styles.statIcon}>{icon}</div>
     </div>
   );
 
@@ -69,6 +189,23 @@ function Dashboard() {
     </div>
   );
 
+  if (error) {
+    return (
+      <div className={styles.dashboard}>
+        <div className={styles.errorContainer}>
+          <h2>Error Loading Dashboard</h2>
+          <p>{error}</p>
+          <button 
+            className={styles.actionButton}
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
@@ -80,7 +217,10 @@ function Dashboard() {
         </div>
         <div className={styles.headerActions}>
           <button className={styles.actionButton}>Export Report</button>
-          <button className={`${styles.actionButton} ${styles.primary}`}>
+          <button 
+            className={`${styles.actionButton} ${styles.primary}`}
+            onClick={() => window.location.reload()}
+          >
             Refresh Data
           </button>
         </div>
@@ -90,26 +230,38 @@ function Dashboard() {
         <StatCard
           title="Total Users"
           value={stats.totalUsers.toLocaleString()}
-          subtitle="Active users this month"
-          trend={7.2}
+          subtitle="Registered users"
+          icon="👥"
         />
         <StatCard
           title="Total Bookings"
           value={stats.totalBookings.toLocaleString()}
-          subtitle="Completed bookings"
-          trend={3.8}
+          subtitle="All bookings"
+          icon="📅"
+        />
+        <StatCard
+          title="Total Workers"
+          value={stats.totalWorkers.toLocaleString()}
+          subtitle="Registered workers"
+          icon="🔧"
+        />
+        <StatCard
+          title="Completed Bookings"
+          value={stats.completedBookings.toLocaleString()}
+          subtitle="Successfully completed"
+          icon="✅"
         />
         <StatCard
           title="Revenue"
           value={`$${stats.revenue.toLocaleString()}`}
-          subtitle="Total revenue this month"
-          trend={12.1}
+          subtitle="Total revenue earned"
+          icon="💰"
         />
         <StatCard
           title="Pending Approvals"
           value={stats.pendingApprovals}
           subtitle="Requires attention"
-          trend={-1.5}
+          icon="⏳"
         />
       </div>
 
@@ -165,22 +317,75 @@ function Dashboard() {
       <div className={styles.contentGrid}>
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <h3 className={styles.cardTitle}>Performance Metrics</h3>
+            <h3 className={styles.cardTitle}>Bookings Trend (Last 7 Days)</h3>
           </div>
           <div className={styles.cardContent}>
-            <div className={styles.performanceChart}>
-              <div className={styles.chartPlaceholder}>
-                <p>Monthly Performance Chart</p>
-                <div className={styles.chartBars}>
-                  {[60, 75, 80, 90, 70, 85, 65].map((height, index) => (
-                    <div
-                      key={index}
-                      className={styles.chartBar}
-                      style={{ height: `${height}%` }}
-                    ></div>
-                  ))}
-                </div>
-              </div>
+            <div className={styles.chartContainer}>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="bookings" 
+                    stroke="#8884d8" 
+                    strokeWidth={2}
+                    name="Bookings"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <h3 className={styles.cardTitle}>Revenue Trend (Last 7 Days)</h3>
+          </div>
+          <div className={styles.cardContent}>
+            <div className={styles.chartContainer}>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                  <Bar dataKey="revenue" fill="#82ca9d" name="Revenue" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.contentGrid}>
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <h3 className={styles.cardTitle}>Booking Status Distribution</h3>
+          </div>
+          <div className={styles.cardContent}>
+            <div className={styles.chartContainer}>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={bookingStatusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {bookingStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
@@ -202,14 +407,14 @@ function Dashboard() {
                 <span className={styles.statusText}>Operational</span>
               </div>
               <div className={styles.statusItem}>
-                <div className={`${styles.statusIndicator} ${styles.warning}`}></div>
-                <span>Payment Gateway</span>
-                <span className={styles.statusText}>Maintenance</span>
-              </div>
-              <div className={styles.statusItem}>
                 <div className={`${styles.statusIndicator} ${styles.online}`}></div>
                 <span>API Services</span>
                 <span className={styles.statusText}>Operational</span>
+              </div>
+              <div className={styles.statusItem}>
+                <div className={`${styles.statusIndicator} ${loading ? styles.warning : styles.online}`}></div>
+                <span>Data Sync</span>
+                <span className={styles.statusText}>{loading ? 'Syncing...' : 'Up to date'}</span>
               </div>
             </div>
           </div>

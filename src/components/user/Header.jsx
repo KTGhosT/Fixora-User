@@ -41,6 +41,25 @@ const UniqueHeader = ({ user, setUser }) => {
     window.location.href = 'tel:+1234567890';
   };
 
+  // Function to get the correct dashboard route based on user role
+  const getDashboardRoute = (userRole) => {
+    switch (userRole) {
+      case 'admin':
+        return '/admin';
+      case 'worker':
+        return '/worker/dashboard';
+      case 'user':
+      default:
+        return '/user/account';
+    }
+  };
+
+  // Handle profile button click with role-based navigation
+  const handleProfileClick = () => {
+    const dashboardRoute = getDashboardRoute(user.role);
+    navigate(dashboardRoute);
+  };
+
   return (
     <>
       {/* Combined Floating Navbar */}
@@ -77,8 +96,8 @@ const UniqueHeader = ({ user, setUser }) => {
                 <div className={styles.userSection}>
                   <button
                     className={styles.profileButton}
-                    onClick={() => navigate('/user/account')}
-                    aria-label="Go to account page"
+                    onClick={handleProfileClick}
+                    aria-label="Go to dashboard"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -162,7 +181,7 @@ const UniqueHeader = ({ user, setUser }) => {
 
               {user ? (
                 <div className={styles.mobileAuthButtons}>
-                  <button className={styles.mobileSignInButton} onClick={() => navigate('/user/account')}>
+                  <button className={styles.mobileSignInButton} onClick={handleProfileClick}>
                     Profile ({user.name})
                   </button>
                   <button className={styles.mobileSignUpButton} onClick={logout}>

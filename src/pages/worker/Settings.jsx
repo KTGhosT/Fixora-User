@@ -1,860 +1,344 @@
-import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import styles from './dashboard.module.css'; // Import dashboard styles
+// src/pages/worker/Settings.jsx
+import React, { useState, useEffect } from 'react';
+import {
+  getWorkerSettingsByUserId,
+  updateWorkerSettings,
+  getWorkerStatusOptions,
+  getEducationOptions,
+  validateWorkerData,
+  validateUserData,
+  debugWorkerSettings
+} from '../../services/workerSettings';
 
 const Settings = () => {
-  // User profile state
-  const [profile, setProfile] = useState({
-    name: 'John Doe',
-    status : 'active',
-    email: 'john@example.com',
-    phone: '+1234567890',
-    bio: 'Software developer with 5 years of experience',
-    location: 'New York, USA',
-    workRole: 'carpenter', // Added work role field, default to 'carpenter'
-    profilePhoto: 'https://via.placeholder.com/150',
-    cv: null,
-    projects: [],
-    experiences: [],
-    // Verification state
-    verification: {
-      status: 'pending', // pending, submitted, verified, rejected
-      documents: {
-        idProof: null,
-        addressProof: null,
-        qualification: null
-      },
-      interview: {
-        status: 'pending', // pending, scheduled, passed, failed
-        date: null,
-        feedback: ''
-      },
-      rejectionReason: ''
-    }
-  });
+  const [user, setUser] = useState({});
+  const [worker, setWorker] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
-  // Refs for file inputs
-  const photoInputRef = useRef(null);
-  const cvInputRef = useRef(null);
-  const idProofRef = useRef(null);
-  const addressProofRef = useRef(null);
-  const qualificationRef = useRef(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const savedUser = JSON.parse(localStorage.getItem('user'));
+        if (!savedUser) {
+          alert('User not logged in');
+          return;
+        }
+        setUser(savedUser);
+        const workerData = await getWorkerSettingsByUserId(savedUser.id);
+        const extractedWorker = workerData?.worker || workerData || {};
+        setWorker(extractedWorker);
+      } catch (err) {
+        console.error('Error fetching worker ', err);
+        if (err.response?.status === 500) {
+          alert('Server error. Please try again later.');
+        } else if (err.response?.status === 401) {
+          alert('Authentication failed. Please log in again.');
+        } else {
+          alert('Failed to load profile. Check your connection.');
+        }
+        setWorker({});
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  // Handle profile field changes
-  const handleInputChange = (e) => {
+  const handleUserChange = (e) => {
     const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
+    setUser(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle profile photo upload
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfile(prev => ({ ...prev, profilePhoto: e.target.result }));
+  const handleWorkerChange = (e) => {
+    const { name, value } = e.target;
+    setWorker(prev => ({ ...prev, [name]: value }));
+  };
+
+  const saveChanges = async () => {
+    try {
+      setSaving(true);
+      
+      const userData = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address
       };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle CV upload
-  const handleCvUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfile(prev => ({ 
-        ...prev, 
-        cv: {
-          name: file.name,
-          url: URL.createObjectURL(file)
-        }
-      }));
-    }
-  };
-
-  // Handle verification document upload
-  const handleDocumentUpload = (type, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfile(prev => ({
-          ...prev,
-          verification: {
-            ...prev.verification,
-            documents: {
-              ...prev.verification.documents,
-              [type]: {
-                name: file.name,
-                preview: e.target.result
-              }
-            }
-          }
-        }));
+      
+      const workerData = {
+        work_role: worker.work_role || '',
+        bio: worker.bio || '',
+        status: worker.status || 'available',
+        experience_level: worker.experience_level || '',
+        availability: worker.availability || '',
+        short_info: worker.short_info || '',
+        minimum_education: worker.minimum_education || ''
       };
-      reader.readAsDataURL(file);
+      
+      const cleanedUserData = Object.fromEntries(
+        Object.entries(userData).filter(([_, v]) => v !== '')
+      );
+      const cleanedWorkerData = Object.fromEntries(
+        Object.entries(workerData).filter(([_, v]) => v !== '')
+      );
+      
+      const userValidation = validateUserData(cleanedUserData);
+      const workerValidation = validateWorkerData(cleanedWorkerData);
+      
+      if (!userValidation.isValid || !workerValidation.isValid) {
+        const errors = [
+          ...Object.values(userValidation.errors || {}),
+          ...Object.values(workerValidation.errors || {})
+        ].join(', ');
+        alert(`Validation error: ${errors}`);
+        return;
+      }
+      
+      await updateWorkerSettings(user.id, worker.id, cleanedUserData, cleanedWorkerData);
+      const debugData = await debugWorkerSettings(user.id, worker.id);
+      
+      if (debugData.user) setUser(prev => ({ ...prev, ...debugData.user }));
+      if (debugData.worker) setWorker(prev => ({ ...prev, ...debugData.worker }));
+      
+      alert('✅ Profile updated successfully!');
+      setEditMode(false);
+    } catch (err) {
+      console.error('Save error:', err);
+      if (err.response?.status === 422 && err.response.data?.errors) {
+        const msgs = Object.values(err.response.data.errors).flat().join(', ');
+        alert(`Fix these: ${msgs}`);
+      } else {
+        alert('❌ Failed to save. Please try again.');
+      }
+    } finally {
+      setSaving(false);
     }
   };
 
-  // Submit verification
-  const submitVerification = () => {
-    setProfile(prev => ({
-      ...prev,
-      verification: {
-        ...prev.verification,
-        status: 'submitted'
-      }
-    }));
-  };
-
-  // Schedule interview (mock function)
-  const scheduleInterview = () => {
-    setProfile(prev => ({
-      ...prev,
-      verification: {
-        ...prev.verification,
-        interview: {
-          ...prev.verification.interview,
-          status: 'scheduled',
-          date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 days from now
-        }
-      }
-    }));
-  };
-
-  // Pass interview (mock function)
-  const passInterview = () => {
-    setProfile(prev => ({
-      ...prev,
-      verification: {
-        ...prev.verification,
-        interview: {
-          ...prev.verification.interview,
-          status: 'passed'
-        }
-      }
-    }));
-  };
-
-  // Fail interview (mock function)
-  const failInterview = () => {
-    setProfile(prev => ({
-      ...prev,
-      verification: {
-        ...prev.verification,
-        interview: {
-          ...prev.verification.interview,
-          status: 'failed',
-          feedback: 'Need to improve technical knowledge'
-        }
-      }
-    }));
-  };
-
-  // Add new project
-  const addProject = () => {
-    setProfile(prev => ({
-      ...prev,
-      projects: [
-        ...prev.projects,
-        { id: Date.now(), title: '', description: '', link: '' }
-      ]
-    }));
-  };
-
-  // Update project details
-  const updateProject = (id, field, value) => {
-    setProfile(prev => ({
-      ...prev,
-      projects: prev.projects.map(project => 
-        project.id === id ? { ...project, [field]: value } : project
-      )
-    }));
-  };
-
-  // Remove project
-  const removeProject = (id) => {
-    setProfile(prev => ({
-      ...prev,
-      projects: prev.projects.filter(project => project.id !== id)
-    }));
-  };
-
-  // Add new experience
-  const addExperience = () => {
-    setProfile(prev => ({
-      ...prev,
-      experiences: [
-        ...prev.experiences,
-        { 
-          id: Date.now(), 
-          company: '', 
-          position: '', 
-          startDate: '', 
-          endDate: '', 
-          description: '' 
-        }
-      ]
-    }));
-  };
-
-  // Update experience details
-  const updateExperience = (id, field, value) => {
-    setProfile(prev => ({
-      ...prev,
-      experiences: prev.experiences.map(exp => 
-        exp.id === id ? { ...exp, [field]: value } : exp
-      )
-    }));
-  };
-
-  // Remove experience
-  const removeExperience = (id) => {
-    setProfile(prev => ({
-      ...prev,
-      experiences: prev.experiences.filter(exp => exp.id !== id)
-    }));
-  };
-
-  // Save profile
-  const saveProfile = () => {
-    console.log('Saving profile:', profile);
-    alert('Profile saved successfully!');
-  };
-
-  // Verification status badge
-  const VerificationBadge = () => {
-    const status = profile.verification.status;
-    let badgeClass = 'badge ';
-    let text = '';
-    
-    switch(status) {
-      case 'verified':
-        badgeClass += 'bg-success';
-        text = 'Verified';
-        break;
-      case 'submitted':
-        badgeClass += 'bg-warning';
-        text = 'Pending Review';
-        break;
-      case 'rejected':
-        badgeClass += 'bg-danger';
-        text = 'Rejected';
-        break;
-      default:
-        badgeClass += 'bg-secondary';
-        text = 'Not Verified';
-    }
-    
-    return <span className={badgeClass}>{text}</span>;
-  };
-
-  // Interview status badge
-  const InterviewBadge = () => {
-    const status = profile.verification.interview.status;
-    let badgeClass = 'badge ';
-    let text = '';
-    
-    switch(status) {
-      case 'passed':
-        badgeClass += 'bg-success';
-        text = 'Passed';
-        break;
-      case 'failed':
-        badgeClass += 'bg-danger';
-        text = 'Failed';
-        break;
-      case 'scheduled':
-        badgeClass += 'bg-info';
-        text = 'Scheduled';
-        break;
-      default:
-        badgeClass += 'bg-secondary';
-        text = 'Pending';
-    }
-    
-    return <span className={badgeClass}>{text}</span>;
-  };
-
-  // Check if all documents are uploaded
-  const allDocumentsUploaded = () => {
-    const docs = profile.verification.documents;
-    return docs.idProof && docs.addressProof && docs.qualification;
-  };
-
-  // Check if verification is complete
-  const isVerified = () => {
-    return profile.verification.status === 'verified' && 
-           profile.verification.interview.status === 'passed';
-  };
-
-  return (
-    <div className={styles.dashboardContainer}>
-      {/* Left Navigation Sidebar */}
-      <div className={styles.sidebar}>
-        <div className={styles.logo}>
-          <h2>WorkerDash</h2>
-        </div>
-        <nav className={styles.navMenu}>
-          <Link to="/worker/dashboard" className={styles.navItem}>
-            <i className="icon-dashboard"></i>
-            <span>Dashboard</span>
-          </Link>
-          <Link to="/worker/works" className={styles.navItem}>
-            <i className="icon-orders"></i>
-            <span>Works</span>
-          </Link>
-          {/* Tasks and Sales removed after consolidation into Works */}
-          <Link to="/worker/payments" className={styles.navItem}>
-            <i className="icon-payments"></i>
-            <span>Payments</span>
-          </Link>
-          <Link to="/worker/inventory" className={styles.navItem}>
-            <i className="icon-inventory"></i>
-            <span>Inventory</span>
-          </Link>
-          <Link to="/worker/clients" className={styles.navItem}>
-            <i className="icon-clients"></i>
-            <span>Clients</span>
-          </Link>
-          <Link to="/worker/reports" className={styles.navItem}>
-            <i className="icon-reports"></i>
-            <span>Reports</span>
-          </Link>
-          <Link to="/worker/calls" className={styles.navItem}>
-            <i className="icon-calls"></i>
-            <span>Calls</span>
-          </Link>
-          <Link to="/worker/settings" className={`${styles.navItem} ${styles.active}`}>
-            <i className="icon-settings"></i>
-            <span>Settings</span>
-          </Link>
-        </nav>
-        <div className={styles.userProfile}>
-          <div className={styles.avatar}>
-            <i className="icon-user"></i>
-          </div>
-          <div className={styles.userInfo}>
-            <div className={styles.username}>John Doe</div>
-            <div className={styles.role}>Worker</div>
-          </div>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full p-8">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your profile...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Main Content Area (Settings) */}
-      <div className={styles.mainContent}>
-        <div className="container-fluid py-4">
-          <div className="row">
-            <div className="col-lg-9">
-              <h1 className="mb-4">Worker Profile Settings</h1>
-              
-              {/* Personal Details Section */}
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h2 className="mb-0">Personal Details</h2>
-                </div>
-                <div className="card-body">
-                  <div className="mb-3">
-                    <label className="form-label">Name</label>
-                    <input 
-                      type="text" 
-                      className="form-control"
-                      name="name" 
-                      value={profile.name} 
-                      onChange={handleInputChange} 
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input 
-                      type="email" 
-                      className="form-control"
-                      name="email" 
-                      value={profile.email} 
-                      onChange={handleInputChange} 
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label className="form-label">Phone</label>
-                    <input 
-                      type="tel" 
-                      className="form-control"
-                      name="phone" 
-                      value={profile.phone} 
-                      onChange={handleInputChange} 
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label className="form-label">Location</label>
-                    <input 
-                      type="text" 
-                      className="form-control"
-                      name="location" 
-                      value={profile.location} 
-                      onChange={handleInputChange} 
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label className="form-label">Bio</label>
-                    <textarea 
-                      className="form-control"
-                      name="bio" 
-                      value={profile.bio} 
-                      onChange={handleInputChange} 
-                      rows="4"
-                    />
-                  </div>
-                </div>
-              </div>
+  return (
+    // ✨ Animated container that fits inside WorkerLayout
+    <div className="animate-fadeInUp max-w-4xl w-full mx-auto px-4 py-6 md:px-6">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Profile Settings</h1>
+        <p className="text-gray-600 mt-1">Manage your personal & work details</p>
+      </div>
 
-              {/* Profile Photo Section */}
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h2 className="mb-0">Profile Photo</h2>
-                </div>
-                <div className="card-body">
-                  <div className="d-flex align-items-center">
-                    <img 
-                      src={profile.profilePhoto} 
-                      alt="Profile" 
-                      className="rounded-circle me-4"
-                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                    />
-                    <div>
-                      <button 
-                        className="btn btn-primary" 
-                        onClick={() => photoInputRef.current.click()}
-                      >
-                        Change Photo
-                      </button>
-                      <input 
-                        type="file" 
-                        ref={photoInputRef}
-                        onChange={handlePhotoUpload} 
-                        accept="image/*"
-                        className="d-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* CV Upload Section */}
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h2 className="mb-0">Upload CV</h2>
-                </div>
-                <div className="card-body">
-                  {profile.cv ? (
-                    <div className="mb-3">
-                      <p className="mb-2">Current CV: <a href={profile.cv.url} target="_blank" rel="noopener noreferrer">{profile.cv.name}</a></p>
-                      <button 
-                        className="btn btn-outline-primary" 
-                        onClick={() => cvInputRef.current.click()}
-                      >
-                        Replace CV
-                      </button>
-                    </div>
-                  ) : (
-                    <button 
-                      className="btn btn-primary" 
-                      onClick={() => cvInputRef.current.click()}
-                    >
-                      Upload CV
-                    </button>
-                  )}
-                  <input 
-                    type="file" 
-                    ref={cvInputRef}
-                    onChange={handleCvUpload} 
-                    accept=".pdf,.doc,.docx"
-                    className="d-none"
-                  />
-                </div>
-              </div>
-
-              {/* Projects Section */}
-              <div className="card mb-4">
-                <div className="card-header d-flex justify-content-between align-items-center">
-                  <h2 className="mb-0">Projects</h2>
-                  <button className="btn btn-success" onClick={addProject}>
-                    Add Project
-                  </button>
-                </div>
-                <div className="card-body">
-                  {profile.projects.map(project => (
-                    <div key={project.id} className="border p-3 mb-3 rounded">
-                      <div className="mb-3">
-                        <label className="form-label">Title</label>
-                        <input 
-                          type="text" 
-                          className="form-control"
-                          value={project.title} 
-                          onChange={(e) => updateProject(project.id, 'title', e.target.value)} 
-                        />
-                      </div>
-                      
-                      <div className="mb-3">
-                        <label className="form-label">Description</label>
-                        <textarea 
-                          className="form-control"
-                          value={project.description} 
-                          onChange={(e) => updateProject(project.id, 'description', e.target.value)} 
-                          rows="3"
-                        />
-                      </div>
-                      
-                      <div className="mb-3">
-                        <label className="form-label">Link</label>
-                        <input 
-                          type="url" 
-                          className="form-control"
-                          value={project.link} 
-                          onChange={(e) => updateProject(project.id, 'link', e.target.value)} 
-                        />
-                      </div>
-                      
-                      <button 
-                        className="btn btn-danger" 
-                        onClick={() => removeProject(project.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Experience Section */}
-              <div className="card mb-4">
-                <div className="card-header d-flex justify-content-between align-items-center">
-                  <h2 className="mb-0">Work Experience</h2>
-                  <button className="btn btn-success" onClick={addExperience}>
-                    Add Experience
-                  </button>
-                </div>
-                <div className="card-body">
-                  {profile.experiences.map(exp => (
-                    <div key={exp.id} className="border p-3 mb-3 rounded">
-                      <div className="mb-3">
-                        <label className="form-label">Company</label>
-                        <input 
-                          type="text" 
-                          className="form-control"
-                          value={exp.company} 
-                          onChange={(e) => updateExperience(exp.id, 'company', e.target.value)} 
-                        />
-                      </div>
-                      
-                      <div className="mb-3">
-                        <label className="form-label">Position</label>
-                        <input 
-                          type="text" 
-                          className="form-control"
-                          value={exp.position} 
-                          onChange={(e) => updateExperience(exp.id, 'position', e.target.value)} 
-                        />
-                      </div>
-                      
-                      <div className="row mb-3">
-                        <div className="col-md-6">
-                          <label className="form-label">Start Date</label>
-                          <input 
-                            type="date" 
-                            className="form-control"
-                            value={exp.startDate} 
-                            onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)} 
-                          />
-                        </div>
-                        
-                        <div className="col-md-6">
-                          <label className="form-label">End Date</label>
-                          <input 
-                            type="date" 
-                            className="form-control"
-                            value={exp.endDate} 
-                            onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)} 
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="mb-3">
-                        <label className="form-label">Description</label>
-                        <textarea 
-                          className="form-control"
-                          value={exp.description} 
-                          onChange={(e) => updateExperience(exp.id, 'description', e.target.value)} 
-                          rows="3"
-                        />
-                      </div>
-                      
-                      <button 
-                        className="btn btn-danger" 
-                        onClick={() => removeExperience(exp.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Save Button */}
-              <div className="text-center">
-                <button className="btn btn-primary btn-lg" onClick={saveProfile}>
-                  Save Profile
-                </button>
-              </div>
-            </div>
-
-            {/* Right Verification Panel */}
-            <div className="col-lg-3">
-              <div className="card">
-                <div className="card-header bg-primary text-white">
-                  <h3 className="mb-0">Verification</h3>
-                </div>
-                <div className="card-body">
-                  <div className="text-center mb-3">
-                    <VerificationBadge />
-                  </div>
-                  
-                  {profile.verification.status === 'rejected' && (
-                    <div className="alert alert-danger">
-                      <strong>Rejection Reason:</strong> {profile.verification.rejectionReason}
-                    </div>
-                  )}
-                  
-                  <div className="mb-3">
-                    <label className="form-label">ID Proof</label>
-                    {profile.verification.documents.idProof ? (
-                      <div className="mb-2">
-                        <small>{profile.verification.documents.idProof.name}</small>
-                        <button 
-                          className="btn btn-sm btn-outline-primary d-block mt-1"
-                          onClick={() => idProofRef.current.click()}
-                        >
-                          Replace
-                        </button>
-                      </div>
-                    ) : (
-                      <button 
-                        className="btn btn-sm btn-outline-primary w-100"
-                        onClick={() => idProofRef.current.click()}
-                      >
-                        Upload ID
-                      </button>
-                    )}
-                    <input 
-                      type="file" 
-                      ref={idProofRef}
-                      onChange={(e) => handleDocumentUpload('idProof', e)}
-                      accept="image/*,.pdf"
-                      className="d-none"
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label className="form-label">Address Proof</label>
-                    {profile.verification.documents.addressProof ? (
-                      <div className="mb-2">
-                        <small>{profile.verification.documents.addressProof.name}</small>
-                        <button 
-                          className="btn btn-sm btn-outline-primary d-block mt-1"
-                          onClick={() => addressProofRef.current.click()}
-                        >
-                          Replace
-                        </button>
-                      </div>
-                    ) : (
-                      <button 
-                        className="btn btn-sm btn-outline-primary w-100"
-                        onClick={() => addressProofRef.current.click()}
-                      >
-                        Upload Address Proof
-                      </button>
-                    )}
-                    <input 
-                      type="file" 
-                      ref={addressProofRef}
-                      onChange={(e) => handleDocumentUpload('addressProof', e)}
-                      accept="image/*,.pdf"
-                      className="d-none"
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label className="form-label">Qualification</label>
-                    {profile.verification.documents.qualification ? (
-                      <div className="mb-2">
-                        <small>{profile.verification.documents.qualification.name}</small>
-                        <button 
-                          className="btn btn-sm btn-outline-primary d-block mt-1"
-                          onClick={() => qualificationRef.current.click()}
-                        >
-                          Replace
-                        </button>
-                      </div>
-                    ) : (
-                      <button 
-                        className="btn btn-sm btn-outline-primary w-100"
-                        onClick={() => qualificationRef.current.click()}
-                      >
-                        Upload Qualification
-                      </button>
-                    )}
-                    <input 
-                      type="file" 
-                      ref={qualificationRef}
-                      onChange={(e) => handleDocumentUpload('qualification', e)}
-                      accept="image/*,.pdf"
-                      className="d-none"
-                    />
-                  </div>
-                  
-                  {profile.verification.status !== 'verified' && (
-                    <button 
-                      className="btn btn-success w-100 mt-3"
-                      onClick={submitVerification}
-                      disabled={!allDocumentsUploaded()}
-                    >
-                      Submit for Verification
-                    </button>
-                  )}
-                  
-                  {profile.verification.status === 'verified' && (
-                    <div className="alert alert-success mt-3">
-                      <i className="bi bi-check-circle-fill me-2"></i>
-                      Documents verified successfully!
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Interview Section */}
-              <div className="card mt-4">
-                <div className="card-header bg-info text-white">
-                  <h3 className="mb-0">Interview</h3>
-                </div>
-                <div className="card-body">
-                  <div className="text-center mb-3">
-                    <InterviewBadge />
-                  </div>
-                  
-                  {profile.verification.interview.status === 'failed' && (
-                    <div className="alert alert-danger">
-                      <strong>Feedback:</strong> {profile.verification.interview.feedback}
-                    </div>
-                  )}
-                  
-                  {profile.verification.interview.status === 'pending' && (
-                    <div className="text-center">
-                      <p>Interview required after document verification</p>
-                      <button 
-                        className="btn btn-info"
-                        disabled={profile.verification.status !== 'verified'}
-                        onClick={scheduleInterview}
-                      >
-                        Schedule Interview
-                      </button>
-                    </div>
-                  )}
-                  
-                  {profile.verification.interview.status === 'scheduled' && (
-                    <div>
-                      <p className="text-center">
-                        <strong>Interview Date:</strong> {profile.verification.interview.date}
-                      </p>
-                      <div className="d-grid gap-2">
-                        <button className="btn btn-success" onClick={passInterview}>
-                          Mark as Passed
-                        </button>
-                        <button className="btn btn-danger" onClick={failInterview}>
-                          Mark as Failed
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {profile.verification.interview.status === 'passed' && (
-                    <div className="alert alert-success">
-                      <i className="bi bi-check-circle-fill me-2"></i>
-                      Interview passed successfully!
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Work Access Card */}
-              <div className="card mt-4">
-                <div className="card-header bg-success text-white">
-                  <h3 className="mb-0">Work Access</h3>
-                </div>
-                <div className="card-body">
-                  {isVerified() ? (
-                    <>
-                      <div className="text-center mb-3">
-                        <i className="bi bi-check-circle-fill text-success" style={{fontSize: '3rem'}}></i>
-                      </div>
-                      <p className="text-center">You have full access to job opportunities!</p>
-                      <button className="btn btn-success w-100">
-                        Browse Jobs
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-center mb-3">
-                        <i className="bi bi-lock-fill text-warning" style={{fontSize: '3rem'}}></i>
-                      </div>
-                      <p className="text-center">
-                        Complete all verification steps to unlock job opportunities
-                      </p>
-                      <div className="progress mt-3">
-                        <div 
-                          className="progress-bar" 
-                          role="progressbar" 
-                          style={{width: `${profile.verification.documents.idProof ? 20 : 0}%`}}
-                        ></div>
-                        <div 
-                          className="progress-bar bg-success" 
-                          role="progressbar" 
-                          style={{width: `${profile.verification.documents.addressProof ? 20 : 0}%`}}
-                        ></div>
-                        <div 
-                          className="progress-bar bg-info" 
-                          role="progressbar" 
-                          style={{width: `${profile.verification.documents.qualification ? 20 : 0}%`}}
-                        ></div>
-                        <div 
-                          className="progress-bar bg-warning" 
-                          role="progressbar" 
-                          style={{width: `${profile.verification.status === 'submitted' ? 20 : 0}%`}}
-                        ></div>
-                        <div 
-                          className="progress-bar bg-danger" 
-                          role="progressbar" 
-                          style={{width: `${profile.verification.interview.status === 'passed' ? 20 : 0}%`}}
-                        ></div>
-                      </div>
-                      <small className="text-muted d-block text-center mt-2">
-                        {profile.verification.status === 'submitted' 
-                          ? 'Verification in progress...' 
-                          : 'Upload all documents to submit'}
-                      </small>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
+      {/* Main Card */}
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="p-6 space-y-8">
+          {/* Edit Toggle */}
+          <div className="flex justify-end">
+            <button
+              onClick={() => setEditMode(!editMode)}
+              className={`px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-300 transform hover:scale-105 ${
+                editMode
+                  ? 'bg-gray-600 text-white hover:bg-gray-700'
+                  : 'bg-emerald-600 text-white hover:bg-emerald-700'
+              }`}
+            >
+              {editMode ? 'Cancel' : 'Edit Profile'}
+            </button>
           </div>
+
+          {/* Personal Info */}
+          <Section title="Personal Information">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <InputField
+                label="First Name"
+                name="first_name"
+                value={user.first_name || ''}
+                onChange={handleUserChange}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Last Name"
+                name="last_name"
+                value={user.last_name || ''}
+                onChange={handleUserChange}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Email"
+                name="email"
+                value={user.email || ''}
+                onChange={handleUserChange}
+                disabled={true}
+              />
+              <InputField
+                label="Phone"
+                name="phone"
+                value={user.phone || ''}
+                onChange={handleUserChange}
+                disabled={!editMode}
+              />
+              <div className="md:col-span-2">
+                <InputField
+                  label="Address"
+                  name="address"
+                  value={user.address || ''}
+                  onChange={handleUserChange}
+                  disabled={!editMode}
+                />
+              </div>
+            </div>
+          </Section>
+
+          {/* Work Info */}
+          <Section title="Work Details">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <InputField
+                label="Work Role"
+                name="work_role"
+                value={worker.work_role || ''}
+                onChange={handleWorkerChange}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Experience Level"
+                name="experience_level"
+                value={worker.experience_level || ''}
+                onChange={handleWorkerChange}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Availability"
+                name="availability"
+                value={worker.availability || ''}
+                onChange={handleWorkerChange}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Short Info"
+                name="short_info"
+                value={worker.short_info || ''}
+                onChange={handleWorkerChange}
+                disabled={!editMode}
+              />
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                <textarea
+                  name="bio"
+                  value={worker.bio || ''}
+                  onChange={handleWorkerChange}
+                  disabled={!editMode}
+                  className={`w-full p-3.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200 ${
+                    !editMode ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white'
+                  }`}
+                  rows="3"
+                />
+              </div>
+              <SelectField
+                label="Status"
+                name="status"
+                value={worker.status || ''}
+                onChange={handleWorkerChange}
+                options={getWorkerStatusOptions()}
+                disabled={!editMode}
+              />
+              <SelectField
+                label="Minimum Education"
+                name="minimum_education"
+                value={worker.minimum_education || ''}
+                onChange={handleWorkerChange}
+                options={getEducationOptions()}
+                disabled={!editMode}
+              />
+            </div>
+          </Section>
+
+          {/* Save Button */}
+          {editMode && (
+            <div className="pt-4">
+              <button
+                onClick={saveChanges}
+                disabled={saving}
+                className={`w-full py-3.5 rounded-xl font-semibold text-white transition-all duration-300 transform hover:scale-[1.02] ${
+                  saving
+                    ? 'bg-blue-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg'
+                }`}
+              >
+                {saving ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </span>
+                ) : (
+                  '💾 Save Changes'
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
+// ✅ Updated Section: removed animate-pulse (not for static content!)
+const Section = ({ title, children }) => (
+  <div className="mb-8">
+    <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+      {title}
+    </h2>
+    {children}
+  </div>
+);
+
+const InputField = ({ label, name, value, onChange, disabled }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+    <input
+      type="text"
+      name={name}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${
+        disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white'
+      }`}
+    />
+  </div>
+);
+
+const SelectField = ({ label, name, value, onChange, options, disabled }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${
+        disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white'
+      }`}
+    >
+      <option value="">Select...</option>
+      {options.map(option => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+);
 
 export default Settings;

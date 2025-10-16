@@ -3,11 +3,12 @@ import { Container, Row, Col, Card, Button, Modal, Form, Alert, ProgressBar, Bad
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
 import styles from './register.module.css';
-import axiosInstance from "../../services/api";
-import ElectricianImg from "../../assets/worker/Electrician.jpg";
-import PlumberImg from "../../assets/worker/Plumber.jpg";
-import CleanerImg from "../../assets/worker/Cleaner.jpg";
-import GardenerImg from "../../assets/worker/Gardener.jpg";
+import axiosInstance from "../services/api";
+import { createWorkerProfileApi } from "../services/workers";
+import ElectricianImg from "../assets/worker/Electrician.jpg";
+import PlumberImg from "../assets/worker/Plumber.jpg";
+import CleanerImg from "../assets/worker/Cleaner.jpg";
+import GardenerImg from "../assets/worker/Gardener.jpg";
 
 // Fallback handler in case a job image fails to load
 const handleJobImageError = (e) => {
@@ -68,22 +69,13 @@ const RegisterPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone_number: '',
-    address: '',
+    work_role: '',
+    bio: '',
     experience_level: '',
     availability: '',
     short_info: '',
+    minimum_education: '',
     jobId: null,
-    // Day Worker specific fields
-    is_day_worker: false,
-    skills: '',
-    available_days: [],
-    available_hours_start: '',
-    available_hours_end: '',
-    service_locations: '',
-    has_own_tools: false,
   });
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
@@ -131,7 +123,11 @@ const RegisterPage = () => {
 
   const handleJobClick = (job) => {
     setSelectedJob(job);
-    setFormData((prev) => ({ ...prev, jobId: job.id }));
+    setFormData((prev) => ({ 
+      ...prev, 
+      jobId: job.id,
+      work_role: job.title.toLowerCase()
+    }));
     setShowModal(true);
   };
 
@@ -139,13 +135,12 @@ const RegisterPage = () => {
     setShowModal(false);
     setSelectedJob(null);
     setFormData({
-      name: '',
-      email: '',
-      phone_number: '',
-      address: '',
+      work_role: '',
+      bio: '',
       experience_level: '',
       availability: '',
       short_info: '',
+      minimum_education: '',
       jobId: null,
     });
     setSuccess(false);
@@ -155,19 +150,44 @@ const RegisterPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-    if (!formData.phone_number.trim()) newErrors.phone_number = 'Phone number is required';
-    else if (!/^\d{10,15}$/.test(formData.phone_number.replace(/\D/g, ''))) newErrors.phone_number = 'Phone number is invalid';
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
-    if (!formData.experience_level.trim()) newErrors.experience_level = 'Experience level is required';
-    if (!formData.availability.trim()) newErrors.availability = 'Availability is required';
-    // Day Worker validations
-    if (formData.is_day_worker) {
-      if (!formData.available_days || formData.available_days.length === 0) newErrors.available_days = 'Select at least one available day';
-      if (!formData.available_hours_start || !formData.available_hours_end) newErrors.available_hours = 'Start and end hours are required';
+    
+    // Check if user is authenticated and has required personal info
+    const savedUser = localStorage.getItem("user");
+    if (!savedUser) {
+      newErrors.submit = 'User not authenticated. Please log in first.';
+      setErrors(newErrors);
+      return false;
     }
+    
+    const userData = JSON.parse(savedUser);
+    if (!userData.name || !userData.email || !userData.phone) {
+      newErrors.submit = 'Please complete your profile with name, email, and phone number before registering as a worker.';
+      setErrors(newErrors);
+      return false;
+    }
+    
+    // Work role validation
+    if (!formData.work_role.trim()) newErrors.work_role = 'Work role is required';
+    
+    // Experience level validation
+    if (!formData.experience_level.trim()) newErrors.experience_level = 'Experience level is required';
+    
+    // Availability validation
+    if (!formData.availability.trim()) newErrors.availability = 'Availability is required';
+    
+    // Bio validation
+    if (!formData.bio.trim()) newErrors.bio = 'Bio is required';
+    else if (formData.bio.trim().length < 10) newErrors.bio = 'Bio must be at least 10 characters';
+    else if (formData.bio.trim().length > 255) newErrors.bio = 'Bio must be 255 characters or less';
+    
+    // Short info validation
+    if (formData.short_info && formData.short_info.length > 255) {
+      newErrors.short_info = 'Short info must be 255 characters or less';
+    }
+    
+    // Education validation
+    if (!formData.minimum_education.trim()) newErrors.minimum_education = 'Minimum education is required';
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -181,24 +201,6 @@ const RegisterPage = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const handleToggleDayWorker = (e) => {
-    const checked = e.target.checked;
-    setFormData((prev) => ({ ...prev, is_day_worker: checked }));
-  };
-
-  const toggleAvailableDay = (day) => {
-    setFormData((prev) => {
-      const days = prev.available_days || [];
-      const nextDays = days.includes(day) ? days.filter((d) => d !== day) : [...days, day];
-      return { ...prev, available_days: nextDays };
-    });
-    if (errors.available_days) setErrors((prev) => ({ ...prev, available_days: '' }));
-  };
-
-  const handleToolsToggle = (e) => {
-    const checked = e.target.checked;
-    setFormData((prev) => ({ ...prev, has_own_tools: checked }));
-  };
 
   const handleProgress = () => {
     setProgress((prev) => Math.min(prev + 25, 100));
@@ -210,42 +212,62 @@ const RegisterPage = () => {
     setIsSubmitting(true);
     handleProgress();
 
-    // Prepare payload with computed availability for day workers
-    const payload = { ...formData };
-    if (payload.is_day_worker) {
-      const days = (payload.available_days || []).join(',');
-      payload.availability = `Days:${days} Hours:${payload.available_hours_start}-${payload.available_hours_end}`;
-      // Ensure removed fields are not sent
-      delete payload.hourly_rate;
-      delete payload.max_jobs_per_day;
+    // Get user information from localStorage
+    const savedUser = localStorage.getItem("user");
+    if (!savedUser) {
+      setErrors({ submit: 'User not authenticated. Please log in first.' });
+      setIsSubmitting(false);
+      return;
     }
+    
+    const userData = JSON.parse(savedUser);
 
-    const formDataToSend = new FormData();
-    Object.entries(payload).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        formDataToSend.append(key, value.join(','));
-      } else if (typeof value === 'boolean') {
-        formDataToSend.append(key, value ? '1' : '0');
-      } else {
-        formDataToSend.append(key, value);
-      }
-    });
+    // Prepare worker data - include personal info from user profile (required by backend)
+    const workerData = {
+      // Personal information from user profile (required by backend API)
+      name: userData.name || '',
+      email: userData.email || '',
+      phone: userData.phone || userData.phone_number || '',
+      
+      // Worker-specific information
+      work_role: formData.work_role,
+      bio: formData.bio,
+      experience_level: formData.experience_level,
+      availability: formData.availability,
+      short_info: formData.short_info,
+      minimum_education: formData.minimum_education,
+      status: 'pending',
+      user_id: userData.id
+    };
 
     try {
-      const response = await axiosInstance.post('api/worker/register', formDataToSend, {
-        // Do NOT set Content-Type header here
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setProgress(percentCompleted);
-        },
-      });
+      // Use the clean worker profile API
+      const response = await createWorkerProfileApi(workerData);
+      
+      // Handle successful response
+      console.log('Worker registration successful:', response);
+      
+      // Store worker information if returned
+      if (response.worker_id || response.id) {
+        const workerInfo = {
+          worker_id: response.worker_id || response.id,
+          user_id: response.user_id || userData.id,
+          work_role: response.work_role || formData.work_role,
+          status: response.status || 'pending',
+          created_at: response.created_at || new Date().toISOString()
+        };
+        
+        // Store worker info in localStorage for future use
+        localStorage.setItem('worker_profile', JSON.stringify(workerInfo));
+      }
+      
       handleProgress();
       setSuccess(true);
       setTimeout(handleClose, 2000);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Failed to submit application. Please try again.';
+      const errorMessage = error.response?.data?.message || 'Failed to register as worker. Please try again.';
       setErrors({ submit: errorMessage });
-      console.error('Submission error:', error);
+      console.error('Registration error:', error);
     } finally {
       setIsSubmitting(false);
       handleProgress();
@@ -466,9 +488,7 @@ const RegisterPage = () => {
       <Modal show={showModal} onHide={handleClose} size="lg" centered className={styles.modal}>
         <Modal.Header closeButton className={styles['modal-header']}>
           <Modal.Title className={styles['modal-title']}>
-            {formData.is_day_worker 
-              ? 'Day Worker Registration' 
-              : `Apply for ${selectedJob?.title}`}
+            Register as {selectedJob?.title}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className={styles['modal-body']}>
@@ -478,87 +498,69 @@ const RegisterPage = () => {
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
-              <h4 className={styles['success-title']}>Application Submitted!</h4>
+              <h4 className={styles['success-title']}>Registration Successful!</h4>
               <p className={styles['success-message']}>
-                Thank you for applying to {selectedJob?.title}. 
-                We'll review your application and contact you soon.
+                Thank you for registering as a {selectedJob?.title}. 
+                We'll review your profile and contact you soon with job opportunities.
               </p>
+              {localStorage.getItem('worker_profile') && (
+                <div className="mt-3">
+                  <small className="text-muted">
+                    Your worker profile has been created and saved.
+                  </small>
+                </div>
+              )}
             </div>
           ) : (
             <Form onSubmit={handleSubmit} className={styles.form}>
               <div className="mb-4">
-                <h5 className={styles['form-section-title']}>Personal Information</h5>
+                <h5 className={styles['form-section-title']}>Worker Profile Information</h5>
+                <div className="alert alert-info mb-3">
+                  <small>
+                    <strong>Note:</strong> Your personal information (name, email, phone) will be taken from your user profile. 
+                    Please ensure your profile is complete before registering as a worker.
+                  </small>
+                </div>
                 <ProgressBar now={progress} className={`mb-3 ${styles.progress}`} />
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label className={styles['form-label']}>Full Name *</Form.Label>
+                      <Form.Label className={styles['form-label']}>Work Role *</Form.Label>
                       <Form.Control
                         type="text"
-                        name="name"
-                        value={formData.name}
+                        name="work_role"
+                        value={formData.work_role}
                         onChange={handleChange}
-                        isInvalid={!!errors.name}
-                        placeholder="Enter your full name"
+                        isInvalid={!!errors.work_role}
+                        placeholder="e.g., electrician, plumber, cleaner"
                         className={styles['form-control']}
+                        readOnly
                       />
-                      <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+                      <Form.Text className={styles['form-hint']}>Selected from job posting</Form.Text>
+                      <Form.Control.Feedback type="invalid">{errors.work_role}</Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label className={styles['form-label']}>Email Address *</Form.Label>
-                      <Form.Control
-                        type="email"
-                        name="email"
-                        value={formData.email}
+                      <Form.Label className={styles['form-label']}>Minimum Education *</Form.Label>
+                      <Form.Select
+                        name="minimum_education"
+                        value={formData.minimum_education}
                         onChange={handleChange}
-                        isInvalid={!!errors.email}
-                        placeholder="Enter your email"
+                        isInvalid={!!errors.minimum_education}
                         className={styles['form-control']}
-                      />
-                      <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                      >
+                        <option value="">Select Education Level</option>
+                        <option value="O/L">O/L (Ordinary Level)</option>
+                        <option value="A/L">A/L (Advanced Level)</option>
+                        <option value="NVQ4">NVQ Level 4</option>
+                        <option value="Diploma">Diploma</option>
+                        <option value="Degree">Degree</option>
+                      </Form.Select>
+                      <Form.Control.Feedback type="invalid">{errors.minimum_education}</Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label className={styles['form-label']}>Phone Number *</Form.Label>
-                      <Form.Control
-                        type="tel"
-                        name="phone_number"
-                        value={formData.phone_number}
-                        onChange={handleChange}
-                        isInvalid={!!errors.phone_number}
-                        placeholder="Enter your phone number"
-                        className={styles['form-control']}
-                      />
-                      <Form.Text className={styles['form-hint']}>Digits only, 10–15 characters.</Form.Text>
-                      <Form.Control.Feedback type="invalid">{errors.phone_number}</Form.Control.Feedback>
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label className={styles['form-label']}>Address *</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        isInvalid={!!errors.address}
-                        placeholder="Enter your address"
-                        className={styles['form-control']}
-                      />
-                      <Form.Text className={styles['form-hint']}>Include city and district for faster matching.</Form.Text>
-                      <Form.Control.Feedback type="invalid">{errors.address}</Form.Control.Feedback>
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </div>
-
-              <div className="mb-4">
-                <h5 className={styles['form-section-title']}>Professional Details</h5>
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
@@ -601,135 +603,48 @@ const RegisterPage = () => {
                     </Form.Group>
                   </Col>
                 </Row>
+              </div>
+
+              <div className="mb-4">
+                <h5 className={styles['form-section-title']}>Professional Bio</h5>
                 <Form.Group className="mb-4">
-                  <Form.Label className={styles['form-label']}>Short Bio</Form.Label>
+                  <Form.Label className={styles['form-label']}>Bio *</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleChange}
+                    isInvalid={!!errors.bio}
+                    placeholder="Tell us about your skills, experience, and what makes you a great worker (10-255 characters)"
+                    maxLength={255}
+                    className={styles['form-control']}
+                  />
+                  <div className={styles['char-count']}>
+                    {formData.bio.length}/255 characters
+                  </div>
+                  <Form.Control.Feedback type="invalid">{errors.bio}</Form.Control.Feedback>
+                </Form.Group>
+                
+                <Form.Group className="mb-4">
+                  <Form.Label className={styles['form-label']}>Additional Information</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={3}
                     name="short_info"
                     value={formData.short_info}
                     onChange={handleChange}
-                    placeholder="Briefly describe your skills and experience (max 255 characters)"
+                    isInvalid={!!errors.short_info}
+                    placeholder="Any additional information you'd like to share (optional, max 255 characters)"
                     maxLength={255}
                     className={styles['form-control']}
                   />
                   <div className={styles['char-count']}>
                     {formData.short_info.length}/255 characters
                   </div>
-        </Form.Group>
-      </div>
-
-      {/* Day Worker Option */}
-      <div className="mb-4">
-        <Form.Check
-          type="checkbox"
-          id="is_day_worker"
-          label="Register as Day Worker"
-          checked={formData.is_day_worker}
-          onChange={handleToggleDayWorker}
-          className={styles['form-checkbox']}
-        />
-      </div>
-
-      {formData.is_day_worker && (
-        <div className="mb-4">
-          <h5 className={styles['form-section-title']}>Day Worker Details</h5>
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className={styles['form-label']}>Skills (comma-separated)</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="skills"
-                  value={formData.skills}
-                  onChange={handleChange}
-                  placeholder="e.g., plumbing, electrical, cleaning"
-                  className={styles['form-control']}
-                />
-              </Form.Group>
-            </Col>
-            
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className={styles['form-label']}>Available Days *</Form.Label>
-                <div className={`${styles['day-chip-group']} d-flex flex-wrap gap-2`}>
-                  {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d) => (
-                    <Form.Check
-                      key={d}
-                      type="checkbox"
-                      inline
-                      className={styles['day-chip']}
-                      label={d}
-                      checked={formData.available_days?.includes(d)}
-                      onChange={() => toggleAvailableDay(d)}
-                    />
-                  ))}
-                </div>
-                <Form.Text className={styles['form-hint']}>Pick at least one day.</Form.Text>
-                {errors.available_days && (
-                  <div className="invalid-feedback d-block">{errors.available_days}</div>
-                )}
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className={styles['form-label']}>Available Hours *</Form.Label>
-                <div className="d-flex gap-2 align-items-center">
-                  <Form.Control
-                    type="time"
-                    name="available_hours_start"
-                    value={formData.available_hours_start}
-                    onChange={handleChange}
-                    className={styles['form-control']}
-                  />
-                  <span>to</span>
-                  <Form.Control
-                    type="time"
-                    name="available_hours_end"
-                    value={formData.available_hours_end}
-                    onChange={handleChange}
-                    className={styles['form-control']}
-                  />
-                </div>
-                <Form.Text className={styles['form-hint']}>Specify your working window.</Form.Text>
-                {errors.available_hours && (
-                  <div className="invalid-feedback d-block">{errors.available_hours}</div>
-                )}
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className={styles['form-label']}>Service Locations</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="service_locations"
-                  value={formData.service_locations}
-                  onChange={handleChange}
-                  placeholder="e.g., Colombo, Kandy"
-                  className={styles['form-control']}
-                />
-              </Form.Group>
-            </Col>
-            
-          </Row>
-
-          <Form.Group className="mb-3">
-            <Form.Check
-              type="checkbox"
-              id="has_own_tools"
-              label="I have my own tools"
-              checked={formData.has_own_tools}
-              onChange={handleToolsToggle}
-            />
-          </Form.Group>
-        </div>
-      )}
+                  <Form.Control.Feedback type="invalid">{errors.short_info}</Form.Control.Feedback>
+                </Form.Group>
+              </div>
               {errors.submit && (
                 <Alert variant="danger" className={styles.alert}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="me-2">
@@ -759,7 +674,7 @@ const RegisterPage = () => {
                       <polyline points="17 8 12 3 7 8"></polyline>
                       <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    Submit Application
+                    Register as Worker
                   </>
                 )}
               </Button>
