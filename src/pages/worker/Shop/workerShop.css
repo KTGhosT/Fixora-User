@@ -1,8 +1,6 @@
 /* ================= HOME PAGE STYLES ================= */
 
 /* Full-bleed cinematic carousel: Edge-to-edge, no side spaces */
-
-
 .carousel {
   position: relative;
   overflow: hidden;
@@ -24,7 +22,7 @@
   height: 100vh;
   position: relative;
   transition: opacity 1s ease-in-out;
-  background: #000; /* Fallback for loading */
+  background: #000;
   width: 100%;
 }
 
@@ -32,10 +30,10 @@
   display: block;
 }
 
-/* Cinematic image with ken burns zoom and pan - Adjusted for minimal cropping */
+/* Cinematic image */
 .carousel-img {
   object-fit: cover;
-  object-position: center center; /* Ensures centered positioning to reduce unwanted cropping */
+  object-position: center center;
   width: 100%;
   height: 100%;
   filter: brightness(60%) contrast(1.15) saturate(1.1);
@@ -48,20 +46,14 @@
 .carousel-item:nth-child(3) .carousel-img { animation-delay: 40s; }
 .carousel-item:nth-child(4) .carousel-img { animation-delay: 60s; }
 
-/* Ken Burns effect: Subtle zoom and pan for cinematic feel - Reduced scale to minimize cropping */
+/* Ken Burns Effect */
 @keyframes kenBurns {
-  0% {
-    transform: scale(1) translate(0, 0);
-  }
-  50% {
-    transform: scale(1.05) translate(-1%, -0.5%); /* Gentler zoom/pan to preserve more of the image */
-  }
-  100% {
-    transform: scale(1) translate(0, 0);
-  }
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.05) translate(-1%, -0.5%); }
+  100% { transform: scale(1) translate(0, 0); }
 }
 
-/* Enhanced overlay: Gradient for depth, cinematic vignette */
+/* Overlay Gradient */
 .carousel-overlay {
   position: absolute;
   top: 0;
@@ -75,14 +67,12 @@
     rgba(0, 0, 0, 0.8) 80%,
     rgba(0, 0, 0, 0.4) 100%
   );
-  /* Vignette for cinematic edges */
   box-shadow: inset 0 0 200px 50px rgba(0, 0, 0, 0.3);
   z-index: 1;
   opacity: 1;
-  transition: opacity 0.5s ease;
 }
 
-/* Professional caption: Staggered entrance, cinematic typography */
+/* Caption Styling */
 .carousel-caption {
   position: absolute;
   top: 50%;
@@ -91,12 +81,12 @@
   z-index: 2;
   color: #fff;
   text-align: center;
-  text-shadow: 
+  text-shadow:
     0 0 10px rgba(0, 0, 0, 0.8),
     0 2px 4px rgba(0, 0, 0, 0.9),
     0 4px 8px rgba(0, 0, 0, 0.7);
   max-width: 85%;
-  animation: captionSlideIn 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: captionSlideIn 1.5s ease forwards;
   opacity: 0;
 }
 
@@ -107,13 +97,10 @@
 
 .carousel-caption h2 {
   font-size: clamp(3rem, 6vw, 5rem);
-  font-family: 'Playfair Display', serif; /* Elegant serif for headings */
+  font-family: 'Playfair Display', serif;
   font-weight: 900;
   letter-spacing: -0.5px;
   margin-bottom: 1rem;
-  line-height: 1.1;
-  position: relative;
-  display: inline-block;
   opacity: 0;
   transform: translateY(50px);
   animation: titleFadeIn 1.2s ease-out 0.5s forwards;
@@ -155,7 +142,7 @@
   padding: 1rem 2.5rem;
   font-weight: 700;
   border-radius: 50px;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.4s ease;
   margin: 0 0.5rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -174,9 +161,7 @@
   transition: left 0.6s;
 }
 
-.carousel-caption .btn:hover::before {
-  left: 100%;
-}
+.carousel-caption .btn:hover::before { left: 100%; }
 
 .carousel-caption .btn-primary {
   background: linear-gradient(135deg, #ffb400, #ffed4e);
@@ -188,7 +173,6 @@
 .carousel-caption .btn-primary:hover {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 15px 40px rgba(255, 180, 0, 0.5);
-  background: linear-gradient(135deg, #ffed4e, #ffb400);
 }
 
 .carousel-caption .btn-outline-light {
@@ -201,10 +185,9 @@
   background: #fff;
   color: #000;
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
 }
 
-/* Cinematic controls: Minimal, elegant, floating */
+/* Controls */
 .carousel-control-prev,
 .carousel-control-next {
   width: 4%;
@@ -214,17 +197,10 @@
 }
 
 .carousel:hover .carousel-control-prev,
-.carousel:hover .carousel-control-next {
-  opacity: 0.8;
-}
+.carousel:hover .carousel-control-next { opacity: 0.8; }
 
-.carousel-control-prev {
-  left: 2%;
-}
-
-.carousel-control-next {
-  right: 2%;
-}
+.carousel-control-prev { left: 2%; }
+.carousel-control-next { right: 2%; }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
@@ -232,7 +208,6 @@
   border-radius: 50%;
   width: 4rem;
   height: 4rem;
-  background-size: 22px 38px;
   filter: invert(1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -246,7 +221,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Sleek indicators: Bottom bar with glow */
+/* Indicators */
 .carousel-indicators {
   bottom: 2rem;
   z-index: 3;
@@ -260,7 +235,6 @@
   border: none;
   margin: 0 6px;
   transition: all 0.4s ease;
-  backdrop-filter: blur(5px);
 }
 
 .carousel-indicators .active {
@@ -271,42 +245,27 @@
 
 /* ================= FULL-BLEED INTRO SECTION ================= */
 .intro-section {
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2c2c2c 100%);
+  background: linear-gradient(135deg, #0f0f0f, #2c2c2c);
   color: #fff;
   padding: 8rem 0;
-  position: relative;
-  overflow: hidden;
-  /* Full-bleed for entire section */
   width: 100vw;
-  left: 50%;
-  right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
-}
-
-.intro-section .container {
+  left: 50%;
+  right: 50%;
   position: relative;
-  max-width: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-.intro-section .row {
-  --bs-gutter-x: 0;
-  padding: 0 2rem; /* Minimal side padding for readability */
+  overflow: hidden;
 }
 
 .brand-name {
   color: #ffb400;
   font-weight: 900;
   text-shadow: 0 0 20px rgba(255, 180, 0, 0.5);
-  letter-spacing: -1px;
 }
 
 .intro-section h1 {
   font-size: clamp(2.5rem, 5vw, 4rem);
   text-align: center;
-  margin-bottom: 1rem;
   font-family: 'Playfair Display', serif;
 }
 
@@ -322,17 +281,14 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-top: 0;
 }
 
 .intro-buttons .btn {
   padding: 1.2rem 3rem;
   font-weight: 700;
   border-radius: 50px;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.5s ease;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  min-width: 200px;
 }
 
 .intro-buttons .btn-primary {
@@ -342,77 +298,43 @@
   box-shadow: 0 10px 35px rgba(255, 180, 0, 0.4);
 }
 
-.intro-buttons .btn-primary:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 20px 50px rgba(255, 180, 0, 0.5);
-}
-
 .intro-buttons .btn-outline-light {
   border: 2px solid #fff;
   color: #fff;
   background: transparent;
 }
 
-.intro-buttons .btn-outline-light:hover {
-  background: #fff;
-  color: #000;
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 20px 50px rgba(255, 255, 255, 0.3);
-}
-
-.intro-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(circle at 20% 80%, rgba(255, 180, 0, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 180, 0, 0.03) 0%, transparent 50%);
-  pointer-events: none;
-}
-
 /* ================= FULL-BLEED HIGHLIGHTS ================= */
 .highlights {
-  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
-  padding: 6rem 0;
-  position: relative;
-  /* Full-bleed for entire section */
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+  padding: 6rem 2rem;
   width: 100vw;
-  left: 50%;
-  right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
-}
-
-.highlights .container {
+  left: 50%;
+  right: 50%;
   position: relative;
-  max-width: 100%;
-  padding: 0;
-  margin: 0;
 }
 
+/* FIXED SPACING BETWEEN CARDS */
 .highlights .row {
-  --bs-gutter-x: 0;
-  padding: 0 2rem;
-  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem; /* Space between cards */
 }
 
 .highlight-card {
   background: #fff;
   border-radius: 25px;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.5s ease;
   overflow: hidden;
-  position: relative;
-  border: none;
   padding: 2rem;
   text-align: center;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex: 1 1 calc(33.333% - 2rem);
+  min-width: 280px;
 }
 
 .highlight-card::before {
@@ -422,7 +344,7 @@
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(to right, #ffb400, #ffed4e);
+  background: linear-gradient(to right, #00ffb7, #ffed4e);
   transform: scaleX(0);
   transition: transform 0.5s ease;
 }
@@ -441,12 +363,6 @@
   color: #ffb400;
   margin-bottom: 1.5rem;
   transition: all 0.4s ease;
-  filter: drop-shadow(0 4px 8px rgba(255, 180, 0, 0.3));
-}
-
-.highlight-card:hover .icon {
-  transform: scale(1.2) rotate(10deg);
-  filter: drop-shadow(0 6px 12px rgba(255, 180, 0, 0.4));
 }
 
 .highlight-card h3 {
@@ -461,140 +377,27 @@
   line-height: 1.6;
 }
 
-/* Cinematic animations */
+/* ================= Animations ================= */
 @keyframes captionSlideIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -60%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
+  from { opacity: 0; transform: translate(-50%, -60%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
-@keyframes titleFadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+@keyframes titleFadeIn { to { opacity: 1; transform: translateY(0); } }
+@keyframes textFadeIn { to { opacity: 1; transform: translateY(0); } }
+@keyframes btnFadeIn { to { opacity: 1; transform: translateY(0); } }
+@keyframes underlineGlow { to { opacity: 1; width: 200px; } }
 
-@keyframes textFadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes btnFadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes underlineGlow {
-  to {
-    opacity: 1;
-    width: 200px;
-  }
-}
-
-/* Hide scrollbars for immersive feel */
-.carousel::-webkit-scrollbar {
-  display: none;
-}
-
-/* Advanced responsive for cinematic scaling */
+/* ================= Responsive ================= */
 @media (max-width: 992px) {
-  .carousel-caption {
-    max-width: 95%;
-  }
-  
-  .carousel-control-prev,
-  .carousel-control-next {
-    width: 6%;
-  }
-  
-  .carousel-caption .btn {
-    display: block;
-    margin: 1rem auto;
-  }
-
-  .intro-section .row,
-  .highlights .row {
-    padding: 0 1.5rem;
-  }
-
-  .intro-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .intro-buttons .btn {
-    min-width: auto;
-    width: 100%;
-    max-width: 250px;
-  }
+  .highlight-card { flex: 1 1 calc(45% - 1.5rem); }
 }
 
 @media (max-width: 768px) {
-  .carousel-caption h2 {
-    font-size: 2.5rem;
-    letter-spacing: 0;
-  }
-
-  .carousel-caption p {
-    font-size: 1.2rem;
-    max-width: 90%;
-  }
-
-  .intro-section {
-    padding: 5rem 0;
-  }
-
-  .highlights {
-    padding: 4rem 0;
-  }
-
-  .highlight-card {
-    margin-bottom: 2.5rem;
-  }
-  
-  /* Reduce ken burns on mobile for performance */
-  .carousel-img {
-    animation-duration: 15s;
-  }
-
-  .intro-section .row,
-  .highlights .row {
-    padding: 0 1rem;
-  }
+  .highlight-card { flex: 1 1 100%; }
 }
 
-@media (max-width: 576px) {
-  .carousel-caption h2 {
-    font-size: 2rem;
-  }
-
-  .carousel-caption p {
-    font-size: 1.1rem;
-  }
-  
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  .intro-section .row,
-  .highlights .row {
-    padding: 0 0.5rem;
-  }
-}
-
-/* Accessibility enhancements */
+/* Accessibility */
 .carousel-control-prev:focus,
 .carousel-control-next:focus,
 .carousel-indicators button:focus {
@@ -605,7 +408,6 @@
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

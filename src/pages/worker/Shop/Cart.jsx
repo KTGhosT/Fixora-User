@@ -1,3 +1,4 @@
+import "./Cart.css";
 function Cart({ cart, removeFromCart }) {
   const total = cart.reduce((acc, item) => acc + item.price, 0);
 
