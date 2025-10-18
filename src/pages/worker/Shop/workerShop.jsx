@@ -2,6 +2,7 @@
 import "./Home.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 import { Link } from "react-router-dom";
 
 function Home() {
@@ -138,7 +139,7 @@ function Home() {
       <section className="intro-section py-5 text-center">
         <div className="container intro-wrapper">
           <h1 className="intro-title">
-            Welcome to <span className="brand-name">Fixora</span>
+            Welcome to <span className="brand-name">FIXORA</span>
           </h1>
           <p className="intro-text mt-3">
             The home of professional workwear — built for comfort, confidence, and class.
