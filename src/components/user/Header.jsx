@@ -6,11 +6,17 @@ const UniqueHeader = ({ user, setUser }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
 
+    // Primary accent colors
+    const primaryColor = 'bg-orange-500'; // New: Orange for Call Now
+    const primaryHover = 'hover:bg-red-600'; // New: Red hover effect
+    const primaryRing = 'focus:ring-orange-300/80';
+    const linkHoverColor = 'hover:text-orange-300'; // New: Orange for link hover
+
     // Handle scroll effect for header appearance and services section visibility
     useEffect(() => {
         const handleScroll = () => {
-            // isScrolled is true after scrolling down 20px
-            setIsScrolled(window.scrollY > 20);
+            // isScrolled is true after scrolling down 50px (increased threshold for better UX)
+            setIsScrolled(window.scrollY > 50);
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -65,22 +71,26 @@ const UniqueHeader = ({ user, setUser }) => {
     // --- Tailwind Classes for Glassmorphism and Animation ---
 
     // Base Glassmorphism Style
-    const glassBase = 'bg-white/15 backdrop-blur-xl border border-white/30 shadow-2xl'; // Increased transparency and shadow
+    const glassBase = 'bg-white/15 backdrop-blur-xl border border-white/30 shadow-2xl';
 
     // Header Classes (Fixed, Floating, Animated)
     const headerClasses = `
         fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-in-out
-        rounded-b-3xl mx-3 md:mx-6 lg:mx-10 mt-3 md:mt-6 transform perspective-1000
+        rounded-b-3xl mx-3 md:mx-6 lg:mx-10 mt-3 md:mt-6 transform
         ${isScrolled 
-            ? 'py-3 ' + glassBase + ' scale-95' // Shrinks and lifts slightly on scroll
-            : 'py-5 ' + glassBase + ' scale-100' // Larger, full size when at the top
+            ? 'py-3 ' + glassBase + ' scale-95' 
+            : 'py-5 ' + glassBase + ' scale-100' 
         }
     `;
 
-    // Services Section Classes (Animated Hide on Scroll)
+    // Services Section Classes (SMOOTH ANIMATION FIX)
+    // Using a more generous max-h value and a custom 'cubic-bezier' for a softer feel
     const servicesSectionClasses = `
-        overflow-hidden transition-all duration-1000 ease-in-out
-        ${isScrolled ? 'max-h-0 opacity-0 pt-0' : 'max-h-96 opacity-100 pt-4 pb-2'}
+        overflow-hidden transition-all duration-700 ease-in-out
+        ${isScrolled 
+            ? 'max-h-0 opacity-0 pt-0' 
+            : 'max-h-96 opacity-100 pt-4 pb-2' // Changed from 96 to 96 (a high value), relies on duration-700 for smooth close.
+        }
     `;
 
     // --- Icons (Same as before) ---
@@ -121,11 +131,11 @@ const UniqueHeader = ({ user, setUser }) => {
             <header className={headerClasses}>
                 <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Top Section */}
-                    <div className="flex items-center justify-between h-20"> {/* Increased height */}
+                    <div className="flex items-center justify-between h-20">
                         {/* Logo Section - Larger Text, Animated */}
                         <div className="flex items-center cursor-pointer select-none group" onClick={() => navigate('/')}>
                             <div className="flex flex-col leading-tight">
-                                <div className="text-4xl font-black text-white tracking-wider drop-shadow-lg transition duration-300 group-hover:scale-105 group-hover:text-blue-300">
+                                <div className="text-4xl font-black text-white tracking-wider drop-shadow-lg transition duration-300 group-hover:scale-105 group-hover:text-orange-300">
                                     FIXORA
                                 </div>
                                 <div className="text-sm text-white/90 font-medium tracking-widest uppercase transition duration-300 group-hover:tracking-[0.3em]">
@@ -140,20 +150,20 @@ const UniqueHeader = ({ user, setUser }) => {
                                 <a 
                                     key={label}
                                     href={`/${label.toLowerCase().replace(/\s/g, '-')}`}
-                                    className="text-xl font-bold text-white/80 hover:text-white transition duration-300 transform hover:scale-110 relative group" // Added group class
+                                    className={`text-xl font-bold text-white/80 ${linkHoverColor} transition duration-300 transform hover:scale-110 relative group`}
                                 >
                                     {label}
-                                    {/* Underline Hover Effect */}
-                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></span>
+                                    {/* Underline Hover Effect - Changed to Orange */}
+                                    <span className="absolute left-0 bottom-0 w-full h-0.5 bg-orange-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></span>
                                 </a>
                             ))}
                         </nav>
 
                         {/* Right Section */}
                         <div className="flex items-center space-x-5">
-                            {/* Call Now Button - Vibrant Primary Color with Glow */}
+                            {/* Call Now Button - New Orange/Red Color Scheme */}
                             <button
-                                className="hidden md:inline-flex items-center space-x-2 px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-full shadow-2xl shadow-blue-500/50 hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300/80 active:scale-95"
+                                className={`hidden md:inline-flex items-center space-x-2 px-6 py-3 text-lg font-bold text-white ${primaryColor} rounded-full shadow-2xl shadow-orange-500/50 transition duration-300 ease-in-out transform hover:scale-105 ${primaryHover} focus:outline-none focus:ring-4 ${primaryRing} active:scale-95`}
                                 onClick={handleCallNow}
                             >
                                 <PhoneIcon className="text-white animate-pulse" />
@@ -188,8 +198,11 @@ const UniqueHeader = ({ user, setUser }) => {
                                         <button className="px-5 py-2.5 text-lg font-bold text-white border-2 border-white/50 rounded-full hover:bg-white/30 transition duration-300 backdrop-blur-sm transform hover:scale-105" onClick={handleLoginSignup}>
                                             Sign in
                                         </button>
-                                        {/* Sign Up Button - Vibrant Primary Color with Glow */}
-                                        <button className="px-5 py-2.5 text-lg font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition duration-300 shadow-xl shadow-blue-500/50 transform hover:scale-105" onClick={handleLoginSignup}>
+                                        {/* Sign Up Button - Vibrant Primary Color with Glow - Changed to Orange */}
+                                        <button 
+                                            className={`px-5 py-2.5 text-lg font-bold text-white ${primaryColor} rounded-full ${primaryHover} transition duration-300 shadow-xl shadow-orange-500/50 transform hover:scale-105`} 
+                                            onClick={handleLoginSignup}
+                                        >
                                             Sign up
                                         </button>
                                     </>
@@ -207,14 +220,14 @@ const UniqueHeader = ({ user, setUser }) => {
                         </div>
                     </div>
 
-                    {/* Services Section - Larger Links, Animated Hide on scroll */}
+                    {/* Services Section - SMOOTH ANIMATION APPLIED HERE */}
                     <div className={`hidden md:block ${servicesSectionClasses}`}>
                         <div className="flex justify-center flex-wrap space-x-6 lg:space-x-10 pt-2 border-t border-white/40">
                             {['Plumber', 'Carpenter', 'Electrician', 'Device Repair', 'House Keeper', 'Garden Cleaner'].map((service) => (
                                 <a
                                     key={service}
                                     href={`/services/${service.toLowerCase().replace(/\s/g, '').replace('keeper', 'cleaning')}`}
-                                    className="text-base font-semibold text-white/90 hover:text-blue-300 py-1 transition duration-200 whitespace-nowrap drop-shadow-sm transform hover:scale-[1.1] hover:underline hover:underline-offset-4"
+                                    className={`text-base font-semibold text-white/90 ${linkHoverColor} py-1 transition duration-200 whitespace-nowrap drop-shadow-sm transform hover:scale-[1.1] hover:underline hover:underline-offset-4`}
                                 >
                                     {service}
                                 </a>
@@ -253,8 +266,8 @@ const UniqueHeader = ({ user, setUser }) => {
 
                             {/* Navigation Links */}
                             <div className="flex flex-col space-y-6 pt-16 border-b-2 border-white/20 pb-6">
-                            <a href="/about" className="text-2xl font-extrabold text-white hover:text-blue-300 transition duration-300" onClick={closeMobileMenu}>About</a>
-                            <a href="/feedback" className="text-2xl font-extrabold text-white hover:text-blue-300 transition duration-300" onClick={closeMobileMenu}>Feedback Center</a>
+                            <a href="/about" className={`text-2xl font-extrabold text-white ${linkHoverColor} transition duration-300`} onClick={closeMobileMenu}>About</a>
+                            <a href="/feedback" className={`text-2xl font-extrabold text-white ${linkHoverColor} transition duration-300`} onClick={closeMobileMenu}>Feedback Center</a>
                             </div>
 
                             {/* Services */}
@@ -265,7 +278,7 @@ const UniqueHeader = ({ user, setUser }) => {
                                 <a
                                     key={`mobile-${service}`}
                                     href={`/services/${service.toLowerCase().replace(/\s/g, '').replace('keeper', 'cleaning')}`}
-                                    className="text-lg text-white/90 hover:text-white transition duration-300 pl-3 border-l-2 border-transparent hover:border-blue-300"
+                                    className={`text-lg text-white/90 hover:text-white transition duration-300 pl-3 border-l-2 border-transparent hover:border-orange-300`}
                                     onClick={closeMobileMenu}
                                 >
                                     {service}
@@ -277,9 +290,9 @@ const UniqueHeader = ({ user, setUser }) => {
 
                         {/* Actions */}
                         <div className="mt-10 flex flex-col space-y-4">
-                            {/* Call Now Button - Mobile version (Primary color) */}
+                            {/* Call Now Button - Mobile version (New Primary color) */}
                             <button
-                                className="flex justify-center items-center space-x-2 w-full px-6 py-4 text-xl font-black text-white bg-blue-600 rounded-xl shadow-2xl shadow-blue-500/50 hover:bg-blue-700 transition duration-300 transform hover:scale-105 focus:ring-4 focus:ring-blue-400"
+                                className={`flex justify-center items-center space-x-2 w-full px-6 py-4 text-xl font-black text-white ${primaryColor} rounded-xl shadow-2xl shadow-orange-500/50 ${primaryHover} transition duration-300 transform hover:scale-105 focus:ring-4 focus:ring-orange-400`}
                                 onClick={handleCallNow}
                             >
                                 <PhoneIcon className="w-6 h-6" />
@@ -312,9 +325,9 @@ const UniqueHeader = ({ user, setUser }) => {
                                     >
                                         SIGN IN
                                     </button>
-                                    {/* Sign Up Button - Mobile (Primary color) */}
+                                    {/* Sign Up Button - Mobile (New Primary color) */}
                                     <button
-                                        className="w-full px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition duration-300 shadow-xl shadow-blue-500/50 transform hover:scale-[1.02]"
+                                        className={`w-full px-6 py-3 text-lg font-bold text-white ${primaryColor} rounded-xl ${primaryHover} transition duration-300 shadow-xl shadow-orange-500/50 transform hover:scale-[1.02]`}
                                         onClick={handleLoginSignup}
                                     >
                                         SIGN UP

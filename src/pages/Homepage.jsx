@@ -1,5 +1,4 @@
 import React from 'react';
-import Navbar from '../components/user/Header';
 import Footer from '../components/user/Footer';
 import Home from '../components/user/Home';
 import Services from '../components/user/Services';

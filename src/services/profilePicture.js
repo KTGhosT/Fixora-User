@@ -51,6 +51,6 @@ export function getProfilePictureUrl(user, forceRefresh = false) {
     return forceRefresh ? `${baseUrl}?t=${Date.now()}` : baseUrl;
   }
   
-  // Return default placeholder
-  return 'https://via.placeholder.com/150/6366f1/ffffff?text=' + (user?.first_name?.[0] || 'U');
+  // Return null to trigger local fallback component
+  return null;
 }

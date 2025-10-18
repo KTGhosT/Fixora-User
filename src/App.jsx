@@ -28,9 +28,10 @@ const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const PasswordReset = lazy(() => import("./pages/auth/PasswordReset"));
 const Homepage = lazy(() => import("./pages/Homepage"));
-const Services = lazy(() => import("./pages/Services"));
+// const Services = lazy(() => import("./pages/Services"));
 const About = lazy(() => import("./pages/About"));
 const UniqueHeader = lazy(() => import("./components/user/Header"));
+const ServiceHeader = lazy(() => import("./components/user/ServiceHeader"));
 const Booking = lazy(() => import("./pages/Booking"));
 const BookingStatus = lazy(() => import("./pages/BookingStatus"));
 const Account = lazy(() => import("./pages/user/Account"));
@@ -55,14 +56,26 @@ const HomeService = lazy(() => import("./pages/Service/HomeService"));
 const AgotaSample = lazy(() => import("./agotasample"));
 const LoadingSpinnerTest = lazy(() => import("./components/LoadingSpinnerTest"));
 
+// Service Header wrapper for service pages
+function ServiceHeaderWrapper({ user, setUser }) {
+  const location = useLocation();
+  // Show service header only on service pages
+  const isServicePage = location.pathname.startsWith("/services/");
+  
+  if (!isServicePage) return null;
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <ServiceHeader user={user} setUser={setUser} />
+    </Suspense>
+  );
+}
+
 // Header wrapper for all public pages except login and signup
 function HeaderWrapper({ user, setUser }) {
   const location = useLocation();
   // Show header on all public pages except /login and /signup
   const publicHeaderPaths = [
-    "/", "/about", "/services", "/services/plumber", "/services/electrician",
-    "/services/gardencleaner", "/services/housecleaning", "/services/devicerepair",
-    "/feedback"
+    "/", "/about", "/services", "/feedback"
   ];
   // If the path starts with /worker or /admin, don't show header
   const isWorkerOrAdmin = location.pathname.startsWith("/worker") || location.pathname.startsWith("/admin");
@@ -70,15 +83,14 @@ function HeaderWrapper({ user, setUser }) {
   const isPasswordReset = location.pathname === "/password-reset" || 
                          location.pathname === "/reset-password" || 
                          location.pathname === "/forgot-password";
+  const isServicePage = location.pathname.startsWith("/services/");
+  
   const showHeader =
     !isWorkerOrAdmin &&
     !isLoginOrSignup &&
     !isPasswordReset &&
-    (
-      publicHeaderPaths.includes(location.pathname) ||
-      // Also show header for any /services/* route
-      location.pathname.startsWith("/services/")
-    );
+    !isServicePage &&
+    publicHeaderPaths.includes(location.pathname);
 
   if (!showHeader) return null;
   return (
@@ -135,6 +147,7 @@ function App() {
   return (
     <Router>
       <HeaderWrapper user={user} setUser={setUser} />
+      <ServiceHeaderWrapper user={user} setUser={setUser} />
       <div className="App">
         <Routes>
           {/* Public Routes */}
@@ -144,7 +157,7 @@ function App() {
           <Route path="/password-reset" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
           <Route path="/reset-password" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
           <Route path="/forgot-password" element={<Suspense fallback={<LoadingSpinner />}><PasswordReset /></Suspense>} />
-          <Route path="/services" element={<Suspense fallback={<LoadingSpinner />}><Services /></Suspense>} />
+          {/* <Route path="/services" element={<Suspense fallback={<LoadingSpinner />}><Services /></Suspense>} /> */}
           <Route path="/about" element={<Suspense fallback={<LoadingSpinner />}><About /></Suspense>} />
           <Route path="/services/plumber" element={<Suspense fallback={<LoadingSpinner />}><Plumber /></Suspense>} />
           <Route path="/services/electrician" element={<Suspense fallback={<LoadingSpinner />}><Electrician /></Suspense>} />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/api";
 import { getProfilePictureUrl } from "../../services/profilePicture";
+import AvatarFallback from "../../components/AvatarFallback";
 import styles from "./Profile.module.css";
 
 const Profile = ({ user: propUser, setUser: setPropUser }) => {
@@ -90,15 +91,32 @@ const Profile = ({ user: propUser, setUser: setPropUser }) => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.profileImageContainer}>
-          <img
-            key={`${user?.profile_picture || 'default'}-${Date.now()}`}
-            src={getProfilePictureUrl(user, true)}
-            alt="Profile"
-            className={styles.profileImage}
-            onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/150/6366f1/ffffff?text=' + (user?.first_name?.[0] || 'U');
-            }}
-          />
+          {user?.profile_picture ? (
+            <img
+              key={`${user?.profile_picture || 'default'}-${Date.now()}`}
+              src={getProfilePictureUrl(user, true)}
+              alt="Profile"
+              className={styles.profileImage}
+              onError={(e) => {
+                // Hide the img and show fallback
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div 
+            className={`${styles.profileImage} ${user?.profile_picture ? 'hidden' : 'flex'}`}
+            style={{ display: user?.profile_picture ? 'none' : 'flex' }}
+          >
+            <AvatarFallback 
+              name={user?.first_name && user?.last_name 
+                ? `${user.first_name} ${user.last_name}` 
+                : user?.name || 'User'
+              }
+              size={150}
+              className="w-full h-full"
+            />
+          </div>
         </div>
         <div className={styles.profileInfo}>
           <h1 className={styles.profileName}>
